@@ -1,1 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>DEROOCE</title><link>https://derooce.github.io/</link><description>Dedicated to write something interesting and insightful.</description><generator>Hugo 0.81.0 https://gohugo.io/</generator><language>zh-CN</language><managingEditor>vanace.jc@gmail.com (DEROOCE)</managingEditor><webMaster>vanace.jc@gmail.com (DEROOCE)</webMaster><copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright><lastBuildDate>Fri, 12 Mar 2021 13:16:04 +0800</lastBuildDate><atom:link rel="self" type="application/rss+xml" href="https://derooce.github.io/rss.xml"/></channel></rss>
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+
+
+
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>DEROOCE</title>
+        <link>https://derooce.github.io/</link>
+        <description>Dedicated to write something interesting and insightful.</description>
+        <generator>Hugo 0.81.0 https://gohugo.io/</generator>
+        
+            <language>zh-CN</language>
+        
+        
+            <managingEditor>vanace.jc@gmail.com (DEROOCE)</managingEditor>
+        
+        
+            <webMaster>vanace.jc@gmail.com (DEROOCE)</webMaster>
+        
+        
+            <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
+        
+        <lastBuildDate>Fri, 12 Mar 2021 14:34:06 &#43;0800</lastBuildDate>
+        
+            <atom:link rel="self" type="application/rss&#43;xml" href="https://derooce.github.io/rss.xml" />
+        
+        
+    </channel>
+</rss>
