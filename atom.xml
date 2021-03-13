@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">MemE 是一个强大且可高度定制的 GoHugo 博客主题，专为个人博客设计。</subtitle>
-    <updated>2021-03-13T11:06:25&#43;08:00</updated>
+    <updated>2021-03-13T12:54:04&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -20,7 +20,7 @@
             <title type="text">Hello Hugo</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/fancy-settings-for-hugo/" />
             <id>https://derooce.github.io/posts/fancy-settings-for-hugo/</id>
-            <updated>2021-03-13T11:03:25&#43;08:00</updated>
+            <updated>2021-03-13T12:53:34&#43;08:00</updated>
             <published>2021-03-12T11:05:36&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -34,7 +34,7 @@
 &lt;p&gt;&lt;code&gt;default.md&lt;/code&gt;中设定&lt;code&gt;slug&lt;/code&gt;为网页网址的一部分。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;ul&gt;
-&lt;li&gt;MEME特殊强调符号： &lt;code&gt;..emphasis..&lt;/code&gt; &lt;code&gt;..强调..&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;MEME特殊强调符号： &lt;code&gt;..emphasis..&lt;/code&gt; &lt;code&gt;..强调..&lt;/code&gt; ..强调..&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;MEME&lt;/strong&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div&gt;
@@ -178,9 +178,9 @@ This is warning
 
 
 &lt;ul&gt;
-&lt;li&gt;插入本地照片&lt;/li&gt;
+&lt;li&gt;插入本地照片 + caption: &lt;code&gt;![](&#39;图片链接&#39;&#39;图标标题)&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://derooce.github.io/1.jpg&#34; alt=&#34;图片示例&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://derooce.github.io/1.jpg&#34; alt=&#34;&#34; title=&#34;示例&#34;&gt;&lt;/p&gt;
 &lt;h3 id=&#34;诗歌引用&#34;&gt;诗歌引用&lt;/h3&gt;
 &lt;p&gt;代码&lt;sup id=&#34;fnref:3&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fn:3&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;{{&amp;lt;quote-center&amp;gt;}}
