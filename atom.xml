@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">MemE 是一个强大且可高度定制的 GoHugo 博客主题，专为个人博客设计。</subtitle>
-    <updated>2021-03-13T09:20:56&#43;08:00</updated>
+    <updated>2021-03-13T11:01:37&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -20,7 +20,7 @@
             <title type="text">Hello Hugo</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/fancy-settings-for-hugo/" />
             <id>https://derooce.github.io/posts/fancy-settings-for-hugo/</id>
-            <updated>2021-03-13T09:20:38&#43;08:00</updated>
+            <updated>2021-03-13T11:00:04&#43;08:00</updated>
             <published>2021-03-12T11:05:36&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -69,6 +69,14 @@
 &lt;/div&gt;&lt;blockquote&gt;
 &lt;p&gt;这是一个注释 。&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;特殊符号
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;&amp;amp;lt&lt;/code&gt;: &lt;code&gt;&amp;lt;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&amp;amp;gt&lt;/code&gt;: &lt;code&gt;&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h2 id=&#34;样式&#34;&gt;样式&lt;/h2&gt;
 &lt;h3 id=&#34;卡片风格引用&#34;&gt;卡片风格引用&lt;/h3&gt;
 &lt;p&gt;卡片风格的引用&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
@@ -118,7 +126,12 @@
 &lt;/font&gt;
 &lt;h3 id=&#34;notice模块&#34;&gt;Notice模块&lt;/h3&gt;
 &lt;p&gt;use the &lt;a href=&#34;https://github.com/martignoni/hugo-notice&#34;&gt;shortcode&lt;/a&gt;, this way:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210312203717.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{{&amp;lt;notice notice-warning&amp;gt;}}
+This is warning
+{{&amp;lt;/notice&amp;gt;}}&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;warning&lt;/code&gt;,&lt;code&gt;tip&lt;/code&gt;,&lt;code&gt;info&lt;/code&gt;,&lt;code&gt;note&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
 
 &lt;div class=&#34;notice notice-warning&#34; &gt;
     &lt;div class=&#34;notice-title&#34;&gt;&lt;svg xmlns=&#34;http://www.w3.org/2000/svg&#34; class=&#34;icon notice-icon&#34; viewBox=&#34;0 0 576 512&#34;&gt;&lt;path d=&#34;M570 440c18 32-5 72-42 72H48c-37 0-60-40-42-72L246 24c19-32 65-32 84 0l240 416zm-282-86a46 46 0 100 92 46 46 0 000-92zm-44-165l8 136c0 6 5 11 12 11h48c7 0 12-5 12-11l8-136c0-7-5-13-12-13h-64c-7 0-12 6-12 13z&#34;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;p&gt;This is warning&lt;/p &gt;&lt;/div&gt;
@@ -132,7 +145,8 @@
     &lt;div class=&#34;notice-title&#34;&gt;&lt;svg xmlns=&#34;http://www.w3.org/2000/svg&#34; class=&#34;icon notice-icon&#34; viewBox=&#34;0 0 512 512&#34;&gt;&lt;path d=&#34;M504 256a248 248 0 11-496 0 248 248 0 01496 0zM227 387l184-184c7-6 7-16 0-22l-22-23c-7-6-17-6-23 0L216 308l-70-70c-6-6-16-6-23 0l-22 23c-7 6-7 16 0 22l104 104c6 7 16 7 22 0z&#34;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;p&gt;This is tip&lt;/p &gt;&lt;/div&gt;
 
 &lt;h3 id=&#34;添加轮播图&#34;&gt;添加轮播图&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;{{&lt;/code&gt; &lt;code&gt;&amp;lt; carousel &amp;quot;URL1,URL2,URL3,URL4,URL5&amp;quot; &amp;gt;&lt;/code&gt;  &lt;code&gt;}}&lt;/code&gt; &lt;sup id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fn:2&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;轮播图&lt;sup id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fn:2&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{{&amp;lt;carousel &#34;URL1,URL2,URL3,URL4,URL5&#34;&amp;gt;}}&lt;/code&gt; &lt;/pre&gt;
 
     &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css&#34;&gt;
     
@@ -166,13 +180,21 @@
 &lt;ul&gt;
 &lt;li&gt;插入本地照片&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://derooce.github.io/1.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://derooce.github.io/1.jpg&#34; alt=&#34;图片示例&#34;&gt;&lt;/p&gt;
 &lt;h3 id=&#34;诗歌引用&#34;&gt;诗歌引用&lt;/h3&gt;
 &lt;p&gt;代码&lt;sup id=&#34;fnref:3&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fn:3&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;：&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;{{&lt;/code&gt; &lt;code&gt;&amp;lt;quote-center&amp;gt;&lt;/code&gt; &lt;code&gt;}}&lt;/code&gt; contexts here &lt;code&gt;{{&lt;/code&gt; &lt;code&gt;&amp;lt;/quote-center&amp;gt;&lt;/code&gt;  &lt;code&gt;}}&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{{&amp;lt;quote-center&amp;gt;}}
+contexts here
+{{&amp;lt;/quote-center&amp;gt;}}&lt;/code&gt;&lt;/pre&gt;
 &lt;blockquote class=&#34;quote-center&#34;&gt;
         &lt;p&gt;伟大的小丑帕格里亚齐来了&lt;br/&gt;去看他的表演吧&lt;br/&gt;他能让你振作起来&lt;/p&gt;&lt;/blockquote&gt; 
 
+&lt;h3 id=&#34;路径样式&#34;&gt;路径样式&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class=&#34;filename&#34;&gt;custom.scss&lt;/span&gt;: 定义一个表示文件名的样式&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;&amp;lt;span class=&amp;quot;filename&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
 &lt;h2 id=&#34;文章小料&#34;&gt;文章小料&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://ztygcs.github.io/posts/emoji%E8%A1%A8%E6%83%85%E5%BA%93%E4%BA%8C/&#34;&gt;Emoji&lt;/a&gt;&lt;/li&gt;
