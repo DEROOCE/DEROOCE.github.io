@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">MemE 是一个强大且可高度定制的 GoHugo 博客主题，专为个人博客设计。</subtitle>
-    <updated>2021-03-14T20:32:53&#43;08:00</updated>
+    <updated>2021-03-14T21:45:52&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -2296,14 +2296,14 @@ $$&lt;/p&gt;
             <title type="text">Blog Css Style</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/blog-css-style/" />
             <id>https://derooce.github.io/posts/blog-css-style/</id>
-            <updated>2021-03-13T23:38:48&#43;08:00</updated>
+            <updated>2021-03-14T21:16:44&#43;08:00</updated>
             <published>2021-03-13T14:14:04&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
                     <uri>https://derooce.github.io/</uri>
                     <email>vanace.jc@gmail.com</email>
                     </author>
-            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">博客页面的css style记录（备忘） 图片浮动在页面右端： 1 &amp;lt;img src=&amp;#34;image.jpg&amp;#34; style=&amp;#34;float:right; margin: 5px;&amp;#34; /&amp;gt; 实现段落两端对齐 1 2 3 4 p { text-align: justify; /* 文本两端对齐 */ text-justify: inter-ideograph; /* 调整表意文字间距以保持两端对齐 */ }</summary>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">博客页面的css style记录（备忘） 图片浮动在页面右端： 1 &amp;lt;img src=&amp;#34;image.jpg&amp;#34; style=&amp;#34;float:right; margin: 5px;&amp;#34; /&amp;gt; 实现段落两端对齐 1 2 3 4 p { text-align: justify; /* 文本两端对齐 */ text-justify: inter-ideograph; /* 调整表意文字间距以保持两端对齐 */ } 博客链接到本页面章节 1 2 3 4 &amp;lt;!-- links to element on this page with id=&amp;#34;attr-href&amp;#34; --&amp;gt; &amp;lt;a href=&amp;#34;#属性&amp;#34;&amp;gt; Description of Same-Page Links &amp;lt;/a&amp;gt;</summary>
             
                 <content type="html">&lt;h2 id=&#34;博客页面的css-style记录备忘&#34;&gt;博客页面的css style记录（备忘）&lt;/h2&gt;
 &lt;ul&gt;
@@ -2332,6 +2332,23 @@ $$&lt;/p&gt;
   &lt;span class=&#34;k&#34;&gt;text-align&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;justify&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;c&#34;&gt;/* 文本两端对齐 */&lt;/span&gt;
   &lt;span class=&#34;k&#34;&gt;text-justify&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;inter-ideograph&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;c&#34;&gt;/* 调整表意文字间距以保持两端对齐 */&lt;/span&gt;
 &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;博客链接到本页面章节&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;c&#34;&gt;&amp;lt;!-- links to element on this page with id=&amp;#34;attr-href&amp;#34; --&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;href&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;#属性&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+Description of Same-Page Links
+&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;</content>

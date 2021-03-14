@@ -1,86 +1,235 @@
 <!DOCTYPE html>
-
-
-
-
-<html lang="en"> 
-
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>404</title>
-    <meta name="author" content="derooce" />
-    <meta name="keywords" content="404 page, css3, template, html5 template" />
-    <meta name="description" content="404 - Page Template" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    
-    <link type="text/css" media="all" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
-    <link type="text/css" media="all" href="https://pkfrom.github.io/404/assets/css/404.min.css" rel="stylesheet" />
-
-    
-    
-    
-    <link href='http://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900' rel='stylesheet' type='text/css'>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Error 404</title>
+  
+  <style type="text/css">
+@import url("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css");
+@import url("https://fonts.googleapis.com/css?family=Anton");
+@import url("https://fonts.googleapis.com/css?family=Lato:300,400,700,900");
+body {
+  height: 100% !important;
+}
+html {
+  height: 100% !important;
+}
+.main {
+  height: 100% !important;
+}
+.main Header {
+   
+   
+   
+  background: url("space.jpg") center center no-repeat;
+  background-size: cover;
+  min-height: 100%;
+  z-index: -9999;
+}
+.main Header:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image: linear-gradient(to bottom right, #002f4b, #000);
+  opacity: 0.6;
+}
+.main Header #universe {
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+.main Header .content {
+  padding-top: 25px;
+  color: #fff;
+}
+.main Header .logo h3 {
+  display: inline-block;
+  font-size: 20px;
+  padding: 7px 0px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-weight: 300;
+  font-family: 'Lato', sans-serif;
+}
+.main Header .nav a {
+  color: #fff;
+}
+.main Header .nav svg {
+  font-size: 22px !important;
+  margin-top: -3px;
+}
+.main Header .hero {
+  font-family: 'Lato', sans-serif;
+  padding: 80px 0px;
+}
+.main Header .hero h1 {
+  font-size: 400px;
+  color: rgba(255,255,255,0.1);
+  margin-bottom: 0px;
+}
+.main Header .hero h2 {
+  color: #fff;
+  font-size: 35px;
+  margin-top: -130px;
+}
+.main Header .hero h3 {
+  color: #fff;
+  margin-bottom: 30px;
+}
+.main Header .hero .btn-back {
+  background-color: #002f4b;
+  cursor: pointer;
+  margin: 30px 0px;
+  padding: 12px;
+  border: 1px solid #002f4b;
+  color: #fff;
+  font-weight: 200;
+  text-transform: uppercase;
+  font-size: 13px;
+  border-radius: 5px;
+  letter-spacing: 1.5px;
+  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.03);
+}
+.main Header .hero .btn-back:hover {
+  background-color: rgba(0,47,75,0.8);
+  transform: scale(1.03);
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+}
+.main Header .hero .astro img {
+  position: fixed;
+  top: 40%;
+  transform: translatey(0px);
+  animation: float 6s ease-in-out infinite;
+}
+@media (max-width: 676px) {
+  .main header .hero {
+    padding: 50px 0px;
+  }
+  .main header .hero h1 {
+    font-size: 160px !important;
+  }
+  .main header .hero h2 {
+    font-size: 24px;
+    margin-top: -60px;
+  }
+  .main header .hero h3 {
+    font-size: 19px;
+  }
+  .main header .hero .btn-back {
+    font-size: 12px;
+  }
+  .main header .nav-link {
+    padding: 0.5rem 0.5rem;
+  }
+  .main header .astro {
+    display: none;
+  }
+  .main header .astro img {
+    width: 120px;
+    bottom: 0;
+    position: absolute;
+  }
+}
+@-moz-keyframes float {
+  0% {
+    transform: translatey(0px);
+  }
+  50% {
+    transform: translatey(-40px);
+  }
+  100% {
+    transform: translatey(0px);
+  }
+}
+@-webkit-keyframes float {
+  0% {
+    transform: translatey(0px);
+  }
+  50% {
+    transform: translatey(-40px);
+  }
+  100% {
+    transform: translatey(0px);
+  }
+}
+@-o-keyframes float {
+  0% {
+    transform: translatey(0px);
+  }
+  50% {
+    transform: translatey(-40px);
+  }
+  100% {
+    transform: translatey(0px);
+  }
+}
+@keyframes float {
+  0% {
+    transform: translatey(0px);
+  }
+  50% {
+    transform: translatey(-40px);
+  }
+  100% {
+    transform: translatey(0px);
+  }
+}
+</style>
 </head>
-<body>
-
-    
-    <div class="animationload">
-        <div class="loader">
-        </div>
-    </div>
-    
-
-    
-    <div id="wrapper">
+<body class="main">
+    <header>
+      <canvas id="universe"></canvas>
+      <div class="content">
         <div class="container">
-            
-            <div class="switcher">
-                <input id="sw" type="checkbox" class="switcher-value">
-                <label for="sw" class="sw_btn"></label>
-                <div class="bg"></div>
-                <div class="text">Turn <span class="text-l">off</span><span class="text-d">on</span><br />the light</div>
+          <div class="row">
+            <div class="col-sm-12">
+              <nav>
+                <ul class="nav nav-pills float-right">
+                  
+                  <li><a class="nav-link" title="NASA"  href="https://www.nasa.gov/"><i class="fas fa-space-shuttle"></i></a></li>
+                </ul>
+              </nav>
+              <div class="logo">
+                <h3>DEROOCE</h3>
+              </div>
             </div>
-            
-
-            
-            <div id="dark" class="row text-center">
-                <div class="info">
-                    <img src="//pkfrom.github.io/404/assets/img/404-dark.png" alt="404 error" />
-                </div>
-            </div>
-            
-
-            
-            <div id="light" class="row text-center">
-                
-                <div class="info">
-                    <img src="//pkfrom.github.io/404/assets/img/404-light.gif" alt="404 error" />
-                    
-                    <p>The page you are looking for was moved, removed,<br />
-                        renamed or might never existed.</p>
-                    <a href="https://derooce.github.io/" class="btn">Go Home</a>
-                    
-                </div>
-                
-            </div>
-            
-
+          </div>
         </div>
-        
-    </div>
-    
-
-
-    
-    <script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" type="text/javascript"></script>
-    <script src="//pkfrom.github.io/404/assets/js/modernizr.custom.js" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.0/jquery.nicescroll.min.js" type="text/javascript"></script>
-    <script src="https://pkfrom.github.io/404/assets/js/404.min.js" type="text/javascript"></script>
-
-    
-    
-
+      </div>
+      <div class="hero">
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-8">
+              <h1>404</h1>
+              <h2>Hello Space Wanderer!</h2>
+              <h3>It seems you are lost in space.</h3>
+              <a href="https://derooce.github.io/" class="btn-back">Back to Homepage</a>
+            </div>
+            <div class="col-sm-4">
+              <div class="astro">
+                  
+                  
+                  <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">
+                  <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/astronaut.png" alt="">
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
 </body>
+
+<script type="text/javascript">
+var WIDTH=window.innerWidth,HEIGHT=window.innerHeight,MAX_PARTICLES=100,DRAW_INTERVAL=60,container=document.querySelector("header"),canvas=document.querySelector("#universe"),context=canvas.getContext("2d"),gradient=null,pixies=new Array;function setDimensions(e){WIDTH=window.innerWidth,HEIGHT=window.innerHeight,container.style.width=WIDTH+"px",container.style.height=HEIGHT+"px",canvas.width=WIDTH,canvas.height=HEIGHT}function Circle(){this.settings={ttl:8e3,xmax:5,ymax:2,rmax:10,rt:1,xdef:960,ydef:540,xdrift:4,ydrift:4,random:!0,blink:!0},this.reset=function(){this.x=this.settings.random?WIDTH*Math.random():this.settings.xdef,this.y=this.settings.random?HEIGHT*Math.random():this.settings.ydef,this.r=(this.settings.rmax-1)*Math.random()+1,this.dx=Math.random()*this.settings.xmax*(Math.random()<.5?-1:1),this.dy=Math.random()*this.settings.ymax*(Math.random()<.5?-1:1),this.hl=this.settings.ttl/DRAW_INTERVAL*(this.r/this.settings.rmax),this.rt=Math.random()*this.hl,this.settings.rt=Math.random()+1,this.stop=.2*Math.random()+.4,this.settings.xdrift*=Math.random()*(Math.random()<.5?-1:1),this.settings.ydrift*=Math.random()*(Math.random()<.5?-1:1)},this.fade=function(){this.rt+=this.settings.rt},this.draw=function(){this.settings.blink&&(this.rt<=0||this.rt>=this.hl)?this.settings.rt=-1*this.settings.rt:this.rt>=this.hl&&this.reset();var newo=1-this.rt/this.hl;context.beginPath(),context.arc(this.x,this.y,this.r,0,2*Math.PI,!0),context.closePath();var cr=this.r*newo;(gradient=context.createRadialGradient(this.x,this.y,0,this.x,this.y,cr<=0?1:cr)).addColorStop(0,"rgba(255,255,255,"+newo+")"),gradient.addColorStop(this.stop,"rgba(77,101,181,"+.6*newo+")"),gradient.addColorStop(1,"rgba(77,101,181,0)"),context.fillStyle=gradient,context.fill()},this.move=function(){this.x+=this.rt/this.hl*this.dx,this.y+=this.rt/this.hl*this.dy,(this.x>WIDTH||this.x<0)&&(this.dx*=-1),(this.y>HEIGHT||this.y<0)&&(this.dy*=-1)},this.getX=function(){return this.x},this.getY=function(){return this.y}}setDimensions(),window.addEventListener("resize",setDimensions);for(var i=0;i<MAX_PARTICLES;i++)pixies.push(new Circle),pixies[i].reset();function draw(){context.clearRect(0,0,WIDTH,HEIGHT);for(var i=0;i<pixies.length;i++)pixies[i].fade(),pixies[i].move(),pixies[i].draw()}setInterval(draw,DRAW_INTERVAL);
+</script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.4/js/all.js"></script>
 </html>
