@@ -114,6 +114,23 @@
     <meta property="article:section" content="posts" />
 
 
+        <link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
+
+        
+
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KFL8D48FDC"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-KFL8D48FDC');
+    </script>
+
+
+
 
     
 
@@ -186,7 +203,13 @@
 
 
         
+
+        
+    
+
     </header>
+
+
 
 
 
@@ -1121,7 +1144,14 @@ $$</p>
 
 
         </div>
-        
+        <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('\/sw.js');
+            });
+        }
+    </script>
+
 
         
 

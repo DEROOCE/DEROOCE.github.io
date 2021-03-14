@@ -9,7 +9,7 @@
     <channel>
         <title>DEROOCE</title>
         <link>https://derooce.github.io/</link>
-        <description>MemE 是一个强大且可高度定制的 GoHugo 博客主题，专为个人博客设计。</description>
+        <description>Writing and Sharing something insightful!</description>
         <generator>Hugo 0.81.0 https://gohugo.io/</generator>
         
             <language>zh-CN</language>
@@ -23,7 +23,7 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
         
-        <lastBuildDate>Sun, 14 Mar 2021 21:45:52 &#43;0800</lastBuildDate>
+        <lastBuildDate>Sun, 14 Mar 2021 23:36:28 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://derooce.github.io/rss.xml" />
         
