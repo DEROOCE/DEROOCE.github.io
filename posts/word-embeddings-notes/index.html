@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+    <meta charset="UTF-8" />
+
+    <meta name="generator" content="Hugo 0.81.0" /><meta name="theme-color" content="#fff" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+    
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    <title>NLP Notes series: Word Embeddings | DEROOCE</title>
+
+    <link rel="stylesheet" href="/css/meme.min.bd228e51eabb42a0ea6503719e2b4dda800632f17a462b176d1a00cd448a9dd5.css"/>
+
+    
+    
+        <script src="/js/meme.min.4194bf2034241e3757fbbbf5fe4db43d0ff17c81f4496e6bc931504f0978cbd2.js"></script>
+
+    
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Martel:wght@200;300;400;600&amp;family=Lora:ital,wght@1,500&amp;family=Shippori&#43;Mincho:wght@400;500;600&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" media="print" onload="this.media='all'" />
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Martel:wght@200;300;400;600&amp;family=Lora:ital,wght@1,500&amp;family=Shippori&#43;Mincho:wght@400;500;600&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" /></noscript>
+
+    <meta name="author" content="DEROOCE" /><meta name="description" content="Word Embeddings 背景 对于一段文本&#34;I saw a cat&#34;,人类可以轻易理解其含义。然而，对于计算机模型却无法做到，它们需要特征向量(vectors of features),这样的向量，或者称“word embeddings&#34;(词嵌入)可以作为文本的一种表示，并且模型也能够“理解”与处理这种表示。……" />
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#2a6df4" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="DEROOCE" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="DEROOCE" />
+    <meta name="msapplication-starturl" content="../../" />
+    <meta name="msapplication-TileColor" content="#fff" />
+    <meta name="msapplication-TileImage" content="../../icons/mstile-150x150.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <script src="https://kit.fontawesome.com/e2d29a5fca.js" crossorigin="anonymous"></script>
+    
+    
+
+    
+    <link rel="canonical" href="https://derooce.github.io/posts/word-embeddings-notes/" />
+    
+
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "datePublished": "2021-03-14T12:38:10+08:00",
+        "dateModified": "2021-03-14T15:09:22+08:00",
+        "url": "https://derooce.github.io/posts/word-embeddings-notes/",
+        "headline": "NLP Notes series: Word Embeddings",
+        "description": "Word Embeddings 背景 对于一段文本\"I saw a cat\",人类可以轻易理解其含义。然而，对于计算机模型却无法做到，它们需要特征向量(vectors of features),这样的向量，或者称“word embeddings\"(词嵌入)可以作为文本的一种表示，并且模型也能够“理解”与处理这种表示。……",
+        "inLanguage" : "zh-CN",
+        "articleSection": "posts",
+        "wordCount":  12822 ,
+        "image": ["https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131010.png","https://lena-voita.github.io/resources/lectures/word_emb/lookup_table.gif","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131337.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131424.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131524.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131627.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131653.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131711.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131727.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131744.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131806.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131823.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131841.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314133105.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314133641.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314134630.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314134920.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135251.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135719.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135832.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140001.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140015.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140029.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140044.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140054.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140111.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140317.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140428.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140459.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140800.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140816.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140827.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140838.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140850.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140901.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted image 20210310211302.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314141106.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314141222.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314141355.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314141841.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314142917.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314142902.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143033.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143459.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143707.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143736.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143846.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144026.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144109.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144426.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144449.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144518.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144543.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144633.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144744.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145043.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145216.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145339.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145425.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145527.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145553.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145807.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145857.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145930.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145944.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314150003.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted-image-20210306201514.png"],
+        "author": {
+            "@type": "Person",
+            "description": "Do or die",
+            "email": "vanace.jc@gmail.com",
+            "image": "https://derooce.github.io/icons/apple-touch-icon.png",
+            "url": "https://derooce.github.io/",
+            "name": "DEROOCE"
+        },
+        "license": "[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)",
+        "publisher": {
+            "@type": "Organization",
+            "name": "DEROOCE",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://derooce.github.io/icons/apple-touch-icon.png"
+            },
+            "url": "https://derooce.github.io/"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebSite",
+            "@id": "https://derooce.github.io/"
+        }
+    }
+</script>
+
+    
+
+<meta name="twitter:card" content="summary_large_image" />
+
+
+<meta name="twitter:site" content="@vanace_jc" />
+<meta name="twitter:creator" content="@vanace_jc" />
+
+    
+
+
+
+<meta property="og:title" content="NLP Notes series: Word Embeddings" />
+<meta property="og:description" content="Word Embeddings 背景 对于一段文本&#34;I saw a cat&#34;,人类可以轻易理解其含义。然而，对于计算机模型却无法做到，它们需要特征向量(vectors of features),这样的向量，或者称“word embeddings&#34;(词嵌入)可以作为文本的一种表示，并且模型也能够“理解”与处理这种表示。……" />
+<meta property="og:url" content="https://derooce.github.io/posts/word-embeddings-notes/" />
+<meta property="og:site_name" content="DEROOCE" />
+<meta property="og:locale" content="zh" /><meta property="og:image" content="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131010.png" />
+<meta property="og:type" content="article" />
+    <meta property="article:published_time" content="2021-03-14T12:38:10&#43;08:00" />
+    <meta property="article:modified_time" content="2021-03-14T15:09:22&#43;08:00" />
+    
+    <meta property="article:section" content="posts" />
+
+
+
+    
+</head>
+
+    <body>
+        <div class="container">
+            
+    <header class="header">
+        
+            <div class="header-wrapper">
+                <div class="header-inner single">
+                    
+    <div class="site-brand">
+        
+            <a href="/" class="brand">DEROOCE</a>
+        
+    </div>
+
+                    <nav class="nav">
+    <ul class="menu" id="menu">
+        
+            
+        
+        
+        
+        
+            
+                <li class="menu-item"><a href="/posts/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon archive"><path d="M32 448c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32V160H32v288zm160-212c0-6.6 5.4-12 12-12h104c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12H204c-6.6 0-12-5.4-12-12v-8zM480 32H32C14.3 32 0 46.3 0 64v48c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16V64c0-17.7-14.3-32-32-32z"/></svg><span class="menu-item-name">文章</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/categories/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon th"><path d="M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"/></svg><span class="menu-item-name">分类</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/tags/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="icon tags"><path d="M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"/></svg><span class="menu-item-name">标签</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/about/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon user-circle"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/></svg><span class="menu-item-name">关于</span></a>
+                </li>
+            
+        
+            
+                
+                    
+                    
+                        <li class="menu-item">
+                            <a id="theme-switcher" href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-light"><path d="M193.2 104.5l48.8-97.5a18 18 0 0128 0l48.8 97.5 103.4 -34.5a18 18 0 0119.8 19.8l-34.5 103.4l97.5 48.8a18 18 0 010 28l-97.5 48.8 34.5 103.4a18 18 0 01-19.8 19.8l-103.4-34.5-48.8 97.5a18 18 0 01-28 0l-48.8-97.5l-103.4 34.5a18 18 0 01-19.8-19.8l34.5-103.4-97.5-48.8a18 18 0 010-28l97.5-48.8-34.5-103.4a18 18 0 0119.8-19.8zM256 128a128 128 0 10.01 0M256 160a96 96 0 10.01 0"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-dark"><path d="M27 412a256 256 0 10154-407a11.5 11.5 0 00-5 20a201.5 201.5 0 01-134 374a11.5 11.5 0 00-15 13"/></svg></a>
+                        </li>
+                    
+                
+            
+        
+    </ul>
+</nav>
+
+                    
+                </div>
+            </div>
+            
+    <input type="checkbox" id="nav-toggle" aria-hidden="true" />
+    <label for="nav-toggle" class="nav-toggle"></label>
+    <label for="nav-toggle" class="nav-curtain"></label>
+
+
+        
+    </header>
+
+
+
+
+            
+            
+    <main class="main single" id="main">
+    <div class="main-inner">
+
+        
+
+        <article class="content post h-entry" data-align="justify" data-type="posts" data-toc-num="true">
+
+            <h1 class="post-title p-name">NLP Notes series: Word Embeddings</h1>
+
+            
+
+            
+                
+            
+
+            
+                
+
+<div class="post-meta">
+    
+        
+        <time datetime="2021-03-14T12:38:10&#43;08:00" class="post-meta-item published dt-published"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>&nbsp;2021.3.14</time>
+    
+    
+    
+    
+        
+        
+        
+            
+                <span class="post-meta-item category"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M464 128H272l-54.63-54.63c-6-6-14.14-9.37-22.63-9.37H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48zm0 272H48V112h140.12l54.63 54.63c6 6 14.14 9.37 22.63 9.37H464v224z"/></svg>&nbsp;<a href="/categories/nlp/" class="category-link p-category">NLP</a>/<a href="/categories/word-embeddings/" class="category-link p-category">Word Embeddings</a></span>
+            
+        
+    
+    
+        
+        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;12822</span>
+    
+    
+    
+    
+</div>
+
+            
+
+            <nav class="contents">
+  <h2 id="contents" class="contents-title">目录</h2><ol class="toc">
+    <li><a id="contents:背景" href="#背景">背景</a></li>
+    <li><a id="contents:离散符号的表示one-hot-vectors" href="#离散符号的表示one-hot-vectors">离散符号的表示：One-hot vectors</a></li>
+    <li><a id="contents:分布式语义" href="#分布式语义">分布式语义</a></li>
+    <li><a id="contents:word-embeddings的性质" href="#word-embeddings的性质">Word Embeddings的性质</a></li>
+    <li><a id="contents:embeddings模型需要关注的地方以及其作用" href="#embeddings模型需要关注的地方以及其作用">Embeddings模型需要关注的地方以及其作用</a></li>
+    <li><a id="contents:基于计数的方法" href="#基于计数的方法">基于计数的方法</a>
+      <ol>
+        <li><a id="contents:介绍" href="#介绍">介绍</a></li>
+        <li><a id="contents:共现计数-co-occurrence-counts" href="#共现计数-co-occurrence-counts">共现计数 Co-Occurrence Counts</a></li>
+        <li><a id="contents:正点互信息-positive-pointwise-mutual-information-ppmi" href="#正点互信息-positive-pointwise-mutual-information-ppmi">正点互信息: Positive Pointwise Mutual Information (PPMI)</a></li>
+        <li><a id="contents:潜在语义分析-latent-semantic-analysis-lsa-understanding-documents" href="#潜在语义分析-latent-semantic-analysis-lsa-understanding-documents">潜在语义分析 Latent Semantic Analysis (LSA): Understanding Documents</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:基于预测的方法word2vec" href="#基于预测的方法word2vec">基于预测的方法：Word2Vec</a>
+      <ol>
+        <li><a id="contents:原理" href="#原理">原理</a></li>
+        <li><a id="contents:目标函数负对数似然" href="#目标函数负对数似然">目标函数：负对数似然</a></li>
+        <li><a id="contents:如何训练" href="#如何训练">如何训练</a>
+          <ol>
+            <li><a id="contents:梯度下降" href="#梯度下降">梯度下降</a></li>
+            <li><a id="contents:更快的训练方式负采样" href="#更快的训练方式负采样">更快的训练方式：负采样</a></li>
+          </ol>
+        </li>
+        <li><a id="contents:后加工" href="#后加工">后加工</a>
+          <ol>
+            <li><a id="contents:加入上下文向量" href="#加入上下文向量">加入上下文向量</a></li>
+            <li><a id="contents:向量标准化" href="#向量标准化">向量标准化</a></li>
+          </ol>
+        </li>
+        <li><a id="contents:推荐训练技巧" href="#推荐训练技巧">推荐训练技巧</a></li>
+        <li><a id="contents:word2vec变种skip-gram和cbow" href="#word2vec变种skip-gram和cbow">Word2Vec变种：Skip-Gram和CBOW</a></li>
+        <li><a id="contents:额外笔记" href="#额外笔记">额外笔记</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:glove-global-vectors-for-word-representation" href="#glove-global-vectors-for-word-representation">Glove: Global Vectors for Word Representation</a></li>
+    <li><a id="contents:词嵌入表示的评估" href="#词嵌入表示的评估">词嵌入表示的评估</a></li>
+    <li><a id="contents:分析与可解释性" href="#分析与可解释性">分析与可解释性</a>
+      <ol>
+        <li><a id="contents:语义空间" href="#语义空间">语义空间</a></li>
+        <li><a id="contents:最近邻" href="#最近邻">最近邻</a></li>
+        <li><a id="contents:线性结构" href="#线性结构">线性结构</a></li>
+        <li><a id="contents:跨语言的相似度" href="#跨语言的相似度">跨语言的相似度</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:问题探讨-rethinking" href="#问题探讨-rethinking">问题探讨 Rethinking</a>
+      <ol>
+        <li><a id="contents:问题1" href="#问题1">问题1</a></li>
+        <li><a id="contents:问题2" href="#问题2">问题2</a></li>
+        <li><a id="contents:问题3" href="#问题3">问题3</a></li>
+        <li><a id="contents:问题4" href="#问题4">问题4</a></li>
+        <li><a id="contents:问题5" href="#问题5">问题5</a></li>
+        <li><a id="contents:问题6" href="#问题6">问题6</a></li>
+        <li><a id="contents:问题7" href="#问题7">问题7</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:reference" href="#reference">Reference</a></li>
+  </ol>
+</nav><div class="post-body e-content">
+              <h1 id="word-embeddings"><a href="#word-embeddings" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:word-embeddings" class="headings">Word Embeddings</a></h1>
+<h2 id="背景"><a href="#背景" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:背景" class="headings">背景</a></h2>
+<p>对于一段文本&quot;<strong>I saw a cat</strong>&quot;,人类可以轻易理解其含义。然而，对于计算机模型却无法做到，它们需要特征向量(vectors of features),这样的向量，或者称“word embeddings&quot;(词嵌入)可以作为文本的一种表示，并且模型也能够“理解”与处理这种表示。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131010.png" style="zoom:80%;" /></p>
+<p>然而，如何或者这种词嵌入表示呢？答案是：使用<strong>查找表</strong>(Look-up table),或者称<strong>词表</strong>(Vocabulary)。</p>
+<p>在实践中，你有一个词表，其中包含着所有的许可词(allowed words),并且这个词表是提前选取好的。对于每一个词，查找表中都包含着其对应的嵌入表示，并且可以根据词在词表中的索引轻易地找到对应的嵌入表示,即根据词表中的索引，在查找表中寻找对应的嵌入表示。</p>
+<p><img src="https://lena-voita.github.io/resources/lectures/word_emb/lookup_table.gif" alt=""><span class="caption">◎ 词嵌入表示的查找</span></p>
+<p>此外，考虑到存在未知的词,即那些不在词表中的词，通常一个词表中包含着一个特殊的词--<strong>UNK</strong>（unknown)。此外，未知词也可以直接忽略或是赋予一个0值向量。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131337.png" style="zoom:33%;" /></p>
+<p>本文的主要目的就是：<strong>如何获得这些词嵌入向量(Word Embeddings)？</strong></p>
+<hr>
+<h2 id="离散符号的表示one-hot-vectors"><a href="#离散符号的表示one-hot-vectors" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:离散符号的表示one-hot-vectors" class="headings">离散符号的表示：One-hot vectors</a></h2>
+<p>表示这些词的最简单方式就是使用<strong>独热编码</strong>(one-hot vectors): 词表的第$i$个词对应的表示向量中，除第$i$维的值为1外，其他维度的值都为0。在机器学习中，这也是表示分类特征的最简单方式。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131424.png" style="zoom: 50%;" /></p>
+<p>然而，这样的表示存在许多问题：</p>
+<ol>
+<li>当词表很大时，这些独热向量的维度也会非常大，即$d=|\mathcal{V}|$</li>
+<li>这两个向量是正交的，独热向量无法表示对应词的任意信息</li>
+</ol>
+<p>其中第二点是独热编码最大的缺点。例如，在词表中<strong>cat</strong>和<strong>dog</strong>的索引距离较近，因而独热编码也会认为<strong>cat</strong>和<strong>dog</strong>的意思相近，而这显然不合理。可以肯定地说，独热向量无法捕获词的含义。</p>
+<p><strong>但是我们如何知道词的含义呢？</strong></p>
+<hr>
+<h2 id="分布式语义"><a href="#分布式语义" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:分布式语义" class="headings">分布式语义</a></h2>
+<p>为了捕获在这些向量中词的含义，我们首先需要定义在实践中可以被使用的含义记号。为此，先了解人类是如何理解哪些单词具有相似的含义。</p>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css">
+    
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131524.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131627.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131653.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131711.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131727.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131744.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131806.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131823.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131841.png" alt="">
+            </div>
+            
+        </div>
+        
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js"></script>
+     
+     <script>
+        var swiper = new Swiper('.swiper-container', {
+            pagination: '.swiper-pagination',
+            paginationClickable: true,
+        });
+        </script>
+
+
+<p><span  class="caption">◎ 分布式语义假设(Distributional Semantics Hypothesis)</span></p>
+<p>一旦我们知道了在不同的上下文中，未知词是如何使用的，我们将有能力去理解该词的含义。</p>
+<blockquote>
+<p><strong>分布式假设</strong>:  频繁出现在<strong>相似语境</strong>的词之间有<strong>相似的含义</strong>。</p>
+</blockquote>
+<p>根据分布式假设，我们的大脑将会搜索其他可以用于相同语境的词。在该例中，红酒(wine)一词符合该语境中的使用，因此，得到结论：<strong>tezgüino</strong>一词与wine具有相似的含义。</p>
+<p>这个想法非常具有价值，甚至在实践中也可以被用来使词向量捕捉其词的含义。根据分布式假设，“捕获词的含义”和“捕获上下文”其实内在意义是相同的。因此，我们所要做的就是<strong>将词的上下文信息加入词的表示中</strong>,而获得的词向量其实就是词的分布式语义表示(distribution semantics representation)。</p>
+<blockquote>
+<p><u>Main idea</u>: We need to put information about word contexts into word representation.</p>
+</blockquote>
+<blockquote>
+<p><a href="https://en.wikipedia.org/wiki/Distributional_semantics" target="_blank" rel="noopener"><em>J.R.Firth’s hypothesis</em></a> from 1957, “<em>You shall know a word by the company it keeps.</em>”</p>
+</blockquote>
+<p><strong>本文主要阐述的也就是实现这种想法的不同方法。</strong></p>
+<hr>
+<h2 id="word-embeddings的性质"><a href="#word-embeddings的性质" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:word-embeddings的性质" class="headings">Word Embeddings的性质</a></h2>
+<p>通过各种嵌入算法得到的词嵌入的简单性质：</p>
+<ol>
+<li>余弦相似度 cosine similarity
+<ol>
+<li>为了估计词/上下文之间的相似性，通常我们需要衡量标准化(normalized)后的词/上下文向量的点积(dot-product),即余弦相似度(cosine similarity)。</li>
+<li>两个词之间的相似度(在$[-1,1]$之间)</li>
+</ol>
+</li>
+<li>词嵌入可以通过线性代数解决词之间的类比关系(analogy relationships)
+<ol>
+<li>例如已知两个词<code>man:woman</code>,以及一个词<code>king</code>,寻找其对应的类比词</li>
+<li>解法：寻找一个向量$w$，能够使得$v_{king}-w$与$v_{man}-v_{woman}$之间最相近，即最小化$||v_w - v_{king} + v_{man} - v_{woman}||^2.$</li>
+<li>这种简单的思想可以在一些标准测试中解决$75\%$的词类比问题。</li>
+</ol>
+</li>
+</ol>
+<hr>
+<h2 id="embeddings模型需要关注的地方以及其作用"><a href="#embeddings模型需要关注的地方以及其作用" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:embeddings模型需要关注的地方以及其作用" class="headings">Embeddings模型需要关注的地方以及其作用</a></h2>
+<p>自然地，<strong>对于每个以词表中的单词作为输入</strong>，<strong>并将单词转换为向量嵌入到低维空间中</strong>，<strong>并通过反向传播算法微调</strong>的前馈神经网络，都必然会生成词的嵌入表示，并将其作为第一层的权重，这一层通常被称为<strong>嵌入层</strong>(Embedding Layer)<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">[1]</a></sup>。</p>
+<ul>
+<li>网络方法：词的嵌入表示只是训练过程中的附带物(by-product)</li>
+<li>Word2Vec方法：显式的目标就是生成词嵌入</li>
+</ul>
+<p>而网络方法和Word2Vec类型方法的主要区别在于它们的<strong>计算复杂度</strong>。对于很大的词表，使用非常深的网络架构训练生成词嵌入很容易造成计算成本过大。这也是为什么直到2013年Word Embeddings研究才会在NLP领域爆炸性增长的原因--计算资源！ 计算复杂度是词嵌入模型的关键权衡点。</p>
+
+<div class="notice notice-info" >
+    <div class="notice-title"><svg xmlns="http://www.w3.org/2000/svg" class="icon notice-icon" viewBox="0 0 512 512"><path d="M256 8a248 248 0 100 496 248 248 0 000-496zm0 110a42 42 0 110 84 42 42 0 010-84zm56 254c0 7-5 12-12 12h-88c-7 0-12-5-12-12v-24c0-7 5-12 12-12h12v-64h-12c-7 0-12-5-12-12v-24c0-7 5-12 12-12h64c7 0 12 5 12 12v100h12c7 0 12 5 12 12v24z"/></svg></div><p>As a side-note, word2vec and Glove might be said to be to NLP what
+VGGNet is to vision, i.e. a common weight initialisation that
+provides generally helpful features without the need for lengthy
+training.</p ></div>
+
+<hr>
+<h2 id="基于计数的方法"><a href="#基于计数的方法" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:基于计数的方法" class="headings">基于计数的方法</a></h2>
+<h3 id="介绍"><a href="#介绍" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:介绍" class="headings">介绍</a></h3>
+<p>基于计数的方法(Counted-Based methods)手动地将全局语料库的统计信息加入到词表示中。</p>
+<p>主要的步骤可以分为两步：</p>
+<ol>
+<li>构建一个词的上下文矩阵</li>
+<li>降低矩阵的维度</li>
+</ol>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314133105.png" alt=""><span class="caption">◎ 矩阵降维方法-SVD</span></p>
+<p>降低维度的原因为：</p>
+<ol>
+<li>初始的上下文矩阵会非常大</li>
+<li>可能有很多词只出现在少量的上下文中，初始矩阵可能包含着很多无信息的元素，例如0元素</li>
+</ol>
+<p>为了定义一个基于计数的方法，我们需要先定义两件事：</p>
+<ul>
+<li>什么是“词的上下文(contexts)”，以及什么是“词在上下文中的含义”</li>
+<li>关联(association)的概念，即计算上下文矩阵元素的公式</li>
+</ul>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314133641.png" style="zoom:33%;" /></p>
+<hr>
+<h3 id="共现计数-co-occurrence-counts"><a href="#共现计数-co-occurrence-counts" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:共现计数-co-occurrence-counts" class="headings">共现计数 Co-Occurrence Counts</a></h3>
+<p>Offconvex博客中提出的观点<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">[2]</a></sup>：</p>
+<blockquote class="quote-center">
+        <p>All embedding methods try to leverage word <strong>co-occurence statistics</strong>.</p></blockquote> 
+
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314134630.png" alt=""><span class="caption">◎ 词的上下文定义</span></p>
+<p><strong>共现计数</strong>是一种非常简单的计数方法。以每个词周围$L$长度的窗口作为其对应的上下文。上下文矩阵元素的定义为词$w$在上下文$c$中出现的<strong>次数</strong>$N(w,c)$。这是获得嵌入表示的最基础，并且非常古老的方法。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314134920.png" style="zoom: 33%;" /></p>
+<hr>
+<h3 id="正点互信息-positive-pointwise-mutual-information-ppmi"><a href="#正点互信息-positive-pointwise-mutual-information-ppmi" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:正点互信息-positive-pointwise-mutual-information-ppmi" class="headings">正点互信息: Positive Pointwise Mutual Information (PPMI)</a></h3>
+<p>在该方法中，上下文的定义方式与共数计数中的定义相同,但衡量词语上下文之间关联性的方式更加聪明：正PMI (PPMI)。PPMI曾一度被广泛认为是<strong>分布式-相似度</strong>(distributional-similarity)模型的最先进的度量方法。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135251.png" style="zoom: 33%;" /></p>
+<p>令$p(w,w')$是词$w$在以$w'$为中心的5个单词组成的窗口内出现的经验概率，$p(w)$是词$w$在文本中出现的概率，$p(w')$是词$w'$在文本中出现的概率。则对应的点互信息(PMI)计算为:
+$$
+PMI(w, w') = \log (\frac{p(w, w')}{p(w) p(w')})  \qquad \mbox{(Pointwise mutual information (PMI))}
+$$</p>
+<blockquote>
+<p>🔥<u>Important</u>: 一些我们将会使用到的神经网络方法(如，Word2Vec)，隐式地近似（移位的，shifted）PMI矩阵的因式分解 $\color{#888}{u_{c}^T}\color{#88bd33}{v_{w}}\color{black} =PMI(\color{#88bd33}{w}\color{black}, \color{#888}{c}\color{black})-\log k$,其中$k$表示<a href="https://derooce.github.io/posts/word-embeddings-notes/#%E6%9B%B4%E5%BF%AB%E7%9A%84%E8%AE%AD%E7%BB%83%E6%96%B9%E5%BC%8F%E8%B4%9F%E9%87%87%E6%A0%B7" target="_blank" rel="noopener">负采样</a>的样本个数。</p>
+</blockquote>
+<hr>
+<h3 id="潜在语义分析-latent-semantic-analysis-lsa-understanding-documents"><a href="#潜在语义分析-latent-semantic-analysis-lsa-understanding-documents" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:潜在语义分析-latent-semantic-analysis-lsa-understanding-documents" class="headings">潜在语义分析 Latent Semantic Analysis (LSA): Understanding Documents</a></h3>
+<p>潜在语义分析(LSA)分析<strong>文件集合</strong>。在之前的方法中，上下文的作用仅是为了获得词向量，用完之后就会被抛弃。然而。在LSA中，上下文仍然被作为关心的信息，或者在该方法中称为<strong>文档向量</strong>(document vectors)。LSA是最简单的主题模型(topic models)之一:文档向量之间的余弦相似度用于衡量文档之间的相似性。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135719.png" style="zoom: 33%;" /></p>
+<p>“LSA”有时指代对<strong>一个文档矩阵(term-document matrix)应用SVD</strong>的更广泛的方法。文档矩阵的元素可以使用不同方式计算，例如简单的<strong>共现计数</strong>、<strong>tf-idf</strong>或者其他权重方法。</p>
+<hr>
+<h2 id="基于预测的方法word2vec"><a href="#基于预测的方法word2vec" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:基于预测的方法word2vec" class="headings">基于预测的方法：Word2Vec</a></h2>
+<h3 id="原理"><a href="#原理" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:原理" class="headings">原理</a></h3>
+<p>首先，我们不要忘记这些方法的主要依据思想：<strong>将上下文中的信息加入到此向量中</strong>。</p>
+<p>基于计数的方法很好地体现了主要依据思想，而Word2Vec从另一个方式体现：<strong>通过教模型预测上下文来学习词向量</strong>。</p>
+<blockquote>
+<p><u>How</u>: <strong>Learn</strong> word vectors by teaching them to <strong>predict contexts</strong>.</p>
+</blockquote>
+<p>Word2Vec的参数为词向量。这些参数针对特定目标进行了迭代优化。这个目标迫使词向量理解词应该出现在什么样的上下文中：<strong>对向量进行训练以预测相应单词的可能上下文</strong>。如果还记得我们的分布式假设，如果词向量能理解上下文，那么这些向量也就能知道词的含义。
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135832.png" style="zoom: 25%;" /></p>
+<p>Word2Vec是一种迭代的方法，它的主要思想如下：</p>
+<ol>
+<li>使用一个巨大的预料库</li>
+<li>通过一个滑动窗口遍历所有的文本，窗口每次移动一个单词。在每一步，都有一个中心词(center word)和上下文词(context  words)</li>
+<li>对于中心词，计算其对应的上下文词的概率</li>
+<li>调整词向量，增加上下文词的概率</li>
+</ol>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css">
+    
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140001.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140015.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140029.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140044.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140054.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140111.png" alt="">
+            </div>
+            
+        </div>
+        
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js"></script>
+     
+     <script>
+        var swiper = new Swiper('.swiper-container', {
+            pagination: '.swiper-pagination',
+            paginationClickable: true,
+        });
+        </script>
+
+
+<p><span class="caption">◎  Word2Vec计算流程示意</span></p>
+<hr>
+<h3 id="目标函数负对数似然"><a href="#目标函数负对数似然" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:目标函数负对数似然" class="headings">目标函数：负对数似然</a></h3>
+<p>对于文本预料的每个位置$t=1,...,T$, 给定中心词$\color{#88bd33}{w_t}$,Word2Vec将根据一个$m$-大小的窗口来预测上下文词:
+$$
+\color{#88bd33}{\mbox{Likelihood}} \color{black}= L(\theta)= \prod\limits_{t=1}^T\prod\limits_{-m\le j \le m, j\neq 0}P(\color{#888}{w_{t+j}}|\color{#88bd33}{w_t}\color{black}, \theta),
+$$
+其中$\theta$是所有需要优化的变量。目标函数(aka. 损失函数、成本函数)$J(\theta)$是平均负对数似然：
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140317.png" alt=""><span class="caption">◎ 似然函数取对数</span></p>
+<p>注意，负对数似然函数与我们所期望的目标的相符程度: <strong>使用一个滑动窗口遍历整个文本，并且计算上下文的概率值</strong>。现在，我们来弄清楚如何计算概率值$P(\color{#888}{w_{t+j}}\color{black}|\color{#88bd33}{w_t}\color{black}, \theta)$：</p>
+<p>对每个词$w$,我们将会获得两个向量：</p>
+<ul>
+<li>$\color{#88bd33}{v_w}$: 当$w$是中心词时</li>
+<li>$\color{#888}{u_w}$： 当$w$是上下文词时</li>
+</ul>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140428.png" style="zoom:33%;" /></p>
+<blockquote>
+<p>一旦向量经过训练后，通常我们将会丢弃所有的上下文词向量，而保留词向量。</p>
+</blockquote>
+<p>对于中心词$\color{#88bd33}{c}$ (c-central)，上下文词$\color{#888}{o}$ (o-outside)以中心词为条件的条件概率为：
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140459.png" style="zoom: 33%;" /></p>
+<blockquote>
+<p>一个词将用有两个向量对应:$u,v$,而在网络训练学习这些词嵌入时，这些向量首先<strong>随机初始化</strong>，赋予它们一个初值，然后根据后续的优化算法逐步学习出一个好的嵌入向量。</p>
+</blockquote>
+<p>注意到上述的函数形式其实就是softmax函数$\mathbb{R}^n\rightarrow \mathbb{R}^n$：
+$$
+softmax(x_i)=\frac{\exp(x_i)}{\sum\limits_{j=i}^n\exp(x_j)}.
+$$</p>
+<p>Softmax函数将任意的值$x_i$映射成一个概率分布$p_i$:</p>
+<ul>
+<li>&quot;max&quot;表示最大的$x_i$值将会有最大的概率值$p_i$</li>
+<li>&quot;soft&quot;表示所有的概率都非零,即使是一些小的$x_i$值也会被赋予一定的概率值</li>
+</ul>
+<p><font color="#88bd33">中心词：central words</font>和<font color="#888">上下文词：context words</font>，下面将给出一个图例帮助理解整个概率值的生成过程。假设第一个中心词是$a$,将其记为$\color{#88bd33}{v_a}$，而当窗口滑动，$a$成为上下文词时，将其记为$\color{#888}{u_a}$。</p>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css">
+    
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140800.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140816.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140827.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140838.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140850.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140901.png" alt="">
+            </div>
+            
+        </div>
+        
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js"></script>
+     
+     <script>
+        var swiper = new Swiper('.swiper-container', {
+            pagination: '.swiper-pagination',
+            paginationClickable: true,
+        });
+        </script>
+
+
+<p><span class="caption">◎ 条件概率的生成示例</span></p>
+<hr>
+<h3 id="如何训练"><a href="#如何训练" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:如何训练" class="headings">如何训练</a></h3>
+<h4 id="梯度下降"><a href="#梯度下降" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:梯度下降" class="headings">梯度下降</a></h4>
+<p><strong>通过梯度下降，一次更新一个词</strong></p>
+<p>回忆我们所需学习的参数$\theta$为词表中所有词的$\color{#88bd33}{v_w}$和$\color{#888}{u_w}$。通过对目标函数使用梯度下降算法来学习这些词向量参数：
+$$
+\theta^{new} = \theta^{old} - \alpha \nabla_{\theta} J(\theta).
+$$</p>
+<p>需要注意的是$\theta$表示的是模型的所有参数。对于一个大小为$|V|$的词表，每个嵌入向量维度为$d$,而这些向量都将包含在$\theta$内，如下图所示：</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted image 20210310211302.png" style="zoom: 50%;" /></p>
+<p><u>一次更新一个词</u>：每次只更新一个(中心词-上下文词)配对。损失函数为：</p>
+<div>
+    $$
+    \begin{aligned}
+\color{#88bd33}{\mbox{Loss}}\color{black} =J(\theta)= -\frac{1}{T}\log L(\theta)&=
+    -\frac{1}{T}\sum\limits_{t=1}^T
+    \sum\limits_{-m\le j \le m, j\neq 0}\log P(\color{#888}{w_{t+j}}\color{black}|\color{#88bd33}{w_t}\color{black}, \theta) \\&=
+    \frac{1}{T} \sum\limits_{t=1}^T
+    \sum\limits_{-m\le j \le m, j\neq 0} J_{t,j}(\theta). 
+	\end{aligned}
+    $$
+</div>
+<p>对于每个中心词$\color{#88bd33}{w_t}$,损失函数包含一个与其上下文词$\color{#888}{w_{t+j}}$对应的项$J_{t,j}(\theta)=-\log P(\color{#888}{w_{t+j}}\color{black}|\color{#88bd33}{w_t}\color{black}, \theta)$.</p>
+<p>为理解整个训练过程，先看一个例子。对于如下序列语句：
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314141106.png" alt="">
+中心词为$\color{#88bd33}\mathrm{cat}$,以及含有四个上下文词。在训练时，我们先从中选出一个上下文词，假设选择$\color{#888}\mathrm{cute}$,那么这个($\color{#88bd33}\mathrm{cat}$,$\color{#888}\mathrm{cute}$)配对的损失函数项为:</p>
+<div>
+    $$
+    \begin{aligned}
+ J_{t,j}(\theta)= -\log P(\color{#888}{cute}\color{black}|\color{#88bd33}{cat}\color{black}) &=
+        -\log \frac{\exp\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}}{
+       \sum\limits_{w\in Voc}\exp{\color{#888}{u_w^T}\color{#88bd33}{v_{cat}} }} \\ &=
+    -\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}\color{black}
+        + \log \sum\limits_{w\in Voc}\exp{\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}\color{black}{.}
+		\end{aligned}
+    $$
+</div>
+<div>
+    $$
+    \begin{aligned}
+\frac{\partial}{\partial v_c}(u_0^Tv_c)-\frac{\partial}{\partial v_c}\log \sum_{w\in Voc}\exp (u_o^Tv_c)&=u_o-\sum_{x=1}^{V}\frac{\exp(u_x^Tv_c)}{\sum_{w\in Woc}\exp(u_w^Tv_c)}\cdot u_x\\
+&=u_o-\sum_{x=1}^{V}p(x|c)\cdot u_x
+\end{aligned}
+    $$
+</div>
+<p>现在注意到该步的参数：</p>
+<ul>
+<li>中心词的词向量参数: $\color{#88bd33}{v_{cat}}$</li>
+<li>上下文词的词向量参数：所有的$\color{#888}{u_w}$（词表中的所有词）</li>
+</ul>
+<p>只有这些参数在当前训练步上需要更新。更新步骤有如下图示：
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314141222.png" alt=""></p>
+<p>为了更新参数以最小化损失函数项$J_{t,j}(\theta)$,我们需要强制增加$\color{#88bd33}{v_{cat}}$和$\color{#888}{u_{cute}}$的相似度(即点积)，并同时降低$\color{#88bd33}{v_{cat}}$和词表中所有词$w$的上下文词$\color{#888}{u_{w}}$之间的相似度。
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314141355.png" alt=""><span class="caption">◎ 训练策略</span></p>
+<p>但是这里可能会出现一个疑问：<strong>为什么还需要降低<span>$\color{#88bd33}{v_{cat}}$</span>和其他所有词之间的相似度</strong>？ 如果其他词中也包括有效的上下文词（例如该例中的$\color{#888}\mathrm{grey,playing}$等）,这样做岂不是会降低其他上下文词预测的概率吗？</p>
+<p>但我们其实不必担心：因为我们会对每个上下文词都进行更新,在在本次更新中，降低相似度的上下文词会在另一些更新中 增加其相似度。于是<u>平均而言</u>，在所有的更新结束后，最终优化后的向量会学习到可能的上下文词的分布。</p>
+<hr>
+<h4 id="更快的训练方式负采样"><a href="#更快的训练方式负采样" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:更快的训练方式负采样" class="headings">更快的训练方式：负采样</a></h4>
+<p><strong>Negative Sampling</strong></p>
+<p>在之前的例子中，对于每个(中心词,上下文词)配对，我们都需要更新所有的上下文词向量。这样会导致显著的低效率性，每一步的计算时间复杂度都与词表的大小成正比。</p>
+<p>因此，我们将会产生疑惑：<strong>为什么一定要在每一步中都更新所有的上下文词向量</strong>？举例来说，假设在当前步，我们不考虑所有词的上下文词，而只考了当前(中心词，上下文词)配对中的上下文词(上例中是$\color{#888}\mathrm{cute}$)以及随机选择词表中的几个词。下图将展示这个想法：
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314141841.png" alt=""><span class="caption">◎ 负采样方法只随机选取K个词</span></p>
+<p>与梯度下降算法中一样，我们更新都需要提高$\color{#88bd33}{v_{cat}}$和$\color{#888}{u_{cute}}$的相似度，但不同的是，在<strong>负采样</strong>方法中，我们不需要降低$\color{#88bd33}{v_{cat}}$与所有词的上下文词之间的相似度，而<strong>只需随机选择词表中大小为$K$的&quot;负”(negative)词</strong>，并降低其与中心词间的相似度。</p>
+<p>因为我们具有很大的语料数据，因此<u>平均所有的更新而言</u>(on average over all updates)，即使每一步不使用所有的上下文词更新，只要我们更新的次数足够多，最终学习到的词向量也能很好地学习到此之间的关系。</p>
+<p>如果需要正式地说明，当前步的新损失函数可以表达为：
+$$
+J_{t,j}(\theta)=
+-\log\sigma(\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}\color{black}) -
+\sum\limits_{w\in {w_{i_1},\dots, w_{i_K}}}\log\sigma({-\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}\color{black}),
+$$
+其中$w_{i_1},\dots, w_{i_K}$表示在当前步上随机选择的$K$个负样本，以及$\sigma(x)=\frac{1}{1+e^{-x}}$表示sigmoid函数。</p>
+<p>注意到$\sigma(-x)=\frac{1}{1+e^{x}}=\frac{1\cdot e^{-x}}{(1+e^{x})\cdot e^{-x}} =
+\frac{e^{-x}}{1+e^{-x}}= 1- \frac{1}{1+e^{x}}=1-\sigma(x)$,因此损失函数还可以改写为：</p>
+<p>$$
+J_{t,j}(\theta)=
+-\log\sigma(\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}\color{black}) -
+\sum\limits_{w\in {w_{i_1},\dots, w_{i_K}}}\log(1-\sigma({\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}\color{black})).
+$$</p>
+<hr>
+<p><strong>关于<em>负</em>采样</strong>的几点说明：</p>
+<ol>
+<li>由于滑动窗口大小的限制，每个中心词只对应着几个“正”上下文词。因此，随机选择的词很可能并不是真正上下文词中的一个，因此称其为&quot;负“(negative)样本
+<ol>
+<li>这种采样的思想不仅在Word2Vec中得到使用，其他应用中也存在这种思想</li>
+</ol>
+</li>
+<li>Word2Vec根据词的<strong>经验分布</strong>(empirical distribution)来随机选择负样本
+<ol>
+<li>假设$U(w)$是一个<strong>一元模型分布</strong>（unigram distribution），即$U(w)$表示此$w$在文本语料中出现的频率</li>
+<li>Word2Vec通过对这种分布进行调整，使得在语料中出现频率少的词被选中的概率增加,而改良后的一元模型分布形式为$U^{3/4}(w)$,将其称为<strong>平滑</strong>一元模型分布(<strong>Smoothed unigram distribution</strong>)</li>
+</ol>
+</li>
+</ol>
+<p>如果将改进后的分布具体写出，则其形式如下：
+$$P\left(w_{i}\right)=\frac{f\left(w_{i}\right)^{3 / 4}}{\sum_{j=0}^{n}\left(f\left(w_{j}\right)^{3 / 4}\right)}$$
+其中$f(w_i)$表示词在文本语料中出现的频率。</p>
+<blockquote>
+<p>改进分布中的$3/4$是有实验经验获得的结果，在实验中,指数选择$3/4$的效果最佳。</p>
+</blockquote>
+<hr>
+<h3 id="后加工"><a href="#后加工" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:后加工" class="headings">后加工</a></h3>
+<h4 id="加入上下文向量"><a href="#加入上下文向量" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:加入上下文向量" class="headings">加入上下文向量</a></h4>
+<p><strong>Adding context vectors</strong>: GloVe的作者建议将词向量和上下文向量合并一起作为最终的输出向量，即<span>$\vec{v}_{\text{cat}} = \vec{w}_{\text{cat}} + \vec{c}_{\text{cat}}$</span>。这样输出增加了一阶相似度， 即<span>$w\cdot v$</span>。</p>
+
+<div class="notice notice-warning" >
+    <div class="notice-title"><svg xmlns="http://www.w3.org/2000/svg" class="icon notice-icon" viewBox="0 0 576 512"><path d="M570 440c18 32-5 72-42 72H48c-37 0-60-40-42-72L246 24c19-32 65-32 84 0l240 416zm-282-86a46 46 0 100 92 46 46 0 000-92zm-44-165l8 136c0 6 5 11 12 11h48c7 0 12-5 12-11l8-136c0-7-5-13-12-13h-64c-7 0-12 6-12 13z"/></svg></div><p>然而，该处理不能被应用与PMI(点互信息)，因为PMI生成的向量是稀疏的。</p ></div>
+
+<h4 id="向量标准化"><a href="#向量标准化" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:向量标准化" class="headings">向量标准化</a></h4>
+<p>将所有向量归一化.</p>
+<h3 id="推荐训练技巧"><a href="#推荐训练技巧" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:推荐训练技巧" class="headings">推荐训练技巧</a></h3>
+<p>Takeaways<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">[3]</a></sup></p>
+<ul>
+<li><strong>DON'T</strong> use shifted PPMI with SVD.</li>
+<li><strong>DON'T</strong> use SVD &quot;correctly&quot;, i.e. without eigenvector weighting (performance drops 15 points compared to with eigenvalue weighting with p=0.5).</li>
+<li><strong>DO</strong> use PPMI and SVD with short contexts (window size of 22).</li>
+<li><strong>DO</strong> use many negative samples with SGNS.</li>
+<li><strong>DO</strong> always use context distribution smoothing (raise <strong>unigram distribution</strong> to the power of $\alpha$=0.75) for all methods.</li>
+<li><strong>DO</strong> use SGNS as a baseline (robust, fast and cheap to train).</li>
+<li><strong>DO</strong> try adding context vectors in SGNS and GloVe.</li>
+</ul>
+<hr>
+<h3 id="word2vec变种skip-gram和cbow"><a href="#word2vec变种skip-gram和cbow" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:word2vec变种skip-gram和cbow" class="headings">Word2Vec变种：Skip-Gram和CBOW</a></h3>
+<ul>
+<li><u>Skip-Gram</u>: 与Word2Vec的主体思想一致，即给定中心词来预测其上下文词。使用负采样更新的Skip-Gram模型(Skip-Gram with Negative Sampling,SGNS)是最常用的方法之一
+<ul>
+<li>SGNS: 隐式地近似(偏移 shifted)PMI矩阵的因式分解</li>
+<li><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314142917.png" style="zoom: 50%;" /></li>
+</ul>
+</li>
+<li><u>CBOW</u>(Continuous Bag-of-Words): 与Word2Vec思想恰好相反，<strong>根据</strong>上下文词向量的累加和来预测中心词，而这种简单的词向量累加结果称为<strong>Bag of words</strong>,CBOW模型也是因此得名
+<ul>
+<li><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314142902.png" style="zoom: 50%;" /></li>
+</ul>
+</li>
+</ul>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143033.png" alt=""><span class="caption">◎ Skip-Gram vs. CBOW</span></p>
+<hr>
+<h3 id="额外笔记"><a href="#额外笔记" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:额外笔记" class="headings">额外笔记</a></h3>
+<p><u>The Idea is Not New</u>: 这种根据上下文词学习中心词的想法其实不是特别新的想法，然而Word2Vec出人意料的地方在于其可以学习到<u>高质量</u>(high-quality)的词向量，以及可以在很大的语料数据集和词表中<u>非常快速</u>地学习。</p>
+<p><u>Why Two Vectors?</u>: 回忆Word2Vec中的内容，我们需要训练两个向量：中心词向量和其对应的上下文向量，并且在训练结束后，上下文词向量将会直接丢弃，不需再使用，那么为什么还需要使用两个向量? 其实这就使得Word2Vec模型简单高效的技巧所在。我们再看一下某一步更新的损失函数：
+$$
+J_{t,j}(\theta)=
+-\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}\color{black} -
+\log \sum\limits_{w\in V}\exp{\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}\color{black}{.}
+$$
+当中心词和上下文词使用不同的向量，在损失函数（负采样方法中的损失函数也是同理）的第一项和第二项指数内的点积其实都关于参数(即词向量)是线性的，因此梯度可以非常容易地计算，从而训练速度也会非常快。</p>
+<p><u>滑动窗口的大小选择</u>: 滑动窗口的大小对向量相似度的计算有很大的影响。有研究表明：越大的窗口越能产生主题相关的相似度(topical similarities),例如walked,run,walking等词会分类在一起，词向量会比较接近；而越小的窗口越能产生更多功能与句法(functional and syntactic)上的相似度，例如Walking,running,approaching等。</p>
+<p><u>某种程度上的标准超参数设置</u>: 通常超参数的选择取决于需要解决的任务，不过根据一些研究的经验，得到某种程度上的一个标准：</p>
+<ol>
+<li>模型选择: 使用负采样的Skip-Gram模型</li>
+<li>负采样的个数：
+<ol>
+<li>小数据集：15-20个采样样本</li>
+<li>大数据集： 2-5个采样样本</li>
+</ol>
+</li>
+<li>嵌入表示的维度：通常选择的维度大小为300维，但是其他变种，如50或100也可能有效</li>
+<li>滑动窗口的大小：5-10</li>
+</ol>
+<hr>
+<h2 id="glove-global-vectors-for-word-representation"><a href="#glove-global-vectors-for-word-representation" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:glove-global-vectors-for-word-representation" class="headings">Glove: Global Vectors for Word Representation</a></h2>
+<p>Glove模型(全局向量)是基于计数的方法和基于预测的方法的结合。Glove表示<strong>Glo</strong>bal <strong>Ve</strong>ctors,其反映的思想是：<strong>使用整个文本语料的全局信息来学习词向量</strong>。</p>
+<p><a href="https://derooce.github.io/posts/word-embeddings-notes/#%E5%9F%BA%E4%BA%8E%E8%AE%A1%E6%95%B0%E7%9A%84%E6%96%B9%E6%B3%95" target="_blank" rel="noopener">在之前章节</a>,最简单的基于计数的方法采用共现计数来衡量中心词$\color{#88bd33}w$和上下文词$\color{#888}c$之间的关联度$N({\color{#88bd33}w},{\color{#888}c})$。Glove也使用该计数方法构建其损失函数：</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143459.png" alt=""></p>
+<p>与Word2Vec思想相似，Glove也需要学习中心词向量和上下文词向量。此外，Glove还分别对两个向量加入了偏置项，而偏置项也同样是需要学习的参数。</p>
+<p>Glove中非常有趣的一个地方在于其控制出现频率低的词和出现频率高的词对损失函数影响大小的方式：<strong>在损失函数中，每个中心词-上下文词配对$({\color{#88bd33}w},{\color{#888}c})$对损失函数的影响都会有一个对应的权重</strong>。</p>
+<ul>
+<li>出现频率低的词将会被惩罚</li>
+<li>出现频率高的词也不会有过于大的权重</li>
+</ul>
+<hr>
+<h2 id="词嵌入表示的评估"><a href="#词嵌入表示的评估" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:词嵌入表示的评估" class="headings">词嵌入表示的评估</a></h2>
+<p>我们如何评估一个方法获得的词嵌入表示比另一个方法的效果好坏呢？通常有两种评估方法（不仅适用于词嵌入的评估）：<strong>内部任务评价</strong>（<em>Intrinsic</em> Evaluation）和<strong>外部任务评价</strong>（extrinsic evaluations）。</p>
+<p><u>内在任务评价</u>: 基于内在的属性</p>
+<p>这种评价方法着眼于嵌入的内在属性，例如这些词嵌入捕获词的含义的能力好坏。
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143707.png" style="zoom: 33%;" /></p>
+<p><u>外在任务评价</u>: 在真实任务中测试</p>
+<p>这种评估方法可以检验哪种嵌入更适合真正关心的任务，例如文本分类等。在这种评估方法中，我们需要在真实任务中，训练多次模型/算法：<strong>一个模型获得一个对应的词嵌入</strong>，接着，检查这些模型的性能来决定哪个词嵌入更好。
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143736.png" style="zoom:40%;" /></p>
+<p><u>如何选择</u></p>
+<p>在此之前，我们应该知道在所有的情形中，并不存在什么完美方法以及正确的解答。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143846.png" style="zoom:30%;" /></p>
+<p>对于评估方法，我们通常关注地是我们想要解决任务的质量(quality)。因此，我们更可能倾向于使用外在任务评估。然而在真实任务中，模型通常需要很多时间和资源来训练，而训练多个模型更是成本太高。</p>
+<p>总而言之，这需要看你自己的能力（你的资源）来决定 :)</p>
+<hr>
+<h2 id="分析与可解释性"><a href="#分析与可解释性" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:分析与可解释性" class="headings">分析与可解释性</a></h2>
+<p>本节将重点关注模型在训练过程中学习到了什么，即模型解释性的问题。</p>
+<h3 id="语义空间"><a href="#语义空间" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:语义空间" class="headings">语义空间</a></h3>
+<p>语义空间专注于创造捕获自然语言含义的表示。我们可以说（好的）词嵌入形成了语义空间，并将多维空间中的一组词向量称为“语义空间”。</p>
+<p>下图将展示使用twitter数据获得的Glove向量组成的语义空间。向量使用t-SNE映射到2维空间中，并只展示前3k个最常见的单词。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144026.png" style="zoom:75%;" /></p>
+<hr>
+<h3 id="最近邻"><a href="#最近邻" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:最近邻" class="headings">最近邻</a></h3>
+<p>在语义空间中，距离较近的点（向量）通常具有相近的含义。有时，即使是一些极少出现的词也能很好地理解。例如下图所示，leptodactylidae和litoria非常接近于frog。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144109.png" style="zoom: 26%;" /></p>
+<p><span class="caption">◎ <a href="https://nlp.stanford.edu/projects/glove/" target="_blank" rel="noopener">GloVe项目上的例子</a></span></p>
+<p><u>词相似度基准</u></p>
+<p>通过余弦相似度或欧式距离来获得最近邻，查看最近邻是估计词表示质量的常用方法之一。有几个单词相似性基准（测试集），它们由根据人类的判断具有相似性分数的单词对组成。词嵌入的质量使用两个相似性得分（来自模型和来自人类）之间的相关性来估计。
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144426.png" style="zoom:30%;" /></p>
+<hr>
+<h3 id="线性结构"><a href="#线性结构" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:线性结构" class="headings">线性结构</a></h3>
+<p>尽管词相似度的结果令人鼓舞，但并不令人惊讶：毕竟，词嵌入本意就是通过专门的训练来反映单词的相似度。然而，令人惊讶地是词之间的许多语义和句法关系在词向量空间中（几乎）是线性的。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144449.png" style="zoom:30%;" /></p>
+<p>上图就显示了这种线性关系。king和queen之间的距离几乎与man和woman之间的距离相同，可以说$\mathrm{man-woman}\approx \mathrm{king-queen}$；又或是kings与king相似，则同样也有queens和queen。</p>
+<p>下图的例子显示了国家-首都的关系，以及一些句法上的关系。
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144518.png" alt=""></p>
+<p><u>词类比基准</u></p>
+<p>这种词向量之间的(近乎)线性关系启发了一种新的评价方法：<strong>词类比评估</strong>(word analogy evaluation)。
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144543.png" alt=""><span class="caption">◎ 类比词任务</span></p>
+<p>给定相同关系的两个单词对,例如(man,woman)和(king,queen)，任务是检测我们是否能根据三个单词来识别剩余的一个单词。具体来说，我们需要检测与向量$\mathrm{king-man+woman}$最接近的向量是否是$\mathrm{queen}$。
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144633.png" style="zoom:57%;" /></p>
+<blockquote>
+<p>几个类比基准数据：these include the standard benchmarks (<a href="https://www.aclweb.org/anthology/N13-1090.pdf" target="_blank" rel="noopener">MSR</a> + <a href="https://arxiv.org/pdf/1301.3781.pdf" target="_blank" rel="noopener">Google analogy</a> test sets) and <a href="https://www.aclweb.org/anthology/N16-2002.pdf" target="_blank" rel="noopener">BATS (the Bigger Analogy Test Set)</a>.</p>
+</blockquote>
+<hr>
+<h3 id="跨语言的相似度"><a href="#跨语言的相似度" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:跨语言的相似度" class="headings">跨语言的相似度</a></h3>
+<p><a href="#%E7%BA%BF%E6%80%A7%E7%BB%93%E6%9E%84">在之前的小节中</a>，我们知道在词嵌入空间中，词向量的关系是(近乎)线性的。然而，当跨语言时将会发生什么？结果表明，语义空间之间的关系也在某种程度上是线性的：<strong>你可以将一个语义空间线性地映射到另一个语义空间，以使两种语言中的相应单词在新的联合语义空间中匹配</strong>。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144744.png" alt=""><span class="caption">◎ 两种语言中的对应单词配对</span></p>
+<blockquote>
+<p>The figure above illustrates <a href="https://arxiv.org/pdf/1309.4168.pdf" target="_blank" rel="noopener">the approach proposed by Tomas Mikolov et al. in 2013</a> not long after the original Word2Vec.</p>
+</blockquote>
+<p>在形式上，给定一组词配对以及它们的向量表示配对${\color{#88a635}{x_i}\color{black}, \color{#547dbf}{z_i}\color{black} }_{i=1}^n$,其中$\color{#88a635}{x_i}$和$\color{#547dbf}{z_i}$分别是源语言(source language)中的第$i$个词，以及目标语言(target language)中对应的翻译单词。我们希望找到一个映射矩阵$W$，使得$W\color{#547dbf}{z_i}$近似于$\color{#88a635}{x_i}$,也即从两个语言的字典中找到匹配的单词。</p>
+<p>我们将根据如下准则选取$W$:
+$$
+W = \arg \min\limits_{W}\sum\limits_{i=1}^n\parallel W\color{#547dbf}{z_i}\color{black} - \color{#88a635}{x_i}\color{black}\parallel^2,
+$$
+并且通过梯度下降算法优化。</p>
+<blockquote>
+<p>在<a href="https://arxiv.org/pdf/1309.4168.pdf" target="_blank" rel="noopener">原始论文中</a>，初始对应的词表由5k个常见的单词与其对应的翻译组成，剩下的单词翻译配对将由学习得到。然而在<a href="https://arxiv.org/pdf/1710.04087.pdf" target="_blank" rel="noopener">之后的研究中</a>表明，我们根本不需要建立字典，<u>即使我们对语言一无所知</u>，我们也可以在语义空间之间建立映射！</p>
+</blockquote>
+<p>这种对不同的嵌入式表示集合进行线性映射以进行集合中元素匹配的想法可以被应用到许多不同任务中。</p>
+<p>❓ 语言之间的“真实”映射是否确实是线性的或更复杂？</p>
+<p>在<a href="https://lena-voita.github.io/nlp_course/word_embeddings.html#papers_analyzing_geometry" target="_blank" rel="noopener">一些研究中</a>发现，我们可以根据学习到的语义空间的几何特性进行检验。</p>
+<hr>
+<h2 id="问题探讨-rethinking"><a href="#问题探讨-rethinking" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:问题探讨-rethinking" class="headings">问题探讨 Rethinking</a></h2>
+<h3 id="问题1"><a href="#问题1" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:问题1" class="headings">问题1</a></h3>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145043.png" alt=""></p>
+<p>❓ <strong>与中心词距离不同的上下文词对中心词是同等重要的吗？如果不是，如何改进</strong>
+<strong>共现计数方法？</strong></p>
+<p>在直觉上，与中心词越接近的上下文词应该更加重要一些。例如，比起距离3的单词，近邻的信息量更大。因此，我们可以改进这个模型：当计数时，给距离中心词更近的上下文词更多的权重。</p>
+<blockquote>
+<p>This idea was used in the <a href="https://link.springer.com/content/pdf/10.3758/BF03204766.pdf" target="_blank" rel="noopener">HAL model (1996)</a>, which once was very famous.</p>
+</blockquote>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145216.png" style="zoom:25%;" /></p>
+<hr>
+<h3 id="问题2"><a href="#问题2" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:问题2" class="headings">问题2</a></h3>
+<p>❓ <strong>在语言中，词的出现顺序很重要，具体来说，左右的上下文词具有不同的含义。我们应该如果区分左右上下文词呢？</strong></p>
+<p>当需要区分左右上下文词时，修改权重的方法将不再有效，因为我们不能断言左边还是右边的上下文词更重要。我们所需做的是分别计算左边和右边的共现次数。</p>
+<p>对每个上下文词，我们都有两种不同的计数：</p>
+<ol>
+<li>当该上下文词处于中心词左边时</li>
+<li>当该上下文词处于中心词右边时</li>
+</ol>
+<p>这意味着共现计数矩阵的大小应为$|V|\times 2|V|$。</p>
+<blockquote>
+<p>This idea was also used in the <a href="https://link.springer.com/content/pdf/10.3758/BF03204766.pdf" target="_blank" rel="noopener">HAL model (1996)</a>.</p>
+</blockquote>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145339.png" style="zoom:25%;" /></p>
+<hr>
+<h3 id="问题3"><a href="#问题3" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:问题3" class="headings">问题3</a></h3>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145425.png" alt=""></p>
+<p>❓ <strong>所有的上下文词都是同等重要的吗？是否存在某些类型的上下文词能比其他类型的上下文词提供更多的信息？考虑有哪些特征可以影响上下文词的重要性。</strong></p>
+<ol>
+<li><u>word frequency</u> : 词出现的频率
+<ol>
+<li>我们可以预期，与罕见词相比，常见词通常所提供的信息更少。</li>
+<li>E.g: 在上图例子中，<code>in</code>为<code>cat</code>的上下文词并出现多次，然而<code>in</code>同时也作为其他很多词的上下文词，却没有提供有用信息。然而，例如<code>cute</code>、<code>grey</code>和<code>playing</code>这些出现较少的上下文词，却提供了一些关于<code>cat</code>的特征信息</li>
+</ol>
+</li>
+<li><u>Distance from the central word</u>: 上下文词与中心词的距离
+<ol>
+<li>正如我们在<a href="#%E9%97%AE%E9%A2%981">问题1</a>中讨论的，越接近中心词的上下文词可能越重要</li>
+</ol>
+</li>
+</ol>
+<hr>
+<h3 id="问题4"><a href="#问题4" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:问题4" class="headings">问题4</a></h3>
+<p>❓ <strong>我们应该如何改进训练过程?</strong></p>
+<ul>
+<li>根据词的频率</li>
+</ul>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145527.png" alt=""></p>
+<p>由<a href="#%E9%97%AE%E9%A2%983">问题3</a>中得到的启发，我们考虑出现频率低和出现频率高的词所带来的信息量。Word2Vec使用了一个简单的下采样(subsampling)方法：<strong>在训练集中的每个词$w_i$，都以一定的概率被忽略</strong>。忽略概率值计算如下：
+$$
+P(w_i)=1 - \sqrt{\frac{thr}{f(w_i)}}
+$$</p>
+<p>其中$f(w_i)$表示词$w_i$出现的频率，$thr$表示选择的阈值(在Word2Vec原始论文中，采用$thr=10^{-5}$)。该等式保留了词出现频率的排序，但对出现频率大于阈值$thr$的词积极地进行了下采样。</p>
+<p>有趣的是，这种启发式方法在实践中效果很好：它加快了学习速度，甚至显着提高了出现频率低的单词的学习向量的准确性。</p>
+<ul>
+<li>根据与中心词的距离</li>
+</ul>
+<p>在<a href="#%E9%97%AE%E9%A2%981">之前的问题中</a>中，我们给距离中心词近的上下文词赋予了更大的权重。乍一看，在原始Word2Vec实现中并没有体现出任何权重调整。然而，在每一步中，它都从$1$到$L$采样上下文窗口的大小。因此，距离中心词近的词将会比距离远的词得到更多的采样。在原始工作中，这样做（可能）是为了提高效率（每个步骤的更新次数较少），但这也与分配不同权重具有相似的效果。</p>
+<hr>
+<h3 id="问题5"><a href="#问题5" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:问题5" class="headings">问题5</a></h3>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145553.png" alt=""></p>
+<p>通常在查询表(look-up table)中，每个词都被赋予一个对应的向量。通过构造，这些向量对它们组成的<strong>子词</strong>(subwords)一无所知：<strong>它们拥有的所有信息都是从上下文中学到的</strong>。</p>
+<p>❓ <strong>如果词嵌入对它们组成的子词有一定的了解，这样会带来什么好处？</strong></p>
+<ul>
+<li><strong>更好地了解词的形态</strong>(morphology)，例如动词时态
+<ul>
+<li>通过给每次词赋予不同的向量，我们这时就忽略了单词的形态。</li>
+<li>如果给定了子词的信息，那么模型就能发掘一些不同的词其实是由同一个词组成的</li>
+</ul>
+</li>
+<li><strong>未知单词的表示</strong>
+<ul>
+<li>通常我们只表示存在于词表中的词</li>
+<li>如果给定子词的信息，将有助于未知词的拼写来表示这些未知词</li>
+</ul>
+</li>
+<li><strong>处理拼写错误</strong>
+<ul>
+<li>即使单词中只有一个字符出错，那也将会成为另一个单词，因此也就会学习到一个完全不同的嵌入表示(甚至是一个未知词的嵌入表示)</li>
+<li>如果给定子词的信息，则拼写错误的单词的嵌入表示也将会和原始单词的嵌入表示相近</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="问题6"><a href="#问题6" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:问题6" class="headings">问题6</a></h3>
+<p>❓ <strong>我们如何将子词的信息整合进词的嵌入表示（例如使用负采样的Skip-Gram）中？</strong></p>
+<p>假设训练流程是固定的，例如采用SGNS(Skip-Gram with Negative Sampling)。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145807.png" alt=""></p>
+<p>一种可能的方法是使用子词的向量来组成该词的词向量。例如，流行的 <a href="https://arxiv.org/pdf/1607.04606.pdf" target="_blank" rel="noopener">FastText embeddings</a>，对每一个词，都添加特殊的起始字符(start characters)和终止字符(end characters)；接着，除了使用该原始词的词向量，FastText也使用<strong>字符n-grams</strong>(characters n-grams)的向量，而这些字符n-grams也在词表中存在；最终，原始词的词嵌入表示由<strong>该词的词向量和子词的词向量的累加</strong>组成的向量构成。</p>
+<blockquote>
+<p>注意，这种方法仅改变了我们形成单词向量的方式。整个训练流程与标准的Word2Vec相同。</p>
+</blockquote>
+<hr>
+<h3 id="问题7"><a href="#问题7" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:问题7" class="headings">问题7</a></h3>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145857.png" alt=""></p>
+<p>假设我们有一个从不同来源组成的文本语料：时间段(time periods)，人口(populations)，地理区域(geographic regions)等。在数字人文科学(digital humanities) 和计算社会科学(computation social science)中,人们通常想找到在这些语料中语法不同的单词。</p>
+<p>❓ <strong>给定两个语料，我们如何检查一个单词在这两个语料中的含义/用法是否不同？</strong></p>
+<ul>
+<li><strong>ACL 2020</strong>: train embeddings, look at the neighbors</li>
+</ul>
+<p>一种非常简单的方法是训练嵌入表示（例如Word2Vec）并查看最近邻。如果一个单词在两个语料中的最近邻不相同，则判断该词在两个语料中的含义不同。</p>
+<blockquote>
+<p>请记住，<strong>词嵌入反映了它们所处的上下文</strong>！如果词嵌入都不同，那么上下文含义也不同，那么也反映该词在不同的上下文中的含义也不相同。</p>
+</blockquote>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145930.png" alt=""></p>
+<p>这个方法在 <a href="https://www.aclweb.org/anthology/2020.acl-main.51.pdf" target="_blank" rel="noopener">ACL 2020 paper</a>中被提出。正式地，对于每个单词，作者都在两个嵌入集合中选择$k$个最近邻的嵌入，并且计算这两个最近邻集合中有多少个相同元素。大交集意味着该单词的含义在两个语料中没有不同，小交集意味着含义不同。</p>
+<ul>
+<li><strong>Previous popular approach</strong>: align two embedding sets <strong>对齐</strong>两个嵌入集</li>
+</ul>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145944.png" alt=""></p>
+<p>在<a href="https://www.aclweb.org/anthology/P16-1141.pdf" target="_blank" rel="noopener">之前的研究</a>中，对齐两个嵌入集并找到嵌入不匹配的单词。在形式上，令$\color{#88a635}{W_1}\color{black}, \color{#547dbf}{W_2}\color{black} \in \mathbb{R}^{d\times |V|}$为在不同语料中训练得到的嵌入集合。为了对齐学习到的嵌入，作者找到一种旋转方法(rotation)$R = \arg \max\limits_{Q^TQ=I}\parallel \color{#547dbf}{W_2}\color{black}Q - \color{#88a635}{W_1}\color{black}\parallel_F$,这被称为$\mathrm{Orthogonal ~~Procrustes}$(正交普鲁克).</p>
+<blockquote>
+<p>普鲁克问题：</p>
+<div>
+    $$
+    W^{*}=\operatorname{argmin}_{W} \sum_{i=1}^{n}\left\|W x_{i}-y_{i}\right\|_{2}
+    $$
+</div>
+<p>or</p>
+<div>
+    $$
+    W^{*}=\arg \min _{W}\|W X-Y\|_{F}
+    $$
+</div>
+</blockquote>
+<blockquote>
+<p>普鲁克：在希腊神话中，Procrustes或“the stretcher”是来自Attica的流氓史密斯和强盗，他们通过拉伸或切断腿部来攻击人们，以迫使他们<strong>适应铁床(iron bed)的大小</strong>。
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314150003.png" alt=""></p>
+</blockquote>
+<p>我们使用原嵌入空间来做同样“糟糕”的事情。我们的Procrustean床是目标嵌入空间。<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted-image-20210306201514.png" alt=""></p>
+<p>通过使用这种旋转，我们可以将嵌入集合对齐，并且找到没有对齐的单词，而这些没有对齐的单词表示在不同语料中的含义发生了改变。</p>
+<hr>
+<h2 id="reference"><a href="#reference" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:reference" class="headings">Reference</a></h2>
+<ol>
+<li><a href="https://lena-voita.github.io/nlp_course/word_embeddings.html" target="_blank" rel="noopener">Lena Voita: word_embeddings</a></li>
+<li><a href="https://ruder.io/word-embeddings-1/index.html" target="_blank" rel="noopener">Sebastian Ruder Blog</a></li>
+<li><a href="http://www.offconvex.org/2015/12/12/word-embeddings-1/" target="_blank" rel="noopener">offconvex: word embedding</a></li>
+</ol>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p><a href="https://ruder.io/word-embeddings-1/index.html" target="_blank" rel="noopener">Sebastian Ruder: On word Embeddings - Part 1</a> <a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p><a href="http://www.offconvex.org/2016/02/14/word-embeddings-2/" target="_blank" rel="noopener">Offconvex: Word Embedding</a> <a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3" role="doc-endnote">
+<p><a href="https://ruder.io/secret-word2vec/index.html#results" target="_blank" rel="noopener">Sebastian Ruder: On word Embeddings - Part 3</a> <a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+
+            </div>
+
+            
+
+
+        </article>
+
+        
+
+        
+    <div class="updated-badge-container">
+        <span title="Updated @ 2021-03-14 15:09:22 CST" style="cursor:help">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2021-03-14</text><text x="915" y="140" textLength="650" transform="scale(.1)">2021-03-14</text></g></svg>
+        </span></div>
+
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+    
+        <div class="post-tags">
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/nlp/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>NLP</a>
+                
+            
+        </div>
+    
+
+
+
+        
+
+
+        
+
+
+        
+    
+        
+        
+    
+    
+    
+    
+        <ul class="post-nav">
+            
+                <li class="post-nav-prev">
+                    <a href="/posts/text-classification-notes/" rel="prev">&lt; NLP Notes series: Text Classification</a>
+                </li>
+            
+            
+                <li class="post-nav-next">
+                    <a href="/posts/resources-packet/" rel="next">资 源 集 锦 &gt;</a>
+                </li>
+            
+        </ul>
+    
+
+
+
+        
+    
+
+        <div class="load-comments">
+            <div id="load-comments">加载评论</div>
+        </div>
+
+        
+            <div id="disqus_thread"></div>
+        
+
+        
+
+        
+
+    
+
+
+
+    </div>
+</main>
+
+
+            
+    <div id="back-to-top" class="back-to-top">
+        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon arrow-up"><path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"/></svg></a>
+    </div>
+
+
+            
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="site-info">&nbsp;DEROOCE&nbsp;&nbsp;©&nbsp;2021–2021</div><div class="site-copyright"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></div><div class="custom-footer">愚蠢的人总是对事情很确定，而聪明的人总是充满疑惑</div>
+
+            
+
+
+            
+        </div>
+    </footer>
+
+
+        </div>
+        
+
+        
+
+
+    <script>
+    if (typeof MathJax === 'undefined') {
+        window.MathJax = {
+            loader: {
+                load: ['[tex]/mhchem']
+            },
+            
+            tex: {
+                inlineMath: {'[+]': [['$', '$']]},
+                tags: 'ams',
+                packages: {'[+]': ['mhchem']}
+            }
+        };
+        (function() {
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+            script.defer = true;
+            document.head.appendChild(script);
+        })();
+    } else {
+        MathJax.texReset();
+        MathJax.typeset();
+    }
+</script>
+
+
+
+
+
+
+    
+
+        
+            <script>
+    function loadComments() {
+        if (typeof DISQUS === 'undefined') {
+            var disqus_config = function() {
+                this.page.url = 'https:\/\/derooce.github.io\/posts\/word-embeddings-notes\/';
+                this.page.identifier = '\/posts\/word-embeddings-notes\/';
+                this.page.title = 'NLP Notes series: Word Embeddings';
+            };
+            (function() {
+                var d = document, s = d.createElement('script'); s.async = true;
+                s.src = 'https://derooce.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        } else {
+            DISQUS.reset({
+                reload: true,
+                config: function() {
+                    this.page.url = 'https:\/\/derooce.github.io\/posts\/word-embeddings-notes\/';
+                    this.page.identifier = '\/posts\/word-embeddings-notes\/';
+                    this.page.title = 'NLP Notes series: Word Embeddings';
+                }
+            });
+        }
+    }
+</script>
+
+        
+
+        
+
+        
+
+    
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@latest/dist/medium-zoom.min.js"></script>
+
+<script>
+    mediumZoom(document.querySelectorAll('div.post-body img'), {
+        background: 'hsla(var(--color-bg-h), var(--color-bg-s), var(--color-bg-l), 0.95)'
+    })
+</script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/instant.page@5.1.0/instantpage.min.js" type="module" defer></script>
+
+
+
+
+
+
+
+    </body>
+</html>

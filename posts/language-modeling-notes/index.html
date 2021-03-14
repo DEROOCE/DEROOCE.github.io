@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+    <meta charset="UTF-8" />
+
+    <meta name="generator" content="Hugo 0.81.0" /><meta name="theme-color" content="#fff" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+    
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    <title>NLP Notes series: Language Modeling | DEROOCE</title>
+
+    <link rel="stylesheet" href="/css/meme.min.bd228e51eabb42a0ea6503719e2b4dda800632f17a462b176d1a00cd448a9dd5.css"/>
+
+    
+    
+        <script src="/js/meme.min.4194bf2034241e3757fbbbf5fe4db43d0ff17c81f4496e6bc931504f0978cbd2.js"></script>
+
+    
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Martel:wght@200;300;400;600&amp;family=Lora:ital,wght@1,500&amp;family=Shippori&#43;Mincho:wght@400;500;600&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" media="print" onload="this.media='all'" />
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Martel:wght@200;300;400;600&amp;family=Lora:ital,wght@1,500&amp;family=Shippori&#43;Mincho:wght@400;500;600&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" /></noscript>
+
+    <meta name="author" content="DEROOCE" /><meta name="description" content="Language Modeling ”对xx建模“到底意味着什么？ 想象我们有一个物理世界的模型。我们会期待其可以做些什么呢？如果这个模型很好，那么也许它可以根据给定“上下文”(context)的描述来预测下一步会发生什么。而当前的context也就对应着当前事物的状态(state)。 一个好的模型应该能模拟真实世界中的行为,它将“了……" />
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#2a6df4" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="DEROOCE" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="DEROOCE" />
+    <meta name="msapplication-starturl" content="../../" />
+    <meta name="msapplication-TileColor" content="#fff" />
+    <meta name="msapplication-TileImage" content="../../icons/mstile-150x150.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <script src="https://kit.fontawesome.com/e2d29a5fca.js" crossorigin="anonymous"></script>
+    
+    
+
+    
+    <link rel="canonical" href="https://derooce.github.io/posts/language-modeling-notes/" />
+    
+
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "datePublished": "2021-03-14T12:38:45+08:00",
+        "dateModified": "2021-03-14T17:28:01+08:00",
+        "url": "https://derooce.github.io/posts/language-modeling-notes/",
+        "headline": "NLP Notes series: Language Modeling",
+        "description": "Language Modeling ”对xx建模“到底意味着什么？ 想象我们有一个物理世界的模型。我们会期待其可以做些什么呢？如果这个模型很好，那么也许它可以根据给定“上下文”(context)的描述来预测下一步会发生什么。而当前的context也就对应着当前事物的状态(state)。 一个好的模型应该能模拟真实世界中的行为,它将“了……",
+        "inLanguage" : "zh-CN",
+        "articleSection": "posts",
+        "wordCount":  8033 ,
+        "image": ["https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170507.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170523.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170541.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170558.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170628.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170644.png","https://lena-voita.github.io/resources/lectures/lang_models/general/i_saw_a_cat_prob.gif","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170751.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171029.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171041.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171053.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171122.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171140.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171212.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171229.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171445.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171502.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171517.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171535.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171635.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171718.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171730.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171744.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171839.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171846.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171913.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171920.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171954.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172057.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172109.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172208.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172319.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172337.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172347.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172422.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172434.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172446.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172507.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172519.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172614.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172623.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172715.png"],
+        "author": {
+            "@type": "Person",
+            "description": "Do or die",
+            "email": "vanace.jc@gmail.com",
+            "image": "https://derooce.github.io/icons/apple-touch-icon.png",
+            "url": "https://derooce.github.io/",
+            "name": "DEROOCE"
+        },
+        "license": "[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)",
+        "publisher": {
+            "@type": "Organization",
+            "name": "DEROOCE",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://derooce.github.io/icons/apple-touch-icon.png"
+            },
+            "url": "https://derooce.github.io/"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebSite",
+            "@id": "https://derooce.github.io/"
+        }
+    }
+</script>
+
+    
+
+<meta name="twitter:card" content="summary_large_image" />
+
+
+<meta name="twitter:site" content="@vanace_jc" />
+<meta name="twitter:creator" content="@vanace_jc" />
+
+    
+
+
+
+<meta property="og:title" content="NLP Notes series: Language Modeling" />
+<meta property="og:description" content="Language Modeling ”对xx建模“到底意味着什么？ 想象我们有一个物理世界的模型。我们会期待其可以做些什么呢？如果这个模型很好，那么也许它可以根据给定“上下文”(context)的描述来预测下一步会发生什么。而当前的context也就对应着当前事物的状态(state)。 一个好的模型应该能模拟真实世界中的行为,它将“了……" />
+<meta property="og:url" content="https://derooce.github.io/posts/language-modeling-notes/" />
+<meta property="og:site_name" content="DEROOCE" />
+<meta property="og:locale" content="zh" /><meta property="og:image" content="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170507.png" />
+<meta property="og:type" content="article" />
+    <meta property="article:published_time" content="2021-03-14T12:38:45&#43;08:00" />
+    <meta property="article:modified_time" content="2021-03-14T17:28:01&#43;08:00" />
+    
+    <meta property="article:section" content="posts" />
+
+
+
+    
+</head>
+
+    <body>
+        <div class="container">
+            
+    <header class="header">
+        
+            <div class="header-wrapper">
+                <div class="header-inner single">
+                    
+    <div class="site-brand">
+        
+            <a href="/" class="brand">DEROOCE</a>
+        
+    </div>
+
+                    <nav class="nav">
+    <ul class="menu" id="menu">
+        
+            
+        
+        
+        
+        
+            
+                <li class="menu-item"><a href="/posts/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon archive"><path d="M32 448c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32V160H32v288zm160-212c0-6.6 5.4-12 12-12h104c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12H204c-6.6 0-12-5.4-12-12v-8zM480 32H32C14.3 32 0 46.3 0 64v48c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16V64c0-17.7-14.3-32-32-32z"/></svg><span class="menu-item-name">文章</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/categories/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon th"><path d="M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"/></svg><span class="menu-item-name">分类</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/tags/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="icon tags"><path d="M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"/></svg><span class="menu-item-name">标签</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/about/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon user-circle"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/></svg><span class="menu-item-name">关于</span></a>
+                </li>
+            
+        
+            
+                
+                    
+                    
+                        <li class="menu-item">
+                            <a id="theme-switcher" href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-light"><path d="M193.2 104.5l48.8-97.5a18 18 0 0128 0l48.8 97.5 103.4 -34.5a18 18 0 0119.8 19.8l-34.5 103.4l97.5 48.8a18 18 0 010 28l-97.5 48.8 34.5 103.4a18 18 0 01-19.8 19.8l-103.4-34.5-48.8 97.5a18 18 0 01-28 0l-48.8-97.5l-103.4 34.5a18 18 0 01-19.8-19.8l34.5-103.4-97.5-48.8a18 18 0 010-28l97.5-48.8-34.5-103.4a18 18 0 0119.8-19.8zM256 128a128 128 0 10.01 0M256 160a96 96 0 10.01 0"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-dark"><path d="M27 412a256 256 0 10154-407a11.5 11.5 0 00-5 20a201.5 201.5 0 01-134 374a11.5 11.5 0 00-15 13"/></svg></a>
+                        </li>
+                    
+                
+            
+        
+    </ul>
+</nav>
+
+                    
+                </div>
+            </div>
+            
+    <input type="checkbox" id="nav-toggle" aria-hidden="true" />
+    <label for="nav-toggle" class="nav-toggle"></label>
+    <label for="nav-toggle" class="nav-curtain"></label>
+
+
+        
+    </header>
+
+
+
+
+            
+            
+    <main class="main single" id="main">
+    <div class="main-inner">
+
+        
+
+        <article class="content post h-entry" data-align="justify" data-type="posts" data-toc-num="true">
+
+            <h1 class="post-title p-name">NLP Notes series: Language Modeling</h1>
+
+            
+
+            
+                
+            
+
+            
+                
+
+<div class="post-meta">
+    
+        
+        <time datetime="2021-03-14T12:38:45&#43;08:00" class="post-meta-item published dt-published"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>&nbsp;2021.3.14</time>
+    
+    
+    
+    
+        
+        
+        
+            
+                <span class="post-meta-item category"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M464 128H272l-54.63-54.63c-6-6-14.14-9.37-22.63-9.37H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48zm0 272H48V112h140.12l54.63 54.63c6 6 14.14 9.37 22.63 9.37H464v224z"/></svg>&nbsp;<a href="/categories/nlp/" class="category-link p-category">NLP</a>/<a href="/categories/language-modeling/" class="category-link p-category">Language Modeling</a></span>
+            
+        
+    
+    
+        
+        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;8033</span>
+    
+    
+    
+    
+</div>
+
+            
+
+            <nav class="contents">
+  <h2 id="contents" class="contents-title">目录</h2><ol class="toc">
+    <li><a id="contents:对xx建模到底意味着什么" href="#对xx建模到底意味着什么">”对xx建模“到底意味着什么？</a></li>
+    <li><a id="contents:那么对于语言呢" href="#那么对于语言呢">那么对于语言呢？</a></li>
+    <li><a id="contents:通用框架" href="#通用框架">通用框架</a>
+      <ol>
+        <li><a id="contents:文本概率" href="#文本概率">文本概率</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:使用语言模型生成一个文本" href="#使用语言模型生成一个文本">使用语言模型生成一个文本</a></li>
+    <li><a id="contents:n-gram语言模型" href="#n-gram语言模型">N-gram语言模型</a>
+      <ol>
+        <li><a id="contents:原理" href="#原理">原理</a></li>
+        <li><a id="contents:马尔科夫性质独立假设" href="#马尔科夫性质独立假设">马尔科夫性质（独立假设）</a></li>
+        <li><a id="contents:平滑重新分配概率质量redistribute-probability-mass" href="#平滑重新分配概率质量redistribute-probability-mass">平滑：重新分配概率质量（Redistribute Probability Mass）</a></li>
+        <li><a id="contents:生成文本" href="#生成文本">生成文本</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:神经语言模型" href="#神经语言模型">神经语言模型</a>
+      <ol>
+        <li><a id="contents:原理-1" href="#原理-1">原理</a></li>
+        <li><a id="contents:高层次的pipeline" href="#高层次的pipeline">高层次的Pipeline</a></li>
+        <li><a id="contents:训练与交叉熵损失" href="#训练与交叉熵损失">训练与交叉熵损失</a></li>
+        <li><a id="contents:模型-循环架构" href="#模型-循环架构">模型： 循环架构</a></li>
+        <li><a id="contents:模型卷积" href="#模型卷积">模型：卷积</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:序列生成策略" href="#序列生成策略">序列生成策略</a>
+      <ol>
+        <li><a id="contents:原理-2" href="#原理-2">原理</a></li>
+        <li><a id="contents:标准抽样" href="#标准抽样">标准抽样</a></li>
+        <li><a id="contents:带温度取样temperature" href="#带温度取样temperature">带温度取样（temperature）</a></li>
+        <li><a id="contents:top-k采样选择前k个概率最高的tokens" href="#top-k采样选择前k个概率最高的tokens">Top-K采样：选择前K个概率最高的tokens</a></li>
+        <li><a id="contents:top-paka-nucleus采样概率质量的前p" href="#top-paka-nucleus采样概率质量的前p">Top-p%(aka Nucleus)采样：概率质量的前p%</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:评估语言模型" href="#评估语言模型">评估语言模型</a>
+      <ol>
+        <li><a id="contents:交叉熵与困惑度" href="#交叉熵与困惑度">交叉熵与困惑度</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:实用技巧" href="#实用技巧">实用技巧</a>
+      <ol>
+        <li><a id="contents:权重绑定weight-tying-aka-参数共享-parameter-sharing" href="#权重绑定weight-tying-aka-参数共享-parameter-sharing">权重绑定(Weight tying, aka 参数共享 Parameter Sharing)</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:研究思考" href="#研究思考">研究思考</a></li>
+    <li><a id="contents:reference" href="#reference">Reference</a></li>
+  </ol>
+</nav><div class="post-body e-content">
+              <h1 id="language-modeling"><a href="#language-modeling" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:language-modeling" class="headings">Language Modeling</a></h1>
+<h2 id="对xx建模到底意味着什么"><a href="#对xx建模到底意味着什么" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:对xx建模到底意味着什么" class="headings">”对xx建模“到底意味着什么？</a></h2>
+<p>想象我们有一个物理世界的模型。我们会期待其可以做些什么呢？如果这个模型很好，那么也许它可以根据给定“上下文”(context)的描述来预测下一步会发生什么。而当前的context也就对应着当前事物的状态(state)。</p>
+<p>一个好的模型应该能模拟真实世界中的行为,它将“了解”哪些事件与世界更一致，即哪些事件更有可能发生。</p>
+<hr>
+<h2 id="那么对于语言呢"><a href="#那么对于语言呢" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:那么对于语言呢" class="headings">那么对于语言呢？</a></h2>
+<p>对于语言，这样的直觉是一致的，而不同的是事件的符号。在语言中，一个事件是一个语言单元（例如文本、句子、token、符号），而<strong>语言模型的目的是估计出这些事件发生的概率</strong>。</p>
+<blockquote>
+<p>Language Models (LMs) estimate the probability of different linguistic units: symbols, tokens, token sequences.</p>
+</blockquote>
+<p>那么语言模型为什么会有用呢？</p>
+<p>其实我们每天都在使用语言模型(LMs)! 通常，大型商业服务中的模型比我们今天要讨论的模型要复杂一些，但是思想是一致的。如果我们可以估计单词/句子等的概率，那么我们将有许多意想不到的应用。</p>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css">
+    
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170507.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170523.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170541.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170558.png" alt="">
+            </div>
+            
+        </div>
+        
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js"></script>
+     
+     <script>
+        var swiper = new Swiper('.swiper-container', {
+            pagination: '.swiper-pagination',
+            paginationClickable: true,
+        });
+        </script>
+
+
+<p>然而这件对人类来说容易的事情，对于机器来说可能很难。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170628.png" alt=""></p>
+<p>当涉及自然语言时，我们人类已经有了“概率”的直觉。例如，当我们谈话时，我们可以很好地理解对方所说的话。我们消除了听起来似乎相似的单词或语句之间的歧义！</p>
+<p>但是一个机器应该如何理解这些呢？机器需要语言模型，用来估计句子的概率。如果语言模型足够好，那么它将给正确的句子赋予更大的概率值。</p>
+<hr>
+<h2 id="通用框架"><a href="#通用框架" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:通用框架" class="headings">通用框架</a></h2>
+<h3 id="文本概率"><a href="#文本概率" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:文本概率" class="headings">文本概率</a></h3>
+<p>我们的目的是估计文本片段的概率。简洁起见，假设我们处理的是句子。我们希望这些概率值能翻译对应语言的知识。具体来说，根据语言模型，我们希望在对应语言环境中更有可能出现的句子拥有更大的概率值。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170644.png" alt=""></p>
+<p>上图的例子中，我们根据经典概率论中频率估计概率的思想，也想使用各种句子在语料中出现的频率来估计其对应的概率。然而这显然不现实，因为我们不可能得到包含所有类型句子的文本语料库。虽然“the mut is tinming the tebn&quot;显然比&quot;mut the tinming tebn is the&quot;更有可能出现，但这些句子的概率估计都为0，即对模型看起来同样糟糕。这意味着这样的模型是不够好的，我们需要进行调整。</p>
+<hr>
+<p><strong>将整个句子的概率拆解为一些小的部分</strong></p>
+<p>在上述的例子中，我们将句子视为语言的原子单位(atomic units)，因而无法产生可靠的估计概率。那如果我们将句子的概率拆解为一些更小部分的组合呢？</p>
+<p>例如，对于一段句子&quot;I saw a cat on a mat&quot;, 假设我们是一字一字地阅读这段句子。在每步中，我们估计目前为止所有见到单词的概率。我们不希望有任何计算是徒劳的，因此我们不会在一个新的单词出现就抛弃之前计算的概率值，而是更新这个概率值来解释新的单词。</p>
+<p><img src="https://lena-voita.github.io/resources/lectures/lang_models/general/i_saw_a_cat_prob.gif" alt=""></p>
+<p>形式上，令$y_1, y_2, \dots, y_n$表示句子中的单词，$P(y_1, y_2, \dots, y_n)$为目前所见所有单词的概率。通过使用链式法则，这个联合概率可以分解为：</p>
+<div>
+    $$
+    \begin{aligned}
+P(y_1, y_2, \dots, y_n)&=P(y_1)\cdot P(y_2|y_1)\cdot P(y_3|y_1, y_2)\cdot\dots\cdot P(y_n|y_1, \dots, y_{n-1})\\&=
+        \prod \limits_{t=1}^n P(y_t|y_{\mbox{<}t}).
+\end{aligned}
+                                                    $$
+</div>
+<p>这样一来，在给定先前上下文的情况下，我们将整个句子的概率分解为每个单词的条件概率。这就是一个标准的从左到右的语言模型。这个框架很通用，N-gram模型和神经网络的语言模型在此框架下，只有计算条件概率$P(y_t|y_1, \dots, y_{t-1})$的方式不同。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170751.png" alt=""></p>
+<hr>
+<h2 id="使用语言模型生成一个文本"><a href="#使用语言模型生成一个文本" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:使用语言模型生成一个文本" class="headings">使用语言模型生成一个文本</a></h2>
+<p>一旦我们有了一个较好的语言模型，我们将可以使用它来生成文本。我们每次生成一个单词或符号，并根据之前生成的文本来预测下一个单词或符号的概率分布，并从该概率分布中抽样：</p>
+<video width="70%" height="auto" loop="" autoplay="" muted="" style="margin-left: 20px;">
+          <source src="https://lena-voita.github.io/resources/lectures/lang_models/general/generation_example.mp4">
+        </video>
+尽管这种采样方式很简单，但是在文本生成中却经常被用到。
+<p>我们可以应用贪婪式的解码，即在每个步骤中，选择概率最高的token。但是，这样做的效果通常不会很好。</p>
+<hr>
+<h2 id="n-gram语言模型"><a href="#n-gram语言模型" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:n-gram语言模型" class="headings">N-gram语言模型</a></h2>
+<h3 id="原理"><a href="#原理" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:原理" class="headings">原理</a></h3>
+<p>让我们回想一下，一般的从左到右的语言建模框架将token序列的概率分解为给定先前上下文的每个token的条件概率乘积：</p>
+<div>
+    $$
+    \begin{aligned}
+P(y_1, y_2, \dots, y_n)&=P(y_1)\cdot P(y_2|y_1)\cdot P(y_3|y_1, y_2)\cdot\dots\cdot P(y_n|y_1, \dots, y_{n-1})\\
+&=
+        \prod \limits_{t=1}^n P(y_t|y_{\mbox{<}t}).
+\end{aligned}
+                                                    $$
+</div>
+<p>而唯一不确定的是<strong>如何计算这些条件概率</strong>。因此，我们所要做的就是定义计算这些条件概率的方法。</p>
+<p>与之前Word Embeddings中<a href="https://derooce.github.io/posts/word-embeddings-notes/#%E5%9F%BA%E4%BA%8E%E8%AE%A1%E6%95%B0%E7%9A%84%E6%96%B9%E6%B3%95" target="_blank" rel="noopener">基于计数的方法</a>非常相似，N-gram语言模型也采用计算文本语料中的全局统计信息建模，即通过<strong>计数</strong>的方法。也就是说，N-gram语言模型估计概率$P(y_t|y_{\mbox{&lt;}t}) = P(y_t|y_1, \dots, y_{t-1})$的方法**几乎**等价于之前我们基于古典概率论中频率估计概率的方法(<a href="https://derooce.github.io/posts/language-modeling-notes/#%E6%96%87%E6%9C%AC%E6%A6%82%E7%8E%87" target="_blank" rel="noopener">文本概率</a>)。</p>
+<p>这里突出了“几乎”二词是因为N-gram模型还包含了两个非常重要的成分：<strong>马尔科夫性质</strong>和<strong>平滑方法</strong>。</p>
+<hr>
+<h3 id="马尔科夫性质独立假设"><a href="#马尔科夫性质独立假设" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:马尔科夫性质独立假设" class="headings">马尔科夫性质（独立假设）</a></h3>
+<p>计算$P(y_t|y_1, \dots, y_{t-1})$一种方法：</p>
+<p>$$
+P(y_t|y_1, \dots, y_{t-1}) = \frac{N(y_1, \dots, y_{t-1}, y_t)}{N(y_1, \dots, y_{t-1})},
+$$</p>
+<p>其中$N(y_1, \dots, y_k)$代表token序列$(y_1, \dots, y_k)$在文本中出现的频数。</p>
+<p>这个方法之前也讨论过，因为片段$(y_1, \dots, y_{t})$在语料中都没有出现，因此该方法效果不会太好。为了解决这个问题，引入了独立性假设，即马尔科夫性质成立：</p>
+<blockquote>
+<p>The probability of a word only depends on a <strong>fixed</strong> number of previous words. 一个词出现的概率只取决于之前固定长度的单词。</p>
+</blockquote>
+<p>形式上，N-gram模型假设：
+$$
+P(y_t|y_1, \dots, y_{t-1}) = P(y_t|y_{t-n+1}, \dots, y_{t-1}).
+$$
+例如：</p>
+<ul>
+<li>N=3时(trigram model)： $P(y_t|y_1, \dots, y_{t-1}) = P(y_t|y_{t-2}, y_{t-1})$</li>
+<li>N=2时(bigram model): $P(y_t|y_1, \dots, y_{t-1}) = P(y_t|y_{t-1})$</li>
+<li>N=1时(unigram model): $P(y_t|y_1, \dots, y_{t-1}) = P(y_t)$</li>
+</ul>
+<p>下图显示了使用该假设前后的对比：</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171029.png" alt=""></p>
+<hr>
+<h3 id="平滑重新分配概率质量redistribute-probability-mass"><a href="#平滑重新分配概率质量redistribute-probability-mass" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:平滑重新分配概率质量redistribute-probability-mass" class="headings">平滑：重新分配概率质量（Redistribute Probability Mass）</a></h3>
+<p>假设我们使用的是4-gram语言模型，并思考如下例子：</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171041.png" alt=""></p>
+<p>如果上式中分子为0或分母为0怎么办呢？这两种情况显然都对模型不友好。为了避免这种情况，通常的做法是使用平滑方法。平滑方法将重新分配概率质量，即将一些存在的事件的概率质量分一些给未出现的事件。</p>
+<ul>
+<li>当分母出现频数为0时，即&quot;N(cat on a)=0&quot;</li>
+</ul>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171053.png" style="zoom: 33%;" /></p>
+<p>方案一：后退法(aka Stupid Backoff)。Backoff的思想是对于那些未出现的序列，我们只使用其子序列的频数估计。举例来说，对于&quot;cat on a&quot;这是一个trigram模型，如果&quot;cat on a&quot;没有出现，则将其退化为使用bigram模型，即计算&quot;on a&quot;的频数；若还是没有出现，则再退化使用unigram模型。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171122.png" style="zoom:33%;" /></p>
+<p>这种方法看起来傻乎乎的，但实际上却效果还可以。</p>
+<p>另一种更聪明的方法是：线性插值(Linear interpolation)。线性插值将使用unigram、bigram、trigram等的结合。为了做到这点，需要使用一些正的权重标量$\lambda_0, \lambda_1, \dots, \lambda_{n-1}$，并且满足$\sum\limits_{i}\lambda_i=1$。如此，更新的概率将为：</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171140.png" style="zoom: 33%;" /></p>
+<p>权重系数$\lambda_i$可以使用交叉验证来选择。</p>
+<hr>
+<ul>
+<li>当分子为0时，即&quot;N(cat on a mat)=0&quot;</li>
+</ul>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171212.png" style="zoom:33%;" /></p>
+<p>这种情形下，常用的方法是<strong>拉普拉斯平滑</strong>（aka 加1平滑， add-one smoothing）。避免这种情况最简单的方法是假设每个n-grams都至少出现1次，即每个n-grams的计数都加上1，或者加上一个很小的值 $\delta$:
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171229.png" style="zoom: 33%;" /></p>
+<hr>
+<h3 id="生成文本"><a href="#生成文本" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:生成文本" class="headings">生成文本</a></h3>
+<p>N-gram模型生成文本的过程与<a href="https://derooce.github.io/posts/language-modeling-notes/#%E4%BD%BF%E7%94%A8%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%94%9F%E6%88%90%E4%B8%80%E4%B8%AA%E6%96%87%E6%9C%AC" target="_blank" rel="noopener">使用语言模型生成一个文本</a>]中的通用过程相似：</p>
+<ol>
+<li>给定当前的历史上下文</li>
+<li>生成下一个token的概率分布</li>
+<li>从概率分布中抽样一个token,并将其加入到序列中</li>
+<li>重复上述步骤</li>
+</ol>
+<p>唯一不同的地方在于条件概率的计算：</p>
+<video width="70%" height="auto" loop="" autoplay="" muted="" style="margin-left: 20px;">
+              <source src="https://lena-voita.github.io/resources/lectures/lang_models/general/generation_ngram.mp4">
+            </video>
+<hr>
+<p><strong>生成文本的例子</strong></p>
+<p>下面展示一个3-gram模型在250w条英语句子中训练的结果：</p>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css">
+    
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171445.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171502.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171517.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171535.png" alt="">
+            </div>
+            
+        </div>
+        
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js"></script>
+     
+     <script>
+        var swiper = new Swiper('.swiper-container', {
+            pagination: '.swiper-pagination',
+            paginationClickable: true,
+        });
+        </script>
+
+
+<p>在上述的例子中，你可能发现这些句子中不是很流畅。显然，这样的模型没有完全利用到整个语料，而只依赖一小部分的token。而<strong>无法充分利用长上下文</strong>正是n-gram模型的缺点。</p>
+<p>现在，我们仍使用相同的模型，不过利用贪婪式的方法解码：在每一步，我们都选择概率最高的token作为输出。</p>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css">
+    
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171635.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171718.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171730.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171744.png" alt="">
+            </div>
+            
+        </div>
+        
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js"></script>
+     
+     <script>
+        var swiper = new Swiper('.swiper-container', {
+            pagination: '.swiper-pagination',
+            paginationClickable: true,
+        });
+        </script>
+
+
+<p>可以发现贪婪式的解码结果有如下性质：</p>
+<ol>
+<li>生成的文本更短： <code>_eos_</code> token具有很高的输出概率</li>
+<li>更加相似：许多文本最终生成的短语是相似的</li>
+</ol>
+<blockquote>
+<p>N-gram语言模型固定上下文所带来的缺点，不会传递给神经网络的语言模型。</p>
+</blockquote>
+<hr>
+<h2 id="神经语言模型"><a href="#神经语言模型" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:神经语言模型" class="headings">神经语言模型</a></h2>
+<h3 id="原理-1"><a href="#原理-1" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:原理-1" class="headings">原理</a></h3>
+<p>再次重复：计算token序列的概率，需要估计条件概率$P(y_t|y_1, \dots, y_{t-1})$</p>
+<div>
+    $$
+    \begin{aligned}
+P(y_1, y_2, \dots, y_n)&=P(y_1)\cdot P(y_2|y_1)\cdot P(y_3|y_1, y_2)\cdot\dots\cdot P(y_n|y_1, \dots, y_{n-1})\\&=
+        \prod \limits_{t=1}^n P(y_t|y_{\mbox{<}t}).
+\end{aligned}
+                                                    $$
+</div>
+<p>不同于N-gram模型是基于全局语料的统计信息来估计条件概率，神经模型通过训练一个网络来预测这些概率。</p>
+<p>直觉上，神经语言模型需要做两件事情：</p>
+<ol>
+<li>处理上下文-&gt; <strong>对上下文编码</strong>(encode context)
+<ol>
+<li>主要的思想是获得之前的上下文的词嵌入表示</li>
+<li>通过使用该表示，模型预测下一个token的概率分布</li>
+<li>这个步骤主要依赖于模型使用的网络架构，例如RNN、CNN等</li>
+</ol>
+</li>
+<li>生成下一个token的概率分布
+<ol>
+<li>一旦上下文经过编码，通常下一个token的条件分布可以使用相同方法获得</li>
+</ol>
+</li>
+</ol>
+<p><video width="60%" height="auto" loop="" autoplay="" muted="" >
+<source src="https://lena-voita.github.io/resources/lectures/lang_models/neural/nn_lm_prob_idea.mp4">
+</video></p>
+<p>从上图的流程可以发现，其实神经语言模型就是一个神经分类器，而预测下一个词的概率分布其实就是一个分类问题的一部分。</p>
+<hr>
+<h3 id="高层次的pipeline"><a href="#高层次的pipeline" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:高层次的pipeline" class="headings">高层次的Pipeline</a></h3>
+<p>由于从左到右的神经语言模型可以被认为是一种分类器，一个通用的pipeline与我们在Text Classification的<a href="Text%20Classification.md#%E5%8E%9F%E7%90%86">原理</a>中看到的很相似。对于不同的网络架构，一个通用的pipeline如下：</p>
+<ol>
+<li>将之前上下文所有词的词嵌入传给网络</li>
+<li>通过训练网络，获得整个上下文的向量表示</li>
+<li>根据该向量表示，预测下一个token的概率分布</li>
+</ol>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171839.png" alt=""></p>
+<p>我们可以先思考分类部分，即如何从文本的向量表示中获取token的概率分布。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171846.png" alt=""></p>
+<p>假设文本的向量表示的维度为$d$,但最后我们需要一个大小为$|V|$的向量来表示$|V|$个tokens(类别)的概率。为此，我们需要使用一个线性网络层，一旦我们获得了大小为$|V|$的向量，就可以对其使用softmax操作，将原始数值转换为各个类别的概率了。</p>
+<hr>
+<p><strong>另一种视野：输出词向量的点积</strong></p>
+<p>如果我们仔细观察最后一层线性层，我们将发现其包含$|V|$个列，并且每一列对应着词表中的一个token。因此，<strong>这些列向量可以看做是输出词的词嵌入</strong>。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171913.png" alt=""></p>
+<p>使用最后的线性层其实等价于对上下文的向量表示$h$和输出词的词嵌入之间做点积。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171920.png" alt=""></p>
+<p>形式上，假设$\color{#d192ba}{h_t}$表示上下文$y_1, \dots, y_{t-1}$的向量表示，$\color{#88bd33}{e_w}$表示输出词的词嵌入，则输出词的条件概率为：
+$$
+p(y_t| y_{\mbox{&lt;}t}) = \frac{exp(\color{#d192ba}{h_t^T}\color{#88bd33}{e_{y_t}}\color{black})}{\sum\limits_{w\in V}exp(\color{#d192ba}{h_t^T}\color{#88bd33}{e_{w}}\color{black})}.
+$$</p>
+<p>点积作为两个向量<strong>相似度</strong>的一种度量方式，如果输出词的词嵌入$\color{#88bd33}e_{y_t}$与上下文的向量表示$\color{#d192ba}h_t$的点积越大，即相似度越大，则对应的条件概率也越大。</p>
+<hr>
+<h3 id="训练与交叉熵损失"><a href="#训练与交叉熵损失" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:训练与交叉熵损失" class="headings">训练与交叉熵损失</a></h3>
+<p>令$y_1, \dots, y_n$表示需训练得到的序列，在时间步$t$上，模型需要预测概率分布$p^{(t)} = p(\ast|y_1, \dots, y_{t-1})$。假设该时间步的目标分布(标签)是$p^{\ast}=\mbox{one-hot}(y_t)$,即我们希望给正确的token$y_t$赋予概率值1，其余为0。</p>
+<p>标准的损失函数为交叉熵损失。目标概率分布$p^*$与预测分布$p$之间的损失为：
+$$
+Loss(p^{\ast}, p^{})= - p^{\ast} \log(p) = -\sum\limits_{i=1}^{|V|}p_i^{\ast} \log(p_i).
+$$
+由于$p^{\ast}$中只有一个元素$p_i^{\ast}$不为0，因此我们可以将上式化简：
+$$
+Loss(p^{\ast}, p) = -\log(p_{y_t})=-\log(p(y_t| y_{\mbox{&lt;}t})).
+$$</p>
+<p>上述损失函数最小化等价于在每个时间步，使模型预测出正确的token的概率最大化。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171954.png" alt=""></p>
+<p>对于整个序列，损失函数将为$-\sum\limits_{t=1}^n\log(p(y_t| y_{\mbox{&lt;}t}))$。如下以RNN网络为例，展示了训练过程：</p>
+<video width="70%" height="auto" loop="" autoplay="" muted="" style="margin-left: 150px;">
+             <source src="https://lena-voita.github.io/resources/lectures/lang_models/neural/rnn_lm_training_with_target.mp4">
+         </video>
+​		 
+<p><strong>交叉熵与KL散度：</strong></p>
+<p>当目标分布为独热向量$p^{\ast}=\mbox{one-hot}(y_t)$时，交叉熵损失为$Loss(p^{\ast}, p^{})= -\sum\limits_{i=1}^{|V|}p_i^{\ast} \log(p_i)$,等价于Kullback-Leibler divergence $D_{KL}(p^{\ast}|| p^{})$。</p>
+<p>因此，标准的NN-LM优化问题可以被看作是最小化模型预测分布$p$和经验目标分布$p^{\ast}$之间的距离。</p>
+<hr>
+<h3 id="模型-循环架构"><a href="#模型-循环架构" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:模型-循环架构" class="headings">模型： 循环架构</a></h3>
+<p>该小节将介绍用于语言模型的RNN模型。本小节的RNN单元可以使用任意RNN结构，如LSTM，Vanilla RNN, GRU等。</p>
+<ul>
+<li>单层 RNN</li>
+</ul>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172057.png" style="zoom:33%;" /></p>
+<p>最简单的循环架构就是单层的循环神经网络。在每个时间步，当前的状态将包含之前tokens的信息，并且将其用于预测下一个token。在训练时，将训练样本传给网络。在推断时，模型将生成一个token。以上步骤直到网络生成<code>_eos_</code>为止。</p>
+<ul>
+<li>多层 RNN</li>
+</ul>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172109.png" style="zoom:50%;" /></p>
+<hr>
+<h3 id="模型卷积"><a href="#模型卷积" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:模型卷积" class="headings">模型：卷积</a></h3>
+<p>对比文本分类中的<a href="https://derooce.github.io/posts/text-classification-notes/#%E5%B0%86%E5%8D%B7%E7%A7%AF%E7%94%A8%E4%BA%8E%E6%96%87%E6%9C%AC%E7%9A%84%E5%8E%9F%E7%90%86" target="_blank" rel="noopener">将卷积用于文本的原理</a>,在语言模型中的CNN将有些不同。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172208.png" alt=""></p>
+<p>当设计CNN语言模型时，我们需要记住如下几点：</p>
+<ol>
+<li>防止之前上下文的信息从将来的tokens中溜走
+<ol>
+<li>为了预测一个token，一个从左到右的语言模型必须使用之前的tokens，因此我们需要<strong>确保CNN只能看到之前上下文的tokens</strong></li>
+<li>在最初预测token时，可能之前的上下文长度不够，此时可以添加一些paddings,但是记住不能使用后续tokens</li>
+</ol>
+</li>
+<li>不要移除位置信息
+<ol>
+<li><strong>与文本分类不同，位置信息对语言模型非常重要</strong></li>
+<li>因此，在CNN语言模型中<strong>不要使用池化操作</strong>（丢失位置信息）</li>
+</ol>
+</li>
+<li>如果需要堆叠很多层，不要忘记使用残差连接(residual connections)
+<ol>
+<li>如果堆叠太多层，则深层的网络将会很难学习</li>
+<li>为了避免上述问题，可以使用<a href="%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84#%E6%AE%8B%E5%B7%AE%E8%BF%9E%E6%8E%A5%E4%B8%8E%E9%AB%98%E9%80%9F%E8%BF%9E%E6%8E%A5">残差连接与高速连接</a></li>
+</ol>
+</li>
+</ol>
+<hr>
+<p><strong>感受野</strong>(Receptive field): 有了许多层，感受野范围可以很广</p>
+<p>当不使用<a href="https://derooce.github.io/posts/text-classification-notes/#%E6%B1%A0%E5%8C%96%E6%93%8D%E4%BD%9C" target="_blank" rel="noopener">全局池化操作</a>的CNN模型时，我们的模型可能无法避免地使用一个固定大小的上下文窗口，而这正是N-gram模型的缺点，以及我们想极力避免的问题。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172319.png" style="zoom:50%;" /></p>
+<p>然而，如果N-gram模型的上下文大小通常为1-4,那么CNN模型的上下文大小却可以非常大。在上图中，我们只是用了3层的卷积层，以及过滤器大小为3，但网络却可以接受7个tokens组成的上下文窗口的信息。如果我们继续堆叠更多层，那么我们将可以获得一个非常大的上下文长度。</p>
+<hr>
+<p><strong>残差连接</strong>： 使得训练深层网络更容易</p>
+<p>为了处理更长的上下文，我们需要更深的网络。然而不幸地是，当堆叠许多网络层后，我们可能面临深层网络的梯度从顶端网络层很难反向传播到底端网络层。为了避免这个问题，我们可以使用残差连接或者更复杂的变种<strong>高速连接</strong>(highway connections)。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172337.png" alt=""></p>
+<p>残差连接非常简单：相对于一般的深层网络，添加了一个输入层到输出层的连接。而高速连接的动机相同，但使用了一个门控来控制输入、输出的和，而不是简单地使用累加和。这与LSTM使用不同的门控控制学习的信息相似。</p>
+<p>下图是带有残差连接的CNN模型图例。加入残差连接后，即使网络层数很深，也可以很容易地训练。此外，深层的网络也给模型带来一个非常可观的感受野。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172347.png" style="zoom:35%;" /></p>
+<hr>
+<h2 id="序列生成策略"><a href="#序列生成策略" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:序列生成策略" class="headings">序列生成策略</a></h2>
+<h3 id="原理-2"><a href="#原理-2" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:原理-2" class="headings">原理</a></h3>
+<p>为了通过语言模型生成一段文本，我们需要从模型预测得到的概率分布中对token抽样。</p>
+<video width="70%" height="auto" loop="" autoplay="" muted="" style="margin-left: 20px;">
+      <source src="https://lena-voita.github.io/resources/lectures/lang_models/general/generation_example.mp4">
+    </video>
+<p><strong>连贯性和多样性</strong>(Coherence and Diversity)</p>
+<ul>
+<li>连贯性Coherent: 生成的文本需要讲得通</li>
+<li>多样性Diverse: 模型应该能够生成各种各样的句子</li>
+</ul>
+<hr>
+<h3 id="标准抽样"><a href="#标准抽样" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:标准抽样" class="headings">标准抽样</a></h3>
+<p>生成序列的最标准方法是直接使用模型预测的分布，而不做任何修改。</p>
+<hr>
+<h3 id="带温度取样temperature"><a href="#带温度取样temperature" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:带温度取样temperature" class="headings">带温度取样（temperature）</a></h3>
+<p>一种非常流行的修改语言模型生成行为的的方法是<strong>更改softmax温度</strong>。在使用最终的softmax函数之前，softmax函数的输入先除以一个温度值$\tau$。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172422.png" alt=""></p>
+<p>形式上，softmax的计算发生如下改变：</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172434.png" alt=""></p>
+<blockquote>
+<p>注意到，采样过程仍然是标准抽样的：唯一不同的是我们计算概率的方式。</p>
+</blockquote>
+<p>实验中，先采取温度范围为$[0.2, 2]$取样。当$\tau=2$时，产生的文本具有很好的多样性，但大多数都没有什么意义。如果换个方向降低温度，例如$\tau=0.2$，此时发现产生的文本虽然更能说的通，但是却大大降低了多样性。为了总结这个发现，我们可以使用温度$\tau$来控制生成文本的连贯性和多样性：
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172446.png" alt=""></p>
+<hr>
+<h3 id="top-k采样选择前k个概率最高的tokens"><a href="#top-k采样选择前k个概率最高的tokens" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:top-k采样选择前k个概率最高的tokens" class="headings">Top-K采样：选择前K个概率最高的tokens</a></h3>
+<p>调整温度非常棘手：如果温度设置太低，那么所有的token的概率都会很低（相对而言，即概率值之间相差较大，大的概率很大，小的概率可能接近0）；如果温度太高，则大量的token都将有很高的概率（相对而言，即每个概率值都差不多）。</p>
+<p>一种简答的启发式解决方法是总是从概率值最大的K个tokens中取样。在此情况下，模型虽然有K种选择，但是那些最不可能的token将不会被使用到。</p>
+<p>然而固定的$K$不总是好的。虽然通常top-K采样比单独使用softmax + temperature的效果好，但固定的K值肯定不是最佳方案。例如下图，</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172507.png" alt=""></p>
+<p>正如上图所示，当$K$值固定时，采样前$K$个token，其中可能包含一些概率值非常小的token(右图所示)。此外，当$K$值固定时，概率大的$K$个token可能对应的含义完全不同（例如左图所示，red,white等完全不同的颜色）。</p>
+<hr>
+<h3 id="top-paka-nucleus采样概率质量的前p"><a href="#top-paka-nucleus采样概率质量的前p" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:top-paka-nucleus采样概率质量的前p" class="headings">Top-p%(aka Nucleus)采样：概率质量的前p%</a></h3>
+<p>一个更合理的策略是不考虑概率值top-K的tokens，而是考虑概率质量和top-p%的tokens,这个方法称为Nucleus抽样。使用Top-p%采样，网络可以基于概率分布的性质，动态地选择tokens的数量。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172519.png" alt=""></p>
+<hr>
+<h2 id="评估语言模型"><a href="#评估语言模型" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:评估语言模型" class="headings">评估语言模型</a></h2>
+<blockquote>
+<p>TL;DR : 当&quot;阅读&quot;一段新的文本时，语言模型会有多”惊讶“？</p>
+</blockquote>
+<p>正如在<a href="https://derooce.github.io/posts/word-embeddings-notes/#%E8%AF%8D%E5%B5%8C%E5%85%A5%E8%A1%A8%E7%A4%BA%E7%9A%84%E8%AF%84%E4%BC%B0" target="_blank" rel="noopener">词嵌入表示的评估</a>中所提的，有两种评估语言模型的方法——<strong>内部任务评价</strong>（<em>Intrinsic</em> Evaluation）和<strong>外部任务评价</strong>（extrinsic evaluations）。这里仅讨论内部任务评价方法。</p>
+<p>类似于物理世界中的好模型必须与现实世界很好地吻合，好的语言模型也必须与真实文本很好地吻合。这是评价方法的主要思想：如果我们输入给模型的文本与模型“期待”得到的文本是接近的，那么这就是个好模型。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172614.png" alt=""></p>
+<h3 id="交叉熵与困惑度"><a href="#交叉熵与困惑度" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:交叉熵与困惑度" class="headings">交叉熵与困惑度</a></h3>
+<p>我们应该如何评估一段文本是否正是模型所期待的呢？形式上，一个模型需要给真实文本赋予高概率，而不太可能出现的文本赋予低概率。</p>
+<p>假设我们有一段文本$y_{1:M}= (y_1, y_2, \dots, y_M)$。语言模型赋予这段文本的概率表征了模型与文本“一致”的程度，即语言模型根据给定的上下文预测即将出现的tokens的好坏：</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172623.png" alt=""></p>
+<p>这是一个对数似然函数,但与交叉熵损失函数不同，其没有负号。此外，注意到在训练阶段损失函数中，对数函数的底数取的是$e$，这更容易计算；而在评估阶段的对数函数中，底数取的是$2$。</p>
+<p>除了交叉熵函数，更常见的评估方式是交叉熵函数的变形——<strong>困惑度</strong>(perplexity):
+$$
+Perplexity (y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})}.
+$$</p>
+<p>一个号的模型应该有更高的对数似然函数值，以及更低的困惑度。</p>
+<ul>
+<li>最好的困惑度为$1$</li>
+</ul>
+<p>假设我们的模型是完美的，每次给正确的tokens的预测概率都是$1$,则此时对数概率值即为$0$,因而困惑度为$1$。</p>
+<ul>
+<li>最坏的困惑度为$|V|$</li>
+</ul>
+<p>在最糟糕的情况中，语言模型对文本一无所知，因此对文本中的每个token都赋予相同的概率值$\frac{1}{|V|}$,于是：</p>
+<div>
+    $$
+    \begin{aligned}
+Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &=
+            2^{-\frac{1}{M}\sum\limits_{t=1}^M\log_2 p(y_t|y_{1:t-1})}\\
+			&=
+            2^{-\frac{1}{M}\cdot M \cdot \log_2\frac{1}{|V|}}=2^{\log_2 |V|} =|V|.
+\end{aligned}
+    $$
+</div>
+<p>因此，模型的困惑度取值应在$[1,|V|]$之间。</p>
+<hr>
+<h2 id="实用技巧"><a href="#实用技巧" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:实用技巧" class="headings">实用技巧</a></h2>
+<h3 id="权重绑定weight-tying-aka-参数共享-parameter-sharing"><a href="#权重绑定weight-tying-aka-参数共享-parameter-sharing" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:权重绑定weight-tying-aka-参数共享-parameter-sharing" class="headings">权重绑定(Weight tying, aka 参数共享 Parameter Sharing)</a></h3>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172715.png" alt=""></p>
+<p>在实现语言模型时，我们需要定义两个嵌入矩阵——输入词嵌入矩阵和输出词嵌入矩阵。输入嵌入矩阵是将上下文词输入到网络中时所使用的词嵌入；输出嵌入矩阵是在softmax操作之前用来获取预测概率的输出矩阵。</p>
+<p>通常情况下。这两个矩阵是不相同的，即在网络中的参数是不同的，因为网络并不知道这两个嵌入矩阵是相关的。为了使用同一个矩阵，整个框架可以采用权重绑定，即对不同的网络模块使用相同的参数。</p>
+<blockquote>
+<p><strong>观点</strong>: 通常，模型参数的很大一部分来自词嵌入，因为词嵌入矩阵很大！通过权重绑定，可以显著减小模型尺寸。</p>
+</blockquote>
+<p>权重绑定的作用类似于正则化，后者迫使模型不仅给目标token赋予高预测概率，而且还给嵌入空间中与目标token接近的tokens也赋予高概率。</p>
+<hr>
+<h2 id="研究思考"><a href="#研究思考" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:研究思考" class="headings">研究思考</a></h2>
+<p>在<a href="https://derooce.github.io/posts/text-classification-notes/#%E4%BD%BF%E7%94%A8cnn%E5%81%9A%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB" target="_blank" rel="noopener">使用CNN做文本分类</a>中，我们了解到CNN的过滤器在经训练后，可以捕捉到对文本情感分类具有很好解释性以及信息性的“暗示”。而<strong>CNN作为语言模型时，将学习到手头任务中有用的模式</strong>。</p>
+<hr>
+<h2 id="reference"><a href="#reference" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:reference" class="headings">Reference</a></h2>
+<ol>
+<li><a href="https://lena-voita.github.io/nlp_course/language_modeling.html" target="_blank" rel="noopener">NLP course: Yandex</a></li>
+</ol>
+
+            </div>
+
+            
+
+
+        </article>
+
+        
+
+        
+    <div class="updated-badge-container">
+        <span title="Updated @ 2021-03-14 17:28:01 CST" style="cursor:help">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2021-03-14</text><text x="915" y="140" textLength="650" transform="scale(.1)">2021-03-14</text></g></svg>
+        </span></div>
+
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+    
+        <div class="post-tags">
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/nlp/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>NLP</a>
+                
+            
+        </div>
+    
+
+
+
+        
+
+
+        
+
+
+        
+    
+        
+        
+    
+    
+    
+    
+        <ul class="post-nav">
+            
+            
+                <li class="post-nav-next">
+                    <a href="/posts/text-classification-notes/" rel="next">NLP Notes series: Text Classification &gt;</a>
+                </li>
+            
+        </ul>
+    
+
+
+
+        
+    
+
+        <div class="load-comments">
+            <div id="load-comments">加载评论</div>
+        </div>
+
+        
+            <div id="disqus_thread"></div>
+        
+
+        
+
+        
+
+    
+
+
+
+    </div>
+</main>
+
+
+            
+    <div id="back-to-top" class="back-to-top">
+        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon arrow-up"><path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"/></svg></a>
+    </div>
+
+
+            
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="site-info">&nbsp;DEROOCE&nbsp;&nbsp;©&nbsp;2021–2021</div><div class="site-copyright"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></div><div class="custom-footer">愚蠢的人总是对事情很确定，而聪明的人总是充满疑惑</div>
+
+            
+
+
+            
+        </div>
+    </footer>
+
+
+        </div>
+        
+
+        
+
+
+    <script>
+    if (typeof MathJax === 'undefined') {
+        window.MathJax = {
+            loader: {
+                load: ['[tex]/mhchem']
+            },
+            
+            tex: {
+                inlineMath: {'[+]': [['$', '$']]},
+                tags: 'ams',
+                packages: {'[+]': ['mhchem']}
+            }
+        };
+        (function() {
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+            script.defer = true;
+            document.head.appendChild(script);
+        })();
+    } else {
+        MathJax.texReset();
+        MathJax.typeset();
+    }
+</script>
+
+
+
+
+
+
+    
+
+        
+            <script>
+    function loadComments() {
+        if (typeof DISQUS === 'undefined') {
+            var disqus_config = function() {
+                this.page.url = 'https:\/\/derooce.github.io\/posts\/language-modeling-notes\/';
+                this.page.identifier = '\/posts\/language-modeling-notes\/';
+                this.page.title = 'NLP Notes series: Language Modeling';
+            };
+            (function() {
+                var d = document, s = d.createElement('script'); s.async = true;
+                s.src = 'https://derooce.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        } else {
+            DISQUS.reset({
+                reload: true,
+                config: function() {
+                    this.page.url = 'https:\/\/derooce.github.io\/posts\/language-modeling-notes\/';
+                    this.page.identifier = '\/posts\/language-modeling-notes\/';
+                    this.page.title = 'NLP Notes series: Language Modeling';
+                }
+            });
+        }
+    }
+</script>
+
+        
+
+        
+
+        
+
+    
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@latest/dist/medium-zoom.min.js"></script>
+
+<script>
+    mediumZoom(document.querySelectorAll('div.post-body img'), {
+        background: 'hsla(var(--color-bg-h), var(--color-bg-s), var(--color-bg-l), 0.95)'
+    })
+</script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/instant.page@5.1.0/instantpage.min.js" type="module" defer></script>
+
+
+
+
+
+
+
+    </body>
+</html>

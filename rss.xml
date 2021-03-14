@@ -23,10 +23,2185 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
         
-        <lastBuildDate>Sun, 14 Mar 2021 09:53:13 &#43;0800</lastBuildDate>
+        <lastBuildDate>Sun, 14 Mar 2021 17:28:25 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://derooce.github.io/rss.xml" />
         
+        
+            <item>
+                <title>NLP Notes series: Language Modeling</title>
+                <link>https://derooce.github.io/posts/language-modeling-notes/</link>
+                <guid isPermaLink="true">https://derooce.github.io/posts/language-modeling-notes/</guid>
+                <pubDate>Sun, 14 Mar 2021 12:38:45 &#43;0800</pubDate>
+                
+                    <author>vanace.jc@gmail.com (DEROOCE)</author>
+                
+                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
+                
+                    <description>&lt;h1 id=&#34;language-modeling&#34;&gt;Language Modeling&lt;/h1&gt;
+&lt;h2 id=&#34;对xx建模到底意味着什么&#34;&gt;”对xx建模“到底意味着什么？&lt;/h2&gt;
+&lt;p&gt;想象我们有一个物理世界的模型。我们会期待其可以做些什么呢？如果这个模型很好，那么也许它可以根据给定“上下文”(context)的描述来预测下一步会发生什么。而当前的context也就对应着当前事物的状态(state)。&lt;/p&gt;
+&lt;p&gt;一个好的模型应该能模拟真实世界中的行为,它将“了解”哪些事件与世界更一致，即哪些事件更有可能发生。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;那么对于语言呢&#34;&gt;那么对于语言呢？&lt;/h2&gt;
+&lt;p&gt;对于语言，这样的直觉是一致的，而不同的是事件的符号。在语言中，一个事件是一个语言单元（例如文本、句子、token、符号），而&lt;strong&gt;语言模型的目的是估计出这些事件发生的概率&lt;/strong&gt;。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Language Models (LMs) estimate the probability of different linguistic units: symbols, tokens, token sequences.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;那么语言模型为什么会有用呢？&lt;/p&gt;
+&lt;p&gt;其实我们每天都在使用语言模型(LMs)! 通常，大型商业服务中的模型比我们今天要讨论的模型要复杂一些，但是思想是一致的。如果我们可以估计单词/句子等的概率，那么我们将有许多意想不到的应用。&lt;/p&gt;
+
+    &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css&#34;&gt;
+    
+    &lt;div class=&#34;swiper-container&#34;&gt;
+        &lt;div class=&#34;swiper-wrapper&#34;&gt;
+            
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170507.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170523.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170541.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170558.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+        &lt;div class=&#34;swiper-pagination&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js&#34;&gt;&lt;/script&gt;
+     
+     &lt;script&gt;
+        var swiper = new Swiper(&#39;.swiper-container&#39;, {
+            pagination: &#39;.swiper-pagination&#39;,
+            paginationClickable: true,
+        });
+        &lt;/script&gt;
+
+
+&lt;p&gt;然而这件对人类来说容易的事情，对于机器来说可能很难。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170628.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;当涉及自然语言时，我们人类已经有了“概率”的直觉。例如，当我们谈话时，我们可以很好地理解对方所说的话。我们消除了听起来似乎相似的单词或语句之间的歧义！&lt;/p&gt;
+&lt;p&gt;但是一个机器应该如何理解这些呢？机器需要语言模型，用来估计句子的概率。如果语言模型足够好，那么它将给正确的句子赋予更大的概率值。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;通用框架&#34;&gt;通用框架&lt;/h2&gt;
+&lt;h3 id=&#34;文本概率&#34;&gt;文本概率&lt;/h3&gt;
+&lt;p&gt;我们的目的是估计文本片段的概率。简洁起见，假设我们处理的是句子。我们希望这些概率值能翻译对应语言的知识。具体来说，根据语言模型，我们希望在对应语言环境中更有可能出现的句子拥有更大的概率值。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170644.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上图的例子中，我们根据经典概率论中频率估计概率的思想，也想使用各种句子在语料中出现的频率来估计其对应的概率。然而这显然不现实，因为我们不可能得到包含所有类型句子的文本语料库。虽然“the mut is tinming the tebn&amp;quot;显然比&amp;quot;mut the tinming tebn is the&amp;quot;更有可能出现，但这些句子的概率估计都为0，即对模型看起来同样糟糕。这意味着这样的模型是不够好的，我们需要进行调整。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;strong&gt;将整个句子的概率拆解为一些小的部分&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在上述的例子中，我们将句子视为语言的原子单位(atomic units)，因而无法产生可靠的估计概率。那如果我们将句子的概率拆解为一些更小部分的组合呢？&lt;/p&gt;
+&lt;p&gt;例如，对于一段句子&amp;quot;I saw a cat on a mat&amp;quot;, 假设我们是一字一字地阅读这段句子。在每步中，我们估计目前为止所有见到单词的概率。我们不希望有任何计算是徒劳的，因此我们不会在一个新的单词出现就抛弃之前计算的概率值，而是更新这个概率值来解释新的单词。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://lena-voita.github.io/resources/lectures/lang_models/general/i_saw_a_cat_prob.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;形式上，令$y_1, y_2, \dots, y_n$表示句子中的单词，$P(y_1, y_2, \dots, y_n)$为目前所见所有单词的概率。通过使用链式法则，这个联合概率可以分解为：&lt;/p&gt;
+&lt;div&gt;
+    $$
+    \begin{aligned}
+P(y_1, y_2, \dots, y_n)&amp;=P(y_1)\cdot P(y_2|y_1)\cdot P(y_3|y_1, y_2)\cdot\dots\cdot P(y_n|y_1, \dots, y_{n-1})\\&amp;=
+        \prod \limits_{t=1}^n P(y_t|y_{\mbox{&lt;}t}).
+\end{aligned}
+                                                    $$
+&lt;/div&gt;
+&lt;p&gt;这样一来，在给定先前上下文的情况下，我们将整个句子的概率分解为每个单词的条件概率。这就是一个标准的从左到右的语言模型。这个框架很通用，N-gram模型和神经网络的语言模型在此框架下，只有计算条件概率$P(y_t|y_1, \dots, y_{t-1})$的方式不同。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170751.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;使用语言模型生成一个文本&#34;&gt;使用语言模型生成一个文本&lt;/h2&gt;
+&lt;p&gt;一旦我们有了一个较好的语言模型，我们将可以使用它来生成文本。我们每次生成一个单词或符号，并根据之前生成的文本来预测下一个单词或符号的概率分布，并从该概率分布中抽样：&lt;/p&gt;
+&lt;video width=&#34;70%&#34; height=&#34;auto&#34; loop=&#34;&#34; autoplay=&#34;&#34; muted=&#34;&#34; style=&#34;margin-left: 20px;&#34;&gt;
+          &lt;source src=&#34;https://lena-voita.github.io/resources/lectures/lang_models/general/generation_example.mp4&#34;&gt;
+        &lt;/video&gt;
+尽管这种采样方式很简单，但是在文本生成中却经常被用到。
+&lt;p&gt;我们可以应用贪婪式的解码，即在每个步骤中，选择概率最高的token。但是，这样做的效果通常不会很好。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;n-gram语言模型&#34;&gt;N-gram语言模型&lt;/h2&gt;
+&lt;h3 id=&#34;原理&#34;&gt;原理&lt;/h3&gt;
+&lt;p&gt;让我们回想一下，一般的从左到右的语言建模框架将token序列的概率分解为给定先前上下文的每个token的条件概率乘积：&lt;/p&gt;
+&lt;div&gt;
+    $$
+    \begin{aligned}
+P(y_1, y_2, \dots, y_n)&amp;=P(y_1)\cdot P(y_2|y_1)\cdot P(y_3|y_1, y_2)\cdot\dots\cdot P(y_n|y_1, \dots, y_{n-1})\\
+&amp;=
+        \prod \limits_{t=1}^n P(y_t|y_{\mbox{&lt;}t}).
+\end{aligned}
+                                                    $$
+&lt;/div&gt;
+&lt;p&gt;而唯一不确定的是&lt;strong&gt;如何计算这些条件概率&lt;/strong&gt;。因此，我们所要做的就是定义计算这些条件概率的方法。&lt;/p&gt;
+&lt;p&gt;与之前Word Embeddings中&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#%E5%9F%BA%E4%BA%8E%E8%AE%A1%E6%95%B0%E7%9A%84%E6%96%B9%E6%B3%95&#34;&gt;基于计数的方法&lt;/a&gt;非常相似，N-gram语言模型也采用计算文本语料中的全局统计信息建模，即通过&lt;strong&gt;计数&lt;/strong&gt;的方法。也就是说，N-gram语言模型估计概率$P(y_t|y_{\mbox{&amp;lt;}t}) = P(y_t|y_1, \dots, y_{t-1})$的方法**几乎**等价于之前我们基于古典概率论中频率估计概率的方法(&lt;a href=&#34;https://derooce.github.io/posts/language-modeling-notes/#%E6%96%87%E6%9C%AC%E6%A6%82%E7%8E%87&#34;&gt;文本概率&lt;/a&gt;)。&lt;/p&gt;
+&lt;p&gt;这里突出了“几乎”二词是因为N-gram模型还包含了两个非常重要的成分：&lt;strong&gt;马尔科夫性质&lt;/strong&gt;和&lt;strong&gt;平滑方法&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;马尔科夫性质独立假设&#34;&gt;马尔科夫性质（独立假设）&lt;/h3&gt;
+&lt;p&gt;计算$P(y_t|y_1, \dots, y_{t-1})$一种方法：&lt;/p&gt;
+&lt;p&gt;$$
+P(y_t|y_1, \dots, y_{t-1}) = \frac{N(y_1, \dots, y_{t-1}, y_t)}{N(y_1, \dots, y_{t-1})},
+$$&lt;/p&gt;
+&lt;p&gt;其中$N(y_1, \dots, y_k)$代表token序列$(y_1, \dots, y_k)$在文本中出现的频数。&lt;/p&gt;
+&lt;p&gt;这个方法之前也讨论过，因为片段$(y_1, \dots, y_{t})$在语料中都没有出现，因此该方法效果不会太好。为了解决这个问题，引入了独立性假设，即马尔科夫性质成立：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The probability of a word only depends on a &lt;strong&gt;fixed&lt;/strong&gt; number of previous words. 一个词出现的概率只取决于之前固定长度的单词。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;形式上，N-gram模型假设：
+$$
+P(y_t|y_1, \dots, y_{t-1}) = P(y_t|y_{t-n+1}, \dots, y_{t-1}).
+$$
+例如：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;N=3时(trigram model)： $P(y_t|y_1, \dots, y_{t-1}) = P(y_t|y_{t-2}, y_{t-1})$&lt;/li&gt;
+&lt;li&gt;N=2时(bigram model): $P(y_t|y_1, \dots, y_{t-1}) = P(y_t|y_{t-1})$&lt;/li&gt;
+&lt;li&gt;N=1时(unigram model): $P(y_t|y_1, \dots, y_{t-1}) = P(y_t)$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下图显示了使用该假设前后的对比：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171029.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;平滑重新分配概率质量redistribute-probability-mass&#34;&gt;平滑：重新分配概率质量（Redistribute Probability Mass）&lt;/h3&gt;
+&lt;p&gt;假设我们使用的是4-gram语言模型，并思考如下例子：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171041.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;如果上式中分子为0或分母为0怎么办呢？这两种情况显然都对模型不友好。为了避免这种情况，通常的做法是使用平滑方法。平滑方法将重新分配概率质量，即将一些存在的事件的概率质量分一些给未出现的事件。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当分母出现频数为0时，即&amp;quot;N(cat on a)=0&amp;quot;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171053.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;方案一：后退法(aka Stupid Backoff)。Backoff的思想是对于那些未出现的序列，我们只使用其子序列的频数估计。举例来说，对于&amp;quot;cat on a&amp;quot;这是一个trigram模型，如果&amp;quot;cat on a&amp;quot;没有出现，则将其退化为使用bigram模型，即计算&amp;quot;on a&amp;quot;的频数；若还是没有出现，则再退化使用unigram模型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171122.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;这种方法看起来傻乎乎的，但实际上却效果还可以。&lt;/p&gt;
+&lt;p&gt;另一种更聪明的方法是：线性插值(Linear interpolation)。线性插值将使用unigram、bigram、trigram等的结合。为了做到这点，需要使用一些正的权重标量$\lambda_0, \lambda_1, \dots, \lambda_{n-1}$，并且满足$\sum\limits_{i}\lambda_i=1$。如此，更新的概率将为：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171140.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;权重系数$\lambda_i$可以使用交叉验证来选择。&lt;/p&gt;
+&lt;hr&gt;
+&lt;ul&gt;
+&lt;li&gt;当分子为0时，即&amp;quot;N(cat on a mat)=0&amp;quot;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171212.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;这种情形下，常用的方法是&lt;strong&gt;拉普拉斯平滑&lt;/strong&gt;（aka 加1平滑， add-one smoothing）。避免这种情况最简单的方法是假设每个n-grams都至少出现1次，即每个n-grams的计数都加上1，或者加上一个很小的值 $\delta$:
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171229.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;生成文本&#34;&gt;生成文本&lt;/h3&gt;
+&lt;p&gt;N-gram模型生成文本的过程与&lt;a href=&#34;https://derooce.github.io/posts/language-modeling-notes/#%E4%BD%BF%E7%94%A8%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%94%9F%E6%88%90%E4%B8%80%E4%B8%AA%E6%96%87%E6%9C%AC&#34;&gt;使用语言模型生成一个文本&lt;/a&gt;]中的通用过程相似：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;给定当前的历史上下文&lt;/li&gt;
+&lt;li&gt;生成下一个token的概率分布&lt;/li&gt;
+&lt;li&gt;从概率分布中抽样一个token,并将其加入到序列中&lt;/li&gt;
+&lt;li&gt;重复上述步骤&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;唯一不同的地方在于条件概率的计算：&lt;/p&gt;
+&lt;video width=&#34;70%&#34; height=&#34;auto&#34; loop=&#34;&#34; autoplay=&#34;&#34; muted=&#34;&#34; style=&#34;margin-left: 20px;&#34;&gt;
+              &lt;source src=&#34;https://lena-voita.github.io/resources/lectures/lang_models/general/generation_ngram.mp4&#34;&gt;
+            &lt;/video&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;strong&gt;生成文本的例子&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;下面展示一个3-gram模型在250w条英语句子中训练的结果：&lt;/p&gt;
+
+    &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css&#34;&gt;
+    
+    &lt;div class=&#34;swiper-container&#34;&gt;
+        &lt;div class=&#34;swiper-wrapper&#34;&gt;
+            
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171445.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171502.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171517.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171535.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+        &lt;div class=&#34;swiper-pagination&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js&#34;&gt;&lt;/script&gt;
+     
+     &lt;script&gt;
+        var swiper = new Swiper(&#39;.swiper-container&#39;, {
+            pagination: &#39;.swiper-pagination&#39;,
+            paginationClickable: true,
+        });
+        &lt;/script&gt;
+
+
+&lt;p&gt;在上述的例子中，你可能发现这些句子中不是很流畅。显然，这样的模型没有完全利用到整个语料，而只依赖一小部分的token。而&lt;strong&gt;无法充分利用长上下文&lt;/strong&gt;正是n-gram模型的缺点。&lt;/p&gt;
+&lt;p&gt;现在，我们仍使用相同的模型，不过利用贪婪式的方法解码：在每一步，我们都选择概率最高的token作为输出。&lt;/p&gt;
+
+    &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css&#34;&gt;
+    
+    &lt;div class=&#34;swiper-container&#34;&gt;
+        &lt;div class=&#34;swiper-wrapper&#34;&gt;
+            
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171635.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171718.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171730.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171744.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+        &lt;div class=&#34;swiper-pagination&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js&#34;&gt;&lt;/script&gt;
+     
+     &lt;script&gt;
+        var swiper = new Swiper(&#39;.swiper-container&#39;, {
+            pagination: &#39;.swiper-pagination&#39;,
+            paginationClickable: true,
+        });
+        &lt;/script&gt;
+
+
+&lt;p&gt;可以发现贪婪式的解码结果有如下性质：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;生成的文本更短： &lt;code&gt;_eos_&lt;/code&gt; token具有很高的输出概率&lt;/li&gt;
+&lt;li&gt;更加相似：许多文本最终生成的短语是相似的&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;N-gram语言模型固定上下文所带来的缺点，不会传递给神经网络的语言模型。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;神经语言模型&#34;&gt;神经语言模型&lt;/h2&gt;
+&lt;h3 id=&#34;原理-1&#34;&gt;原理&lt;/h3&gt;
+&lt;p&gt;再次重复：计算token序列的概率，需要估计条件概率$P(y_t|y_1, \dots, y_{t-1})$&lt;/p&gt;
+&lt;div&gt;
+    $$
+    \begin{aligned}
+P(y_1, y_2, \dots, y_n)&amp;=P(y_1)\cdot P(y_2|y_1)\cdot P(y_3|y_1, y_2)\cdot\dots\cdot P(y_n|y_1, \dots, y_{n-1})\\&amp;=
+        \prod \limits_{t=1}^n P(y_t|y_{\mbox{&lt;}t}).
+\end{aligned}
+                                                    $$
+&lt;/div&gt;
+&lt;p&gt;不同于N-gram模型是基于全局语料的统计信息来估计条件概率，神经模型通过训练一个网络来预测这些概率。&lt;/p&gt;
+&lt;p&gt;直觉上，神经语言模型需要做两件事情：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;处理上下文-&amp;gt; &lt;strong&gt;对上下文编码&lt;/strong&gt;(encode context)
+&lt;ol&gt;
+&lt;li&gt;主要的思想是获得之前的上下文的词嵌入表示&lt;/li&gt;
+&lt;li&gt;通过使用该表示，模型预测下一个token的概率分布&lt;/li&gt;
+&lt;li&gt;这个步骤主要依赖于模型使用的网络架构，例如RNN、CNN等&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;生成下一个token的概率分布
+&lt;ol&gt;
+&lt;li&gt;一旦上下文经过编码，通常下一个token的条件分布可以使用相同方法获得&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;video width=&#34;60%&#34; height=&#34;auto&#34; loop=&#34;&#34; autoplay=&#34;&#34; muted=&#34;&#34; &gt;
+&lt;source src=&#34;https://lena-voita.github.io/resources/lectures/lang_models/neural/nn_lm_prob_idea.mp4&#34;&gt;
+&lt;/video&gt;&lt;/p&gt;
+&lt;p&gt;从上图的流程可以发现，其实神经语言模型就是一个神经分类器，而预测下一个词的概率分布其实就是一个分类问题的一部分。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;高层次的pipeline&#34;&gt;高层次的Pipeline&lt;/h3&gt;
+&lt;p&gt;由于从左到右的神经语言模型可以被认为是一种分类器，一个通用的pipeline与我们在Text Classification的&lt;a href=&#34;Text%20Classification.md#%E5%8E%9F%E7%90%86&#34;&gt;原理&lt;/a&gt;中看到的很相似。对于不同的网络架构，一个通用的pipeline如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;将之前上下文所有词的词嵌入传给网络&lt;/li&gt;
+&lt;li&gt;通过训练网络，获得整个上下文的向量表示&lt;/li&gt;
+&lt;li&gt;根据该向量表示，预测下一个token的概率分布&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171839.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;我们可以先思考分类部分，即如何从文本的向量表示中获取token的概率分布。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171846.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;假设文本的向量表示的维度为$d$,但最后我们需要一个大小为$|V|$的向量来表示$|V|$个tokens(类别)的概率。为此，我们需要使用一个线性网络层，一旦我们获得了大小为$|V|$的向量，就可以对其使用softmax操作，将原始数值转换为各个类别的概率了。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;strong&gt;另一种视野：输出词向量的点积&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;如果我们仔细观察最后一层线性层，我们将发现其包含$|V|$个列，并且每一列对应着词表中的一个token。因此，&lt;strong&gt;这些列向量可以看做是输出词的词嵌入&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171913.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;使用最后的线性层其实等价于对上下文的向量表示$h$和输出词的词嵌入之间做点积。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171920.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;形式上，假设$\color{#d192ba}{h_t}$表示上下文$y_1, \dots, y_{t-1}$的向量表示，$\color{#88bd33}{e_w}$表示输出词的词嵌入，则输出词的条件概率为：
+$$
+p(y_t| y_{\mbox{&amp;lt;}t}) = \frac{exp(\color{#d192ba}{h_t^T}\color{#88bd33}{e_{y_t}}\color{black})}{\sum\limits_{w\in V}exp(\color{#d192ba}{h_t^T}\color{#88bd33}{e_{w}}\color{black})}.
+$$&lt;/p&gt;
+&lt;p&gt;点积作为两个向量&lt;strong&gt;相似度&lt;/strong&gt;的一种度量方式，如果输出词的词嵌入$\color{#88bd33}e_{y_t}$与上下文的向量表示$\color{#d192ba}h_t$的点积越大，即相似度越大，则对应的条件概率也越大。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;训练与交叉熵损失&#34;&gt;训练与交叉熵损失&lt;/h3&gt;
+&lt;p&gt;令$y_1, \dots, y_n$表示需训练得到的序列，在时间步$t$上，模型需要预测概率分布$p^{(t)} = p(\ast|y_1, \dots, y_{t-1})$。假设该时间步的目标分布(标签)是$p^{\ast}=\mbox{one-hot}(y_t)$,即我们希望给正确的token$y_t$赋予概率值1，其余为0。&lt;/p&gt;
+&lt;p&gt;标准的损失函数为交叉熵损失。目标概率分布$p^*$与预测分布$p$之间的损失为：
+$$
+Loss(p^{\ast}, p^{})= - p^{\ast} \log(p) = -\sum\limits_{i=1}^{|V|}p_i^{\ast} \log(p_i).
+$$
+由于$p^{\ast}$中只有一个元素$p_i^{\ast}$不为0，因此我们可以将上式化简：
+$$
+Loss(p^{\ast}, p) = -\log(p_{y_t})=-\log(p(y_t| y_{\mbox{&amp;lt;}t})).
+$$&lt;/p&gt;
+&lt;p&gt;上述损失函数最小化等价于在每个时间步，使模型预测出正确的token的概率最大化。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171954.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;对于整个序列，损失函数将为$-\sum\limits_{t=1}^n\log(p(y_t| y_{\mbox{&amp;lt;}t}))$。如下以RNN网络为例，展示了训练过程：&lt;/p&gt;
+&lt;video width=&#34;70%&#34; height=&#34;auto&#34; loop=&#34;&#34; autoplay=&#34;&#34; muted=&#34;&#34; style=&#34;margin-left: 150px;&#34;&gt;
+             &lt;source src=&#34;https://lena-voita.github.io/resources/lectures/lang_models/neural/rnn_lm_training_with_target.mp4&#34;&gt;
+         &lt;/video&gt;
+​		 
+&lt;p&gt;&lt;strong&gt;交叉熵与KL散度：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当目标分布为独热向量$p^{\ast}=\mbox{one-hot}(y_t)$时，交叉熵损失为$Loss(p^{\ast}, p^{})= -\sum\limits_{i=1}^{|V|}p_i^{\ast} \log(p_i)$,等价于Kullback-Leibler divergence $D_{KL}(p^{\ast}|| p^{})$。&lt;/p&gt;
+&lt;p&gt;因此，标准的NN-LM优化问题可以被看作是最小化模型预测分布$p$和经验目标分布$p^{\ast}$之间的距离。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;模型-循环架构&#34;&gt;模型： 循环架构&lt;/h3&gt;
+&lt;p&gt;该小节将介绍用于语言模型的RNN模型。本小节的RNN单元可以使用任意RNN结构，如LSTM，Vanilla RNN, GRU等。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;单层 RNN&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172057.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;最简单的循环架构就是单层的循环神经网络。在每个时间步，当前的状态将包含之前tokens的信息，并且将其用于预测下一个token。在训练时，将训练样本传给网络。在推断时，模型将生成一个token。以上步骤直到网络生成&lt;code&gt;_eos_&lt;/code&gt;为止。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;多层 RNN&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172109.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;模型卷积&#34;&gt;模型：卷积&lt;/h3&gt;
+&lt;p&gt;对比文本分类中的&lt;a href=&#34;https://derooce.github.io/posts/text-classification-notes/#%E5%B0%86%E5%8D%B7%E7%A7%AF%E7%94%A8%E4%BA%8E%E6%96%87%E6%9C%AC%E7%9A%84%E5%8E%9F%E7%90%86&#34;&gt;将卷积用于文本的原理&lt;/a&gt;,在语言模型中的CNN将有些不同。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172208.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;当设计CNN语言模型时，我们需要记住如下几点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;防止之前上下文的信息从将来的tokens中溜走
+&lt;ol&gt;
+&lt;li&gt;为了预测一个token，一个从左到右的语言模型必须使用之前的tokens，因此我们需要&lt;strong&gt;确保CNN只能看到之前上下文的tokens&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;在最初预测token时，可能之前的上下文长度不够，此时可以添加一些paddings,但是记住不能使用后续tokens&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;不要移除位置信息
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;与文本分类不同，位置信息对语言模型非常重要&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;因此，在CNN语言模型中&lt;strong&gt;不要使用池化操作&lt;/strong&gt;（丢失位置信息）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;如果需要堆叠很多层，不要忘记使用残差连接(residual connections)
+&lt;ol&gt;
+&lt;li&gt;如果堆叠太多层，则深层的网络将会很难学习&lt;/li&gt;
+&lt;li&gt;为了避免上述问题，可以使用&lt;a href=&#34;%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84#%E6%AE%8B%E5%B7%AE%E8%BF%9E%E6%8E%A5%E4%B8%8E%E9%AB%98%E9%80%9F%E8%BF%9E%E6%8E%A5&#34;&gt;残差连接与高速连接&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;strong&gt;感受野&lt;/strong&gt;(Receptive field): 有了许多层，感受野范围可以很广&lt;/p&gt;
+&lt;p&gt;当不使用&lt;a href=&#34;https://derooce.github.io/posts/text-classification-notes/#%E6%B1%A0%E5%8C%96%E6%93%8D%E4%BD%9C&#34;&gt;全局池化操作&lt;/a&gt;的CNN模型时，我们的模型可能无法避免地使用一个固定大小的上下文窗口，而这正是N-gram模型的缺点，以及我们想极力避免的问题。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172319.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;然而，如果N-gram模型的上下文大小通常为1-4,那么CNN模型的上下文大小却可以非常大。在上图中，我们只是用了3层的卷积层，以及过滤器大小为3，但网络却可以接受7个tokens组成的上下文窗口的信息。如果我们继续堆叠更多层，那么我们将可以获得一个非常大的上下文长度。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;strong&gt;残差连接&lt;/strong&gt;： 使得训练深层网络更容易&lt;/p&gt;
+&lt;p&gt;为了处理更长的上下文，我们需要更深的网络。然而不幸地是，当堆叠许多网络层后，我们可能面临深层网络的梯度从顶端网络层很难反向传播到底端网络层。为了避免这个问题，我们可以使用残差连接或者更复杂的变种&lt;strong&gt;高速连接&lt;/strong&gt;(highway connections)。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172337.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;残差连接非常简单：相对于一般的深层网络，添加了一个输入层到输出层的连接。而高速连接的动机相同，但使用了一个门控来控制输入、输出的和，而不是简单地使用累加和。这与LSTM使用不同的门控控制学习的信息相似。&lt;/p&gt;
+&lt;p&gt;下图是带有残差连接的CNN模型图例。加入残差连接后，即使网络层数很深，也可以很容易地训练。此外，深层的网络也给模型带来一个非常可观的感受野。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172347.png&#34; style=&#34;zoom:35%;&#34; /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;序列生成策略&#34;&gt;序列生成策略&lt;/h2&gt;
+&lt;h3 id=&#34;原理-2&#34;&gt;原理&lt;/h3&gt;
+&lt;p&gt;为了通过语言模型生成一段文本，我们需要从模型预测得到的概率分布中对token抽样。&lt;/p&gt;
+&lt;video width=&#34;70%&#34; height=&#34;auto&#34; loop=&#34;&#34; autoplay=&#34;&#34; muted=&#34;&#34; style=&#34;margin-left: 20px;&#34;&gt;
+      &lt;source src=&#34;https://lena-voita.github.io/resources/lectures/lang_models/general/generation_example.mp4&#34;&gt;
+    &lt;/video&gt;
+&lt;p&gt;&lt;strong&gt;连贯性和多样性&lt;/strong&gt;(Coherence and Diversity)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;连贯性Coherent: 生成的文本需要讲得通&lt;/li&gt;
+&lt;li&gt;多样性Diverse: 模型应该能够生成各种各样的句子&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;标准抽样&#34;&gt;标准抽样&lt;/h3&gt;
+&lt;p&gt;生成序列的最标准方法是直接使用模型预测的分布，而不做任何修改。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;带温度取样temperature&#34;&gt;带温度取样（temperature）&lt;/h3&gt;
+&lt;p&gt;一种非常流行的修改语言模型生成行为的的方法是&lt;strong&gt;更改softmax温度&lt;/strong&gt;。在使用最终的softmax函数之前，softmax函数的输入先除以一个温度值$\tau$。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172422.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;形式上，softmax的计算发生如下改变：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172434.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意到，采样过程仍然是标准抽样的：唯一不同的是我们计算概率的方式。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;实验中，先采取温度范围为$[0.2, 2]$取样。当$\tau=2$时，产生的文本具有很好的多样性，但大多数都没有什么意义。如果换个方向降低温度，例如$\tau=0.2$，此时发现产生的文本虽然更能说的通，但是却大大降低了多样性。为了总结这个发现，我们可以使用温度$\tau$来控制生成文本的连贯性和多样性：
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172446.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;top-k采样选择前k个概率最高的tokens&#34;&gt;Top-K采样：选择前K个概率最高的tokens&lt;/h3&gt;
+&lt;p&gt;调整温度非常棘手：如果温度设置太低，那么所有的token的概率都会很低（相对而言，即概率值之间相差较大，大的概率很大，小的概率可能接近0）；如果温度太高，则大量的token都将有很高的概率（相对而言，即每个概率值都差不多）。&lt;/p&gt;
+&lt;p&gt;一种简答的启发式解决方法是总是从概率值最大的K个tokens中取样。在此情况下，模型虽然有K种选择，但是那些最不可能的token将不会被使用到。&lt;/p&gt;
+&lt;p&gt;然而固定的$K$不总是好的。虽然通常top-K采样比单独使用softmax + temperature的效果好，但固定的K值肯定不是最佳方案。例如下图，&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172507.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;正如上图所示，当$K$值固定时，采样前$K$个token，其中可能包含一些概率值非常小的token(右图所示)。此外，当$K$值固定时，概率大的$K$个token可能对应的含义完全不同（例如左图所示，red,white等完全不同的颜色）。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;top-paka-nucleus采样概率质量的前p&#34;&gt;Top-p%(aka Nucleus)采样：概率质量的前p%&lt;/h3&gt;
+&lt;p&gt;一个更合理的策略是不考虑概率值top-K的tokens，而是考虑概率质量和top-p%的tokens,这个方法称为Nucleus抽样。使用Top-p%采样，网络可以基于概率分布的性质，动态地选择tokens的数量。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172519.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;评估语言模型&#34;&gt;评估语言模型&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;TL;DR : 当&amp;quot;阅读&amp;quot;一段新的文本时，语言模型会有多”惊讶“？&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;正如在&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#%E8%AF%8D%E5%B5%8C%E5%85%A5%E8%A1%A8%E7%A4%BA%E7%9A%84%E8%AF%84%E4%BC%B0&#34;&gt;词嵌入表示的评估&lt;/a&gt;中所提的，有两种评估语言模型的方法——&lt;strong&gt;内部任务评价&lt;/strong&gt;（&lt;em&gt;Intrinsic&lt;/em&gt; Evaluation）和&lt;strong&gt;外部任务评价&lt;/strong&gt;（extrinsic evaluations）。这里仅讨论内部任务评价方法。&lt;/p&gt;
+&lt;p&gt;类似于物理世界中的好模型必须与现实世界很好地吻合，好的语言模型也必须与真实文本很好地吻合。这是评价方法的主要思想：如果我们输入给模型的文本与模型“期待”得到的文本是接近的，那么这就是个好模型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172614.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;交叉熵与困惑度&#34;&gt;交叉熵与困惑度&lt;/h3&gt;
+&lt;p&gt;我们应该如何评估一段文本是否正是模型所期待的呢？形式上，一个模型需要给真实文本赋予高概率，而不太可能出现的文本赋予低概率。&lt;/p&gt;
+&lt;p&gt;假设我们有一段文本$y_{1:M}= (y_1, y_2, \dots, y_M)$。语言模型赋予这段文本的概率表征了模型与文本“一致”的程度，即语言模型根据给定的上下文预测即将出现的tokens的好坏：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172623.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这是一个对数似然函数,但与交叉熵损失函数不同，其没有负号。此外，注意到在训练阶段损失函数中，对数函数的底数取的是$e$，这更容易计算；而在评估阶段的对数函数中，底数取的是$2$。&lt;/p&gt;
+&lt;p&gt;除了交叉熵函数，更常见的评估方式是交叉熵函数的变形——&lt;strong&gt;困惑度&lt;/strong&gt;(perplexity):
+$$
+Perplexity (y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})}.
+$$&lt;/p&gt;
+&lt;p&gt;一个号的模型应该有更高的对数似然函数值，以及更低的困惑度。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;最好的困惑度为$1$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;假设我们的模型是完美的，每次给正确的tokens的预测概率都是$1$,则此时对数概率值即为$0$,因而困惑度为$1$。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;最坏的困惑度为$|V|$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在最糟糕的情况中，语言模型对文本一无所知，因此对文本中的每个token都赋予相同的概率值$\frac{1}{|V|}$,于是：&lt;/p&gt;
+&lt;div&gt;
+    $$
+    \begin{aligned}
+Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &amp;=
+            2^{-\frac{1}{M}\sum\limits_{t=1}^M\log_2 p(y_t|y_{1:t-1})}\\
+			&amp;=
+            2^{-\frac{1}{M}\cdot M \cdot \log_2\frac{1}{|V|}}=2^{\log_2 |V|} =|V|.
+\end{aligned}
+    $$
+&lt;/div&gt;
+&lt;p&gt;因此，模型的困惑度取值应在$[1,|V|]$之间。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;实用技巧&#34;&gt;实用技巧&lt;/h2&gt;
+&lt;h3 id=&#34;权重绑定weight-tying-aka-参数共享-parameter-sharing&#34;&gt;权重绑定(Weight tying, aka 参数共享 Parameter Sharing)&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172715.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;在实现语言模型时，我们需要定义两个嵌入矩阵——输入词嵌入矩阵和输出词嵌入矩阵。输入嵌入矩阵是将上下文词输入到网络中时所使用的词嵌入；输出嵌入矩阵是在softmax操作之前用来获取预测概率的输出矩阵。&lt;/p&gt;
+&lt;p&gt;通常情况下。这两个矩阵是不相同的，即在网络中的参数是不同的，因为网络并不知道这两个嵌入矩阵是相关的。为了使用同一个矩阵，整个框架可以采用权重绑定，即对不同的网络模块使用相同的参数。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;观点&lt;/strong&gt;: 通常，模型参数的很大一部分来自词嵌入，因为词嵌入矩阵很大！通过权重绑定，可以显著减小模型尺寸。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;权重绑定的作用类似于正则化，后者迫使模型不仅给目标token赋予高预测概率，而且还给嵌入空间中与目标token接近的tokens也赋予高概率。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;研究思考&#34;&gt;研究思考&lt;/h2&gt;
+&lt;p&gt;在&lt;a href=&#34;https://derooce.github.io/posts/text-classification-notes/#%E4%BD%BF%E7%94%A8cnn%E5%81%9A%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB&#34;&gt;使用CNN做文本分类&lt;/a&gt;中，我们了解到CNN的过滤器在经训练后，可以捕捉到对文本情感分类具有很好解释性以及信息性的“暗示”。而&lt;strong&gt;CNN作为语言模型时，将学习到手头任务中有用的模式&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;reference&#34;&gt;Reference&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://lena-voita.github.io/nlp_course/language_modeling.html&#34;&gt;NLP course: Yandex&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+                
+                
+                
+                
+                
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/categories/nlp/">NLP</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/categories/language-modeling/">Language Modeling</category>
+                                
+                            
+                        
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/tags/nlp/">NLP</category>
+                                
+                            
+                        
+                    
+                
+            </item>
+        
+            <item>
+                <title>NLP Notes series: Text Classification</title>
+                <link>https://derooce.github.io/posts/text-classification-notes/</link>
+                <guid isPermaLink="true">https://derooce.github.io/posts/text-classification-notes/</guid>
+                <pubDate>Sun, 14 Mar 2021 12:38:29 &#43;0800</pubDate>
+                
+                    <author>vanace.jc@gmail.com (DEROOCE)</author>
+                
+                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
+                
+                    <description>&lt;h1 id=&#34;文本分类&#34;&gt;文本分类&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;文本分类是一个非常流行的任务。例如在你在使用邮件系统时，就享受到了文本分类器的便利：正常邮件与垃圾邮件分类。其他应用还包括文档分类(document classification)、评论分类(review classification)等。&lt;/p&gt;
+
+    &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css&#34;&gt;
+    
+    &lt;div class=&#34;swiper-container&#34;&gt;
+        &lt;div class=&#34;swiper-wrapper&#34;&gt;
+            
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151716.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151738.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151755.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151811.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+        &lt;div class=&#34;swiper-pagination&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js&#34;&gt;&lt;/script&gt;
+     
+     &lt;script&gt;
+        var swiper = new Swiper(&#39;.swiper-container&#39;, {
+            pagination: &#39;.swiper-pagination&#39;,
+            paginationClickable: true,
+        });
+        &lt;/script&gt;
+
+
+&lt;p&gt;&lt;span class=&#34;caption&#34;&gt;◎ 文本分类任务&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;文本分类通常不是作为一个单独的任务，而是一个更大的任务流程中的一部分。例如，语音助手对你的话语进行分类，以了解你想要完成的动作（如设置闹钟、叫一个出租车或者就是与语音助手聊天），根据语音助手中的分类器的决策，将这些信息传递给不同模型来完成相应动作。另一个例子是网络搜索引擎：它可以使用分类器来识别查询语言来预测你查询的类型，例如信息、导航、交易等。&lt;/p&gt;
+&lt;p&gt;因为大多数的分类数据集都假设一个数据只有一个对应正确标签，即单标签分类(single-label classification)。此外，也存在多标签分类问题(multi-label classification)。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;分类数据集&#34;&gt;分类数据集&lt;/h2&gt;
+&lt;p&gt;用于文本分类的数据集在大小（数据集大小和示例大小）、分类内容和标签数量方面都存在很大差异。下图显示了一些文本分类数据集的统计差异：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;&lt;strong&gt;数据集&lt;/strong&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;&lt;strong&gt;类型&lt;/strong&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;strong&gt;标签数量&lt;/strong&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;strong&gt;（训练集/测试集)大小&lt;/strong&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;每个token的平均长度&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://nlp.stanford.edu/sentiment/index.html&#34;&gt;SST&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;情感&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;5 or 2&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;8.5k / 1.1k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;19&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://ai.stanford.edu/~amaas/data/sentiment/&#34;&gt;IMDB 影评&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;情感&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;2&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;25k / 25k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;271&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/yelp-dataset/yelp-dataset&#34;&gt;Yelp 评价&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;情感&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;5 or 2&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;650k / 50k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;179&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/bittlingmayer/amazonreviews&#34;&gt;Amazon 评价&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;情感&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;5 or 2&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;3m / 650k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;79&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://cogcomp.seas.upenn.edu/Data/QA/QC/&#34;&gt;TREC&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;问题&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;6&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;5.5k / 0.5k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;10&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/soumikrakshit/yahoo-answers-dataset&#34;&gt;Yahoo! Answers&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;问题&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;10&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;1.4m / 60k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;131&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;http://groups.di.unipi.it/~gulli/AG_corpus_of_news_articles.html&#34;&gt;AG&#39;s 新闻&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;主题&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;4&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;120k / 7.6k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;44&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;http://www.sogou.com/labs/resource/cs.php&#34;&gt;Sogou 新闻&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;主题&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;6&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;54k / 6k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;737&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://wiki.dbpedia.org/services-resources/dbpedia-data-set-2014&#34;&gt;DBPedia&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;主题&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;14&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;560k / 70k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;67&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;其中最流行的数据集是情感分类(sentiment classification)数据集。这样的数据由电影评论、景点评论、饭店评论、产品评论等组成。此外，也存在一些问题分类数据集和主题分类数据集。&lt;/p&gt;
+&lt;p&gt;为了更好理解典型的分类任务，我们以SST数据集的描述为例。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;SST: 一个情感分类数据集，由电影评论组成
+&lt;ul&gt;
+&lt;li&gt;该数据集由句子的分析树组成，不仅是整个句子，较小的短语也都有对应的情感标签。&lt;/li&gt;
+&lt;li&gt;一个有5个标签：1(非常消极),2(消极),3(中性),4(积极),5(非常积极)&lt;/li&gt;
+&lt;li&gt;SST存在一个二分类的变种数据集——SST-2，其中标签只有积极和消极两种&lt;/li&gt;
+&lt;li&gt;SST一共包含215,154个短语，这些短语将组成各个影评&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Makes even the claustrophobic on-board quarters seem fun.&lt;/em&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314152841.png&#34; style=&#34;zoom:23%;&#34; /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;总览&#34;&gt;总览&lt;/h2&gt;
+&lt;p&gt;假设我们有一个带有真实标签(ground-truth)的文档集合。一个分类器的输入是一个文档$x=(x_1, \dots, x_n)$,其中$(x_1, \dots, x_n)$是tokens,输出是标签$y\in 1\dots k$.通常。一个分类器会估计所有类别的概率分布，并且以概率值最高的类别作为预测输出。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;获取特征表示并分类&#34;&gt;获取特征表示并分类&lt;/h3&gt;
+&lt;p&gt;文本分类器有如下结构：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;特征提取器 feature extractor&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;一个特征提取器要么被手动定义（例如传统的机器学习方法），要么可以自动学习得到（例如基于神经网络的方法）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;分类器&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;给定文本的特征表示，一个分类器需要给标签赋予概率值。最常见的方法是通过&lt;strong&gt;逻辑回归&lt;/strong&gt;获得概率值。当然也存在其他变形，例如朴素贝叶斯分类器或者SVM。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153022.png&#34; style=&#34;zoom:40%;&#34; /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;生成模型和判别模型&#34;&gt;生成模型和判别模型&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153041.png&#34; alt=&#34;&#34; title=&#34;生成模型与判别模型区别&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;一个分类模型要么是生成模型(generative)要么是判别模型(discriminative)&lt;/strong&gt;。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;生成模型&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;生成模型学习数据的联合分布$p(x, y) = p(x|y)\cdot p(y)$。为了根据输入$x$获得一个预测，生成模型将以联合概率最高的类别作为预测：
+$$
+y = \arg \max\limits_{k}p(x|y=k)\cdot p(y=k)
+$$&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;判别模型&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;判别模型只对条件概率$p(y|x)$感兴趣，即它们只学习&lt;strong&gt;类别间的边界&lt;/strong&gt;。为了根据给定输入$x$进行预测，判别模型将以条件概率最大的类别作为预测：
+$$
+y = \arg \max\limits_{k}p(y=k|x)
+$$&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;文本分类的传统方法&#34;&gt;文本分类的传统方法&lt;/h2&gt;
+&lt;h3 id=&#34;朴素贝叶斯分类器naive-bayes-classifier&#34;&gt;朴素贝叶斯分类器Naive-Bayes-Classifier&lt;/h3&gt;
+&lt;h4 id=&#34;原理&#34;&gt;原理&lt;/h4&gt;
+&lt;p&gt;朴素贝叶斯方法的高层次思想是：根据贝叶斯定理，给出类别的条件概率另一形式，并且最终归结为计算$P(x|y=k)\cdot P(y=k)$&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153140.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;由于朴素贝叶斯方法通过对数据的联合分布建模，因此朴素贝叶斯方法是一个&lt;strong&gt;生成模型&lt;/strong&gt;，
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153149.png&#34; alt=&#34;&#34; title=&#34;朴素贝叶斯模型的思想&#34;&gt;&lt;/p&gt;
+&lt;p&gt;我们对使用到的术语进行如下描述：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;先验概率$P(y=k)$: 在浏览观测数据之前（即在得到$x$之前），经验式的类别概率&lt;/li&gt;
+&lt;li&gt;后验概率$P(y=k|x)$(posterior): 在浏览观测数据之后（即在得知具体的$x$值后）的类别概率&lt;/li&gt;
+&lt;li&gt;联合概率$P(x,y)$: 数据的联合概率，即样本$x$和标签$y$&lt;/li&gt;
+&lt;li&gt;最大后验估计(Maximum a posteriori estimate, MAP): 选取后验概率最高的类别作为估计&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;如何定义pxyk和pyk&#34;&gt;如何定义$P(x|y=k)$和$P(y=k)$&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;$P(y=k)$: 通过计算标签出现的频数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;$P(y=k)$非常容易计算：我们只需要计算标签$k$在文档中出现的频率(这个是最大似然估计MLE的结果)，即：
+$$
+P(y=k)=\frac{N(y=k)}{\sum\limits_{i}N(y=i)},
+$$&lt;/p&gt;
+&lt;p&gt;其中$N(y=k)$是文档中标签为$k$的样本数。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$P(x|y=k)$: 使用“朴素”假设，再计数、&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;首先，我们假设文档$x$由一组特征表示，例如一组单词$(x_1, \dots, x_n)$，则有：
+$$
+P(x| y=k)=P(x_1, \dots, x_n|y).
+$$&lt;/p&gt;
+&lt;p&gt;朴素贝叶斯假设为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;词袋假设(Bag of words assumption): 单词的顺序不重要&lt;/li&gt;
+&lt;li&gt;条件独立假设： 给定类别，特征(单词)之间是相互独立的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;直觉上，我们假设标签为$k$的词在文档中出现的概率不取决于其所在的上下文,也不取决于单词顺序和其他的单词。例如，我们可以说&lt;strong&gt;awesome,brilliant,great&lt;/strong&gt;更容易出现在积极情感的文档中；&lt;strong&gt;awful,boring,bad&lt;/strong&gt;更容易出现在消极情感的文档中，&lt;strong&gt;但是我们却不知道这些词会怎么影响到其他的单词&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;有了这些朴素假设，我们可以得到$P(x|y=k)$的计算式：
+$$
+P(x| y=k)=P(x_1, \dots, x_n|y)=\prod\limits_{t=1}^nP(x_t|y=k).
+$$&lt;/p&gt;
+&lt;p&gt;概率$P(x_i|y=k)$由单词$x_i$在$k$类文档中的所有单词中出现频数为估计：
+$$
+P(x_i|y=k)=\frac{N(x_i, y=k)}{\sum\limits_{t=1}^{|V|}N(x_t, y=k)},
+$$
+其中如果$N(x_i, y=k)=0$，即在训练中，在$k$类文档中并没有出现$x_i$，那么整个$P(x|y=k)$的值都将会归零，这显然不是我们想要的。
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153331.png&#34; alt=&#34;&#34; title=&#34;部分词未在文档中出现时&#34;&gt;
+例如， 在训练集的积极样本中，**一些罕见的词,如pterodactyl或abracadabra没有出现，但这并不代表这些词不可能包含在一个积极情感的文档中**。&lt;/p&gt;
+&lt;p&gt;为了避免这个情况，我们可以使用到一个简单的技巧：对所有词的计数结果都加上一个很小的平滑值$\delta$：
+$$
+P(x_i|y=k)=\frac{\color{red}{\delta} +\color{black} N(x_i, y=k)
+}{\sum\limits_{t=1}^{|V|}(\color{red}{\delta} +\color{black}N(x_t, y=k))} =
+\frac{\color{red}{\delta} +\color{black} N(x_i, y=k)
+}{\color{red}{\delta\cdot |V|}\color{black}  + \sum\limits_{t=1}^{|V|}\color{black}N(x_t, y=k)}
+,
+$$&lt;/p&gt;
+
+&lt;div class=&#34;notice notice-tip&#34; &gt;
+    &lt;div class=&#34;notice-title&#34;&gt;&lt;svg xmlns=&#34;http://www.w3.org/2000/svg&#34; class=&#34;icon notice-icon&#34; viewBox=&#34;0 0 512 512&#34;&gt;&lt;path d=&#34;M504 256a248 248 0 11-496 0 248 248 0 01496 0zM227 387l184-184c7-6 7-16 0-22l-22-23c-7-6-17-6-23 0L216 308l-70-70c-6-6-16-6-23 0l-22 23c-7 6-7 16 0 22l104 104c6 7 16 7 22 0z&#34;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;p&gt;其中$\delta$值可以使用&lt;strong&gt;交叉验证&lt;/strong&gt;获取。&lt;/p &gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;当$\delta=1$时，上式平滑方式就是&lt;strong&gt;拉普拉斯平滑&lt;/strong&gt;(Laplace smoothing)。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;进行预测&#34;&gt;进行预测&lt;/h4&gt;
+&lt;p&gt;在上述内容中提到，朴素贝叶斯（或者更广泛一点：生成模型）是基于数据和类别间的联合分布做出预测：
+$$
+y^{\ast} = \arg \max\limits_{k}P(x, y=k) = \arg \max\limits_{k} P(y=k)\cdot P(x|y=k).
+$$&lt;/p&gt;
+&lt;p&gt;直觉上，朴素贝叶斯期待一些词能够成为类别指示器(class indicators)。例如，在情感分类中，如果给定文本类别是积极情感，则像&lt;strong&gt;awesome&lt;/strong&gt;,
+&lt;strong&gt;brilliant&lt;/strong&gt;, &lt;strong&gt;great&lt;/strong&gt;这一类词通常会比在消极文本中有更高的概率，即$P( \mathrm{awesome} \mid {\color{#88bd33}{y=+}}) \gg P( awesome \mid {\color{red}{y=-}})$。
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153905.png&#34; style=&#34;zoom:30%;&#34; /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;额外笔记&#34;&gt;额外笔记&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;实践技巧&lt;/strong&gt;： 使用&lt;strong&gt;对数概率和&lt;/strong&gt;而不是概率乘积。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Sum of Log-Probabilities Instead of Product of Probabilities.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;朴素贝叶斯用于分类的主要表达式是概率乘积：
+$$
+P(x, y=k)=P(y=k)\cdot P(x_1, \dots, x_n|y)=P(y=k)\cdot \prod\limits_{t=1}^nP(x_t|y=k).
+$$&lt;/p&gt;
+&lt;p&gt;然而，许多概率的乘积可能会导致数值不稳定，因此，通常我们不使用$P(x,y)$，而是使用$\log P(x,y)$:
+$$
+\log P(x, y=k)=\log P(y=k) + \sum\limits_{t=1}^n\log P(x_t|y=k).
+$$
+由于我们的目的是求$\arg\max$，因此将$P(x,y)$替换我$\log P(x,y)$并不会影响分类结果。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通用框架&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在朴素贝叶斯中，我们的特征是单词，以及特征表示为词袋(Bag-of-Words, BOW)表示——单词的独热编码的累加和。事实上，为了估计$P(x,y)$,我们只需要计算每个单词在文档中出现的频数即可。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154125.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;特征设计&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在标准的设计中，我们将单词作为特征输入。然而，我们也可以使用其他类型的特征，例如网站地址(URL)、用户ID等。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;最大熵分类器-aka-逻辑回归&#34;&gt;最大熵分类器-aka-逻辑回归&lt;/h3&gt;
+&lt;h4 id=&#34;原理-1&#34;&gt;原理&lt;/h4&gt;
+&lt;p&gt;与朴素贝叶斯算法不同，MaxEnt分类器(Maximum Entropy)是一个&lt;strong&gt;判别模型&lt;/strong&gt;，即我们的关注点在于$P(y=k|x)$而不是联合分布$P(x,y)$。同时，在MaxEnt模型中，我们需要&lt;strong&gt;学习如何使用特征&lt;/strong&gt;，而朴素贝叶斯是需要我们&lt;strong&gt;自定义使用特征&lt;/strong&gt;的方法。&lt;/p&gt;
+
+&lt;div class=&#34;notice notice-note&#34; &gt;
+    &lt;div class=&#34;notice-title&#34;&gt;&lt;svg xmlns=&#34;http://www.w3.org/2000/svg&#34; class=&#34;icon notice-icon&#34; viewBox=&#34;0 0 512 512&#34;&gt;&lt;path d=&#34;M504 256a248 248 0 11-496 0 248 248 0 01496 0zm-248 50a46 46 0 100 92 46 46 0 000-92zm-44-165l8 136c0 6 5 11 12 11h48c7 0 12-5 12-11l8-136c0-7-5-13-12-13h-64c-7 0-12 6-12 13z&#34;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;p&gt;MaxEnt分类器同样需要我们手动定义特征，但是自由度更高：特征不需要一定是分类类型(categorical),而&lt;strong&gt;在朴素贝叶斯中，数据必须为分类类型&lt;/strong&gt;。我们可以使用BOW表示或者使用一些更有意思的特征表示方法。&lt;/p &gt;&lt;/div&gt;
+
+&lt;p&gt;一个寻常的分类流程为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;获取输入文本的特征表示: $\color{#7aab00}{h}\color{black}=(\color{#7aab00}{f_1}\color{black},\color{#7aab00}{f_2}\color{black}, \dots,           \color{#7aab00}{f_n}\color{black}{)}$&lt;/li&gt;
+&lt;li&gt;获取每个类别的特征权重向量： $w^{(i)}=(w_1^{(i)}, \dots, w_n^{(i)})$， &lt;strong&gt;一个类别对应一个权重向量&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;对每个类别，将特征进行加权，即将特征表示$\color{#7aab00}{h}$与特征权重向量$w^{(k)}$做点积: $w^{(k)}\color{#7aab00}{h}\color{black} =w_1^{(k)}\cdot\color{#7aab00}{f_1}\color{black}+\dots+w_n^{(k)}\cdot\color{#7aab00}{f_n}\color{black}{, \ \ \ \ \ k=1, \dots, K.}$
+&lt;ul&gt;
+&lt;li&gt;为了在上述累加和中加入偏置项，我们定义一个值为1的特征$\color{#7aab00}{f_0}=1$,则有$w^{(k)}\color{#7aab00}{h}\color{black} = \color{red}{w_0^{(k)}}\color{black} + w_1^{(k)}\cdot\color{#7aab00}{f_1}\color{black}+\dots+ w_n^{(k)}\cdot\color{#7aab00}{f_{n}}\color{black}{, \ \ \ \ \ k=1, \dots, K.}$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;使用softmax函数获得每个类别的概率：
+$$
+P(class=k|\color{#7aab00}{h}\color{black})=
+\frac{\exp(w^{(k)}\color{#7aab00}{h}\color{black})}{\sum\limits_{i=1}^K
+\exp(w^{(i)}\color{#7aab00}{h}\color{black})}.
+$$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Softmax将在上一步中做点积获得的$K$个值归一化为输出类上的概率分布。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154245.png&#34; alt=&#34;&#34; title=&#34;每个类别的权重向量$w_k$与文本的特征表示$h$做点积&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;训练极大似然估计&#34;&gt;训练：极大似然估计&lt;/h4&gt;
+&lt;p&gt;给定训练样本$x^1, \dots, x^N$以及对应的标签$y^1, \dots, y^N$,其中$y^i\in{1, \dots, K}$。我们需要优化的是每个类别对应的特征选择向量$w^{(k)}, k=1..K$。通过在训练集数据中最大化如下概率，获得$w^{(k)}$的最优解：
+$$
+w^{\ast}=\arg \max\limits_{w}\sum\limits_{i=1}^N\log P(y=y^i|x^i).
+$$
+换句话说，我们选择参数使得数据${x^i,y^i}_{i=1}^N$出现的概率最大。因此，这个训练目标也称为参数的**极大似然估计**(maximum likelihood estimate, MLE)。&lt;/p&gt;
+&lt;p&gt;为了寻找使得数据的对数似然函数值最大的参数，我们使用梯度下降算法进行优化：通过多次对数据迭代更新，逐步改进权重向量$w$。最终，给定样本$x^i$，获得正确标签$y^i$的概率值最大。&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;&lt;u&gt;等价于最小化交叉熵&lt;/u&gt;&lt;/b&gt;: 最大化数据的对数似然，其实等价于&lt;strong&gt;最小化目标标签的概率分布&lt;/strong&gt; $p^{\ast} = (0, \dots, 0, 1, 0, \dots)$(1表示目标标签，0表示其他标签) &lt;strong&gt;与模型预测的标签分布&lt;/strong&gt; $p=(p_1, \dots, p_K), p_i=p(i|x)$&lt;strong&gt;之间的交叉熵函数&lt;/strong&gt;：&lt;/p&gt;
+&lt;div&gt;
+    $$
+    Loss(p^{\ast}, p^{})= - p^{\ast} \log(p) = -\sum\limits_{i=1}^{K}p_i^{\ast} \log(p_i).
+    $$
+&lt;/div&gt;
+&lt;p&gt;因为$p^{\ast}$中只有一个$p_i^{\ast}$不为0，即目标标签$k$为1，其余标签为0,我们可以将上式简化：&lt;/p&gt;
+&lt;div&gt;
+    $$
+    Loss(p^{\ast}, p) = -\log(p_{k})=-\log(p(k| x)).
+    $$
+&lt;/div&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154535.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+
+&lt;div class=&#34;notice notice-note&#34; &gt;
+    &lt;div class=&#34;notice-title&#34;&gt;&lt;svg xmlns=&#34;http://www.w3.org/2000/svg&#34; class=&#34;icon notice-icon&#34; viewBox=&#34;0 0 512 512&#34;&gt;&lt;path d=&#34;M504 256a248 248 0 11-496 0 248 248 0 01496 0zm-248 50a46 46 0 100 92 46 46 0 000-92zm-44-165l8 136c0 6 5 11 12 11h48c7 0 12-5 12-11l8-136c0-7-5-13-12-13h-64c-7 0-12 6-12 13z&#34;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;p&gt;这种等价性对于理解逻辑回归很重要：当使用神经网络的方法时，通常会采用最小化交叉熵损失的方法优化。&lt;strong&gt;不要忘记其实这也与最大化数据的对数似然是等价的&lt;/strong&gt;。&lt;/p &gt;&lt;/div&gt;
+
+&lt;hr&gt;
+&lt;h3 id=&#34;朴素贝叶斯-vs-逻辑回归&#34;&gt;朴素贝叶斯 vs 逻辑回归&lt;/h3&gt;
+&lt;p&gt;最后，对比两个方法的优缺点。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155544.png&#34; style=&#34;zoom:32%;&#34; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;简洁性：
+&lt;ul&gt;
+&lt;li&gt;两个方法都非常简单，而朴素贝叶斯要更加简单一点&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;可解释性：
+&lt;ul&gt;
+&lt;li&gt;两个方法都具有较好的解释性，可以清楚知道哪些特征(词)对文本的分类具有影响&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;训练速度：
+&lt;ul&gt;
+&lt;li&gt;朴素贝叶斯的训练速度非常快，只需要将训练数据前馈一次用于统计频数，即可获得预测&lt;/li&gt;
+&lt;li&gt;逻辑回归需要多次梯度下降更新才能收敛&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;独立性假设：
+&lt;ul&gt;
+&lt;li&gt;朴素贝叶斯是真的很“朴素”，因为它假设了给定类别，特征(词)之间是相互独立的&lt;/li&gt;
+&lt;li&gt;逻辑回归不需要这样的假设&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;文本表示: 手动 manual
+&lt;ul&gt;
+&lt;li&gt;两个方法都需要手动定义特征表示，在朴素贝叶斯中，通常使用BOW作为标准选择，但也可以自己设定&lt;/li&gt;
+&lt;li&gt;有时，一种定义特征的方法可能对于模型的解释性有帮助，然而却可能降低模型预测性能&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;使用svm做文本分类&#34;&gt;使用SVM做文本分类&lt;/h3&gt;
+&lt;p&gt;使用SVM做文本分类时，也需要手动定义特征。最基本也是最流行定义特征的方式是BOW和Bag-of-ngrams(n-grams是n个词组成的元组)。有了这些简单的特征，使用线性核函数的SVMs就比朴素贝叶斯的分类性能要更佳。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155621.png&#34; style=&#34;zoom:35%;&#34; /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;基于神经网络的文本分类&#34;&gt;基于神经网络的文本分类&lt;/h2&gt;
+&lt;h3 id=&#34;原理-2&#34;&gt;原理&lt;/h3&gt;
+&lt;p&gt;基于神经网络的文本分类的主要思想：通过使用神经网络，可以自动获得输入文本的特征表示。我们将输入tokens的嵌入表示传给神经网络，然后该网络会返回给我们输入文本的向量表示。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155656.png&#34; alt=&#34;&#34; title=&#34;传统分类方法与神经网络方法对比&#34;&gt;&lt;/p&gt;
+&lt;p&gt;当处理神经网络时，我们可以使用一种简单的方式考虑分类部分（即如何从文本的向量表示中获得类别的概率）。&lt;/p&gt;
+&lt;p&gt;文本的向量表示假设有$d$维，但最后我们只需要一个$K$维的向量来表示各个类别的概率。为了从一个$d$维向量中获得一个$K$维的向量，我们可以使用一个线性层。一旦我们有了$K$维向量，剩下只需要将该向量交给softmax函数，将该$K$维向量转换为各个类别的概率。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155730.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;分类部分：这是一个逻辑回归&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;如果仔细观察神经网络分类器，我们处理输入文本的向量表示的方式与&lt;a href=&#34;https://derooce.github.io/posts/text-classification-notes/#%E6%9C%80%E5%A4%A7%E7%86%B5%E5%88%86%E7%B1%BB%E5%99%A8-aka-%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92&#34;&gt;逻辑回归&lt;/a&gt;中的处理方式一致。我们根据每个类别的特征权重，对特征加权。而两者的唯一区别在于：&lt;strong&gt;特征的来源&lt;/strong&gt;；要么是手动定义的，要么通过网络获得。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155910.png&#34; alt=&#34;&#34; title=&#34;逻辑回归的分类步骤与神经网络的分类步骤对比&#34;&gt;&lt;/p&gt;
+&lt;p&gt;直觉：&lt;strong&gt;文本表示(text representation)向量 $h$ 指向类表示(Class representation)向量 $w$ 的方向&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155952.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;如果我们仔细观察最后的线性层，可以发现线性层权重矩阵的列元素即为向量$w_i$。这些向量可以被认为是&lt;strong&gt;类别的向量表示&lt;/strong&gt;。一个好的神经网络将学会以这样的方式表示输入文本：&lt;strong&gt;文本向量将指向相应类向量的方向&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;训练过程与交叉熵损失&#34;&gt;训练过程与交叉熵损失&lt;/h3&gt;
+&lt;p&gt;神经网络分类器经过训练来预测各个类别的概率分布。直觉上，在每一步中，我们都将模型分配给正确类别的概率最大化。&lt;/p&gt;
+&lt;p&gt;标准的损失函数为交叉熵损失。对于目标概率分布$p^{\ast} = (0, \dots, 0, 1, 0, \dots)$（1代表目标标签，0表示其他标签）和由模型预测获得的概率分布$p=(p_1, \dots, p_K), p_i=p(i|x)$,两者的交叉熵损失函数为：&lt;/p&gt;
+&lt;p&gt;$$
+Loss(p^{\ast}, p^{})= - p^{\ast} \log(p) = -\sum\limits_{i=1}^{K}p_i^{\ast} \log(p_i).
+$$&lt;/p&gt;
+&lt;p&gt;由于$p_i^{\ast}$中只有对应目标标签$k$的元素不为0 ，为1。因此，损失函数可以化简为$Loss(p^{\ast}, p) = -\log(p_{k})=-\log(p(k| x)).$&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160254.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;在训练中，我们通过对数据多次迭代更新，逐步改进模型的权重：我们对所有训练数据(或者批次训练数据)训练，并更新梯度。在每一步，我们将模型分配给正确类别的概率最大化。同时，我们也相等于最小化了错误类别的概率和：&lt;strong&gt;由于所有概率的总和为常数(1),通过增大其中一个概率，其他概率和就会随着减小&lt;/strong&gt;。&lt;/p&gt;
+&lt;video width=&#34;70%&#34; height=&#34;auto&#34; loop=&#34;&#34; autoplay=&#34;&#34; muted=&#34;&#34; style=&#34;margin-center: 20px;&#34; controls=&#34;&#34;&gt;
+         &lt;source src=&#34;https://lena-voita.github.io/resources/lectures/text_clf/neural/nn_clf_training.mp4&#34;&gt;
+     &lt;/video&gt;
+&lt;blockquote&gt;
+&lt;p&gt;回忆：最小化交叉熵损失函数等价于最大似然函数。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;基于网络的文本分类模型&#34;&gt;基于网络的文本分类模型&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;我们需要一个可以对不同长度的输入产生一个固定长度的向量。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在这个部分，我们将研究使用神经网络获取输入文本的向量表示的不同方法。注意到当输入文本可以有不同的长度，而文本的输出向量表示的大小是固定的，否则，网络将无法“工作”。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160338.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;我们从仅使用词嵌入的最简单方法开始（不在其顶层添加模型），然后我们再研究循环和卷积神经网络。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;基础嵌入袋boe和加权boe&#34;&gt;基础：嵌入袋(BOE)和加权BOE&lt;/h4&gt;
+&lt;p&gt;最简单的文本处理方法是仅使用单词嵌入，而不再其后增加任何神经网络。为了获得一段文本的向量表示，我们要么将所有的tokens的嵌入累加(Bag of Embeddings, BOE),或者使用这些嵌入的加权和(权重，可以是&lt;a href=&#34;https://zh.wikipedia.org/wiki/Tf-idf&#34;&gt;TF-IDF算法&lt;/a&gt;等)&lt;/p&gt;
+&lt;p&gt;嵌入袋(BOE)（&lt;strong&gt;最好搭配朴素贝叶斯&lt;/strong&gt;）应该是任何具有神经网络的模型的基准(Baseline)。如果最终效果没有基准好，那么就不值得使用神经网络模型，不过这种情况可能是因为我们没有足够多的数据。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160458.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;虽然有时嵌入袋(BOE)也被称为词袋(BOW)，但请注意这两个概念是非常不同的。BOE是多个嵌入表示的累加和，而BOW是多个独热编码向量的累加和。&lt;strong&gt;BOE相比BOW，具有更多语言的信息&lt;/strong&gt;。预训练的嵌入(例如Word2Vec,Glove)可以理解单词之间的相似性。例如，在BOE中，&lt;strong&gt;awesome,brilliant,great&lt;/strong&gt;由相似的词向量表示，而在BOW中却使用毫无关联的特征表示。&lt;/p&gt;
+&lt;p&gt;此外，为了使用多个嵌入的加权和，我们需要想出一种获取权重的方法。然而，这恰恰是我们想要通过使用神经网络避免的事情：&lt;strong&gt;我们不希望加入手动定义的特征，而是使用神经网络去学习有用的模式(pattern)&lt;/strong&gt;。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可以试试在BOE的基础上使用SVM算法。SVM与传统算法区分开的是核函数的选择：一般RBF核会更好。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;循环网络模型rnnlstmetc&#34;&gt;循环网络模型(RNN/LSTM/etc)&lt;/h4&gt;
+&lt;h5 id=&#34;原理-3&#34;&gt;原理&lt;/h5&gt;
+&lt;p&gt;循环神经网络是一种非常自然地处理文本的方法，与人类相似，通过一个一个单词地阅读句子并处理这些信息，并可望网络的每一步都将“记住”它以前阅读过的所有内容。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;RNN 单元&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在每个时间步上，一个RNN将接受一个新的输入向量（例如，token的嵌入）以及之前时间步RNN的隐藏状态（可望该隐藏状态可将之前所有的信息都编码进去）。通过使用这两个输入，RNN单元计算得到新的隐藏状态，并以此获得对应时间步的输出。这个新的隐藏状态包含着当前输入以及过去时间步输入的信息。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160534.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;RNN读取tokens组成的序列&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;RNN通过一个一个token的方式读取序列。在每个时间步上，RNN使用新读取token的嵌入和之前时间步的隐藏状态。&lt;/p&gt;
+&lt;video width=&#34;90%&#34; height=&#34;auto&#34; loop=&#34;&#34; autoplay=&#34;&#34; muted=&#34;&#34; style=&#34;margin-center: 20px;&#34; controls=&#34;&#34;&gt;
+             &lt;source src=&#34;https://lena-voita.github.io/resources/lectures/text_clf/neural/rnn/rnn_reads_text.mp4&#34;&gt;
+        &lt;/video&gt;
+&lt;blockquote&gt;
+&lt;p&gt;每个时间步上的RNN单元都是相同的。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;Vanilla RNN&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;最简单的RNN架构-Vanilla RNN,将之前时间步的隐藏状态$h_{t-1}$和当前时间步的输入数据$x_t$进行**线性变换**(矩阵乘积)，然后再使用一个非线性激活函数转换(通常选择$\mathrm{tanh}$函数):&lt;/p&gt;
+&lt;p&gt;$$
+h_t = \tanh(h_{t-1}W_h + x_tW_t).
+$$&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160559.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;然而Vanilla RNN容易遭受梯度消失和梯度爆炸的问题。为了减缓这个问题，一些更复杂的循环网络单元被提出(如LSTM、GRU等)。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h5 id=&#34;用于文本分类的循环神经网络&#34;&gt;用于文本分类的循环神经网络&lt;/h5&gt;
+&lt;p&gt;本小节将介绍循环网络是如何应用在文本分类任务中的。本节所有的循环网络通指&amp;quot;RNN&amp;quot;(如vanilla RNN, LSTM, GRU等)。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;We need a model that can produce a &lt;strong&gt;fixed-sized&lt;/strong&gt; vector for inputs of &lt;strong&gt;different&lt;/strong&gt; lengths.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;简单的RNN：读取文本，并进入最终状态&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;大多数简单的循环网络模型都是&lt;strong&gt;单层&lt;/strong&gt;的RNN网络。在这种网络结构中，我们必须采用具有输入文本的大部分信息的隐藏状态。因此，我们必须使用最后一个时间步上的隐藏状态（因为最后一个时间步的隐藏状态将遍历了所有的输入tokens）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160625.png&#34; style=&#34;zoom:40%;&#34; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;多层结构：将一层RNN的隐藏状态传递给下一层RNN&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;为了获得更好的文本表示，我们可以叠加多层网络。例如下图中，高层的RNN输入来自之前层RNN输出的表示。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160643.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;多层结构的主要假设是：有了多层网络，低层次的网络可以捕捉到文本的局部现象（例如，短语等），而高层次的网络可以学习到更高层次的信息（如文本主题）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;双向结构：使用前向和反向RNNs的最终状态&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;之前的循环网络结构都存在一个问题：&lt;strong&gt;最后时间步的隐藏状态很容易忘记之前的tokens信息&lt;/strong&gt;，即使是非常强健的LSTM模型也会遭遇这个问题。&lt;/p&gt;
+&lt;p&gt;为了避免这个问题，我们可以使用两个RNNs：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;font style=&#34;color:#d192ba&#34;&gt;前向&lt;/font&gt;(forward):从左到右读取输入&lt;/li&gt;
+&lt;li&gt;&lt;font style=&#34;color:#88bd33&#34;&gt;反向&lt;/font&gt;(backward): 从右到左读取输入&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;然后，我们可以使用两个循环网络结构的最终隐藏状态：一个网络会更好地记住文本的末尾部分，而另一个会更好地记住文本的开始部分。这些状态可以连接在一起，或者累加，或者做些别的操作。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160713.png&#34; style=&#34;zoom:40%;&#34; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;有了这些RNNs结构，我们就可以像搭积木一样，自由组合多种RNNs结构。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;卷积神经网络cnn&#34;&gt;卷积神经网络（CNN）&lt;/h4&gt;
+&lt;h5 id=&#34;图像卷积和平移不变性convolutions-for-images-and-translation-invariance&#34;&gt;图像卷积和平移不变性（Convolutions for Images and Translation Invariance）&lt;/h5&gt;
+&lt;p&gt;卷积神经网络最初发明用于计算机视觉任务。因此，首先了解用于图像的卷积模型背后的直觉。&lt;/p&gt;
+&lt;p&gt;想象我们想要将图像分成多个类别，例如cat,dog,airplane等。在这个例子中，如果我们在图像中找到一只猫，&lt;strong&gt;我们不需要关系这只猫在图像的哪个位置&lt;/strong&gt;，我们只需要关系猫是否在图像上。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160745.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;卷积网络将相同的操作应用于图像的一小部分，这也是卷积网络如何提取特征的方式。每个操作都在寻找与模式匹配的内容，网络将学习到哪些模式有用。有了许多网络层，学习到的特征将会越来越复杂：从低层网络中学习到的线条特征到高层网络学习到的非常复杂的模式（如整只猫或狗）。&lt;/p&gt;
+&lt;video width=&#34;50%&#34; height=&#34;auto&#34; loop=&#34;&#34; autoplay=&#34;&#34; muted=&#34;&#34; style=&#34;margin-center: 20px;&#34; controls=&#34;&#34;&gt;
+                &lt;source src=&#34;https://lena-voita.github.io/resources/lectures/models/cnn/cnn_with_cat.mp4&#34;&gt;
+                &lt;/video&gt;
+&lt;p&gt;而卷积网络的这种特性被称为&lt;strong&gt;平移不变性&lt;/strong&gt;(translation invariance):&lt;strong&gt;平移&lt;/strong&gt;是因为我们讨论的是在空间的中移动，而&lt;strong&gt;不变形&lt;/strong&gt;是因为我们想要的是空间中的移动对图像类别的识别没有影响。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h5 id=&#34;将卷积用于文本的原理&#34;&gt;将卷积用于文本的原理&lt;/h5&gt;
+&lt;p&gt;对于图像，这个问题非常清楚，例如我们能够移动猫在图像上的位置，因为我们并不需要在乎猫在哪里。然而那文本呢？第一眼看，这个问题并不简单：&lt;strong&gt;我们不能轻易地移动文本中的短语&lt;/strong&gt;——文本的含义会发生变化或者我们将获得一些说不通的语句。&lt;/p&gt;
+&lt;p&gt;然而，在某些应用中，我们可以想到相同的直觉。想象我们正在对文本进行分类，不是像图像一样分类cat,dog，而是分类为积极情感或消极情感。接着，文本中的一些单词和短语可能会具有非常多的信息暗示(cues)（例如&lt;strong&gt;It&#39;s been great, bored, absolutely amazing&lt;/strong&gt;）,而其他一些单词就不那么重要。也就是说，&lt;strong&gt;我们不需要太关心这些具有很大信息暗示的单词和短语在文本中出现的位置，就可以大概理解文本的情感&lt;/strong&gt;！&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160809.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;一个经典的CNN模型：卷积+池化块&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;跟从上述想象中的直觉，我们想要识别出一些模式，但是我们并不需要对这些模式出现的位置过于关心。这样的行为可以通过两个网络层实现:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;卷积层(convolution): 找到这些模式的匹配项&lt;/li&gt;
+&lt;li&gt;池化(pooling): 将这些匹配项汇总（要么局部汇总，要么全局汇总）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;为了获得输入文本的向量表示，一个卷积网络通过一个非线性映射（通常是$\mathrm{ReLU}$）和一个池化操作，获得词嵌入。该获取表示，并用于分类的方式与其他网络是相似的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160819.png&#34; alt=&#34;&#34; title=&#34;用于文本分类的CNN架构&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h5 id=&#34;用于文本的卷积层&#34;&gt;用于文本的卷积层&lt;/h5&gt;
+&lt;p&gt;卷积的想法是通过滑动窗口，遍历图像，并对每个窗口应用相同的操作，即&lt;strong&gt;卷积滤波器&lt;/strong&gt;(convolution filter)。&lt;/p&gt;
+&lt;p&gt;用于图像的卷积是二维的，因为图像也是二维的（高和宽）。而与图像不同，文本只有一个维度，因此卷积操作也是一维的。&lt;/p&gt;
+&lt;video width=&#34;60%&#34; height=&#34;auto&#34; loop=&#34;&#34; autoplay=&#34;&#34; muted=&#34;&#34; style=&#34;margin-center: 20px;&#34; controls=&#34;&#34;&gt;
+                &lt;source src=&#34;https://lena-voita.github.io/resources/lectures/models/cnn/cnn_filter_reads_text.mp4&#34;&gt;
+                &lt;/video&gt;
+&lt;p&gt;卷积是应用于每个输入窗口的&lt;strong&gt;线性层&lt;/strong&gt;（紧随其后的是非线性变换）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160905.png&#34; alt=&#34;&#34; title=&#34;对文本的卷积操作&#34;&gt;&lt;/p&gt;
+&lt;p&gt;形式上，我们做出如下假设：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$(x_1, \dots, x_n)$表示输入单词的表示，其中$x_i\in \mathbb{R}^d$&lt;/li&gt;
+&lt;li&gt;$d$（输入通道）：输入词嵌入的大小&lt;/li&gt;
+&lt;li&gt;$k$（核的大小）：卷积窗口的长度（在图示中是$k=3$）&lt;/li&gt;
+&lt;li&gt;$m$（输出通道）：卷积滤波器的数量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted-image-20210309122959.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;卷积层是一个线性变换层，其变换矩阵为$W\in\mathbb{R}^{(k\cdot d)\times m}$。对于一个大小为$k$的窗口$(x_i, \dots x_{i+k-1})$,卷积接受这些向量的连接( concatenation):
+$$
+u_i = [x_i, \dots x_{i+k-1}]\in\mathbb{R}^{k\cdot d}
+$$
+然后与卷积矩阵相乘：
+$$
+F_i = u_i \times W.
+$$
+卷积通过使用滑动窗口，遍历所有的输入，并对每个窗口应用相同的线性变换。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;直觉：每个过滤器提取一个特征。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;一个过滤器——一个特征提取器&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;一个过滤器采用当前窗口下的词表示，并将其线性转换成一个特征。形式上，对于窗口$u_i = [x_i, \dots x_{i+k-1}]\in\mathbb{R}^{k\cdot d}$,过滤器$f\in\mathbb{R}^{k\cdot d}$计算点积：
+$$
+F_i^{(f)} = (f, u_i).
+$$&lt;/p&gt;
+&lt;p&gt;数值$F_i^{(f)}$（提取到的特征）是将过滤器$f$施加给窗口$(x_i, \dots x_{i+k-1})$的结果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161226.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$m$个过滤器——$m$个特征提取器&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://lena-voita.github.io/resources/lectures/models/cnn/several_filters_read.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;一个过滤器提取一种特征，那么我们使用多个过滤器即可提取多种特征。每个过滤器读取输入文本，并提到不同的特征。&lt;strong&gt;过滤器的数量是我们想要获得的输出特征的数量&lt;/strong&gt;。有了$m$个过滤器，之前讨论的卷积矩阵大小将变为$(k\cdot d)\times m$。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161255.png&#34; style=&#34;zoom:37%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;这是并行完成的&lt;/strong&gt;(parallel)！在上述图示中展示了CNN如何“读取”文本，而实际上这些计算是并行进行的。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h5 id=&#34;池化操作&#34;&gt;池化操作&lt;/h5&gt;
+&lt;p&gt;在卷积层从每个窗口提取到$m$个特征后，池化层将整合了某些区域的特征。池化层被用于降低输入维度，因此也可以降低网络使用的参数数量。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;最大和平均池化(Max/Mean Pooling)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;最流行的做法是最大池化：它将选取每个维度上的最大值，即选取每个特征的最大值输出。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161355.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;平均池化与最大池化的工作原理相似，不过其操作是取每个特征的均值而不是最大值。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted-image0210309123102.png&#34; alt=&#34;&#34; title=&#34;k-max池化： 选取k个概率最高的值&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;池化与全局池化(global pooling)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;与卷积相似，池化也被用于几个元素组成的窗口中。池化还有一个&lt;strong&gt;步长&lt;/strong&gt;(stride)参数，最常见的方法是对不重叠的窗口分别进行池化。为了做到这个操作，我们需要将步长设置为池化窗口大小一致。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161650.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;池化与全局池化的差异在于池化将独立应用于每个窗口中的特征，而全局池化将对整个输入执行池化操作。全局池化通常被用于获取整个文本的单一向量表示；这种全局池化被称为&lt;strong&gt;max-over-time&lt;/strong&gt;池化，其中“时间”轴从第一个输入token到最后一个token。
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161739.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;直觉上，每个特征在看到某种模式时都会“触发”，例如图像中的视觉模式（线条、纹理、猫爪等）或者一个文本模式（例如短语）。在池化操作后，我们将输出一个向量来说明有哪些模式存在于输入中。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h5 id=&#34;使用cnn做文本分类&#34;&gt;使用CNN做文本分类&lt;/h5&gt;
+&lt;p&gt;我们需要构建一个将文本表示为单个向量的卷积模型。&lt;/p&gt;
+&lt;p&gt;下图展示使用CNN做文本分类的基础模型框架：
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161759.png&#34; alt=&#34;&#34; title=&#34;文本分类CNN的基本框架&#34;&gt;&lt;/p&gt;
+&lt;p&gt;在卷积操作后，我们采用的&lt;strong&gt;max-over-time&lt;/strong&gt;的池化操作。这是一个非常关键的步骤:&lt;strong&gt;它将文本压缩为单个向量&lt;/strong&gt;。模型本身可以有所不同，但是使用池化操作时，它必须使用&lt;strong&gt;全局池化&lt;/strong&gt;来将整个输入文本压缩为单个向量。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;几个使用不同大小核的卷积&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;除了使用只有一种大小核的卷积操作，我们还可以使用具有不同核大小的多个卷积。步骤很简单：对数据应用每个不同大小核的卷积，在每个卷积之后添加非线性和全局池化，然后合并结果（在图示中，为简单起见，省略了非线性）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161846.png&#34; alt=&#34;&#34; title=&#34;使用多种大小核的卷积，并最终连接成一个文本的向量表示&#34;&gt;&lt;/p&gt;
+&lt;p&gt;以上就是获取用于分类文本的向量表示的方式。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;堆叠多个卷积+池化块&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;除了使用单个卷积-池化层，我们还可以卷积-池化层作为模块，叠加使用。在使用多个卷积-池化层模块后（可以使用一般的池化），我们可以叠加另一种卷积-池化层模块，而这一层池化需要使用到全局池化。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;请记住：&lt;strong&gt;因为我们必须获得一个固定大小的向量，为此，需要使用全局池化&lt;/strong&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;当您的文本很长时，这种多层卷积可能会很有用。例如，如果当模型是字符级(character-level)的（而不是单词级word-level的）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161948.png&#34; alt=&#34;&#34; title=&#34;多层卷积+池化&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;多标签分类&#34;&gt;多标签分类&lt;/h2&gt;
+&lt;h3 id=&#34;简介-1&#34;&gt;简介&lt;/h3&gt;
+&lt;p&gt;多标签分类(Multi-label classification)与之前讨论的单标签分类任务不同，多标签分类中每个输入都可以有多个正确的标签。例如，一条推特可以有多个标签(hashtags),一个用户可以有多种主题的兴趣等。&lt;/p&gt;
+
+    &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css&#34;&gt;
+    
+    &lt;div class=&#34;swiper-container&#34;&gt;
+        &lt;div class=&#34;swiper-wrapper&#34;&gt;
+            
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162047.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162101.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+        &lt;div class=&#34;swiper-pagination&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js&#34;&gt;&lt;/script&gt;
+     
+     &lt;script&gt;
+        var swiper = new Swiper(&#39;.swiper-container&#39;, {
+            pagination: &#39;.swiper-pagination&#39;,
+            paginationClickable: true,
+        });
+        &lt;/script&gt;
+
+
+&lt;p&gt;&lt;span class=&#34;caption&#34;&gt;◎ 多标签任务举例&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;对于多标签问题，相较于单标签问题，我们需要改变以下两个内容：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;模型：如何估计类别的概率&lt;/li&gt;
+&lt;li&gt;损失函数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;模型softmax-rightarrow-元素向sigmoid&#34;&gt;模型：Softmax $\rightarrow$ 元素向Sigmoid&lt;/h3&gt;
+&lt;p&gt;在最后的线性层之后，我们有$K$个类别对应的$K$个值，而我们需要将这些值转换为对应类别的概率。&lt;/p&gt;
+&lt;p&gt;在单标签问题中，我们使用softmax函数来做到这件事情，其将$K$个值转换为一个概率分布，即所有类别的概率和为1，而&lt;strong&gt;这意味着所有类别共享&lt;font style=&#34;color:red&#34;&gt;相同的概率密度&lt;/font&gt;&lt;/strong&gt;。如果一个类别的概率很高，那么其他类别就不会有高的概率值。&lt;/p&gt;
+&lt;p&gt;而对于多标签问题，我们需要将这$K$个值转换为&lt;strong&gt;类别间相互独立&lt;/strong&gt;的相应类别概率。具体来说，我们将对这$K$个值分别使用sigmoid函数 $\sigma(x)=\frac{1}{1+e^{-x}}$.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162242.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;在直觉上，我们可以将&lt;strong&gt;多标签问题等价为$K$个独立的二分类问题&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;损失函数每个类别使用二值交叉熵&#34;&gt;损失函数：每个类别使用二值交叉熵&lt;/h3&gt;
+&lt;p&gt;在多标签问题中，损失函数需要作出一定的改变来应用于多个标签：&lt;strong&gt;对每个类别，我们都使用二值交叉熵函数(binary cross-entropy loss)&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;$$H_{p}(q)=-\frac{1}{N} \sum_{i=1}^{N} y_{i} \cdot \log \left(p\left(y_{i}\right)\right)+\left(1-y_{i}\right) \cdot \log \left(1-p\left(y_{i}\right)\right)$$&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162359.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;下图展示了二值交叉熵的直观推导流程&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/text-classification-notes/#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+    &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css&#34;&gt;
+    
+    &lt;div class=&#34;swiper-container&#34;&gt;
+        &lt;div class=&#34;swiper-wrapper&#34;&gt;
+            
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162923.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162944.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163200.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163218.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163328.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163341.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163356.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163407.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163424.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163439.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163517.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163538.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+        &lt;div class=&#34;swiper-pagination&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js&#34;&gt;&lt;/script&gt;
+     
+     &lt;script&gt;
+        var swiper = new Swiper(&#39;.swiper-container&#39;, {
+            pagination: &#39;.swiper-pagination&#39;,
+            paginationClickable: true,
+        });
+        &lt;/script&gt;
+
+
+&lt;p&gt;&lt;span class=&#34;caption&#34;&gt;◎ 二值交叉熵函数推导&lt;/span&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;实践技巧&#34;&gt;实践技巧&lt;/h2&gt;
+&lt;h3 id=&#34;词嵌入如何处理&#34;&gt;词嵌入：如何处理？&lt;/h3&gt;
+&lt;p&gt;网络的输入由词嵌入表示，我们有三种选择获得这些词嵌入。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;作为模型的一部分，从头开始训练
+&lt;ul&gt;
+&lt;li&gt;只使用特定任务的语料训练词嵌入&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;使用预训练的词嵌入(如Word2Vec,Glove等)，并固定（将其作为静态向量使用）&lt;/li&gt;
+&lt;li&gt;使用预训练的词嵌入进行初始化，然后通过网络对其进行训练（“微调”）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163632.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;用于分类的训练数据是带有标记的，并且是与特定任务相应的，但是带有标记的数据通常很难获得。因此，这个语料库可能不会很大（至少），或者不会多样化，或者两者兼而有之。相反，词嵌入的训练数据是无需标记的，并且纯文本就足够了。因此，这些数据集可能庞大而多样，可以供网络学习很多东西。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163749.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;现在，让我们根据对词嵌入的处理方式来考虑模型将学习的内容。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果词嵌入是从头开始训练得到的，那么模型将会只“知道”分类数据，而不足够良好地学习单词之间的关系。&lt;/li&gt;
+&lt;li&gt;如果使用预训练的词嵌入，那么模型将知道一个很大的预料库，并且学习到很多内容
+&lt;ul&gt;
+&lt;li&gt;为了将这些词嵌入适用于我们手头特定的任务，我们可以通过整个网络训练这些预训练的词嵌入，对其进行微调。这样的做法可以使模型性能获得一定提升&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163800.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;当我们使用预训练的词嵌入时，其实就是迁移学习的一种体现：&lt;strong&gt;通过预训练的词嵌入，我们将预训练中的训练数据的知识“迁移”到我们特定的任务中&lt;/strong&gt;。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;那我们是否应该使用微调的预训练词嵌入呢? &lt;/strong&gt;&lt;br&gt;
+在训练模型之前，可以首先考虑微调为什么会有用，以及哪些类型的任务可以从中受益,再做决定。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;数据增强免费获得更多的数据的方法&#34;&gt;数据增强：“免费”获得更多的数据的方法&lt;/h3&gt;
+&lt;p&gt;数据增强以不同的方式更改数据集，以获取同一训练数据集的“加强”版本。数据增强可以增加：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;训练数据的数量
+&lt;ol&gt;
+&lt;li&gt;模型的质量很大程度上取决于样本的数量。对于深度学习模型，拥有大数据集至关重要&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;数据的多样性
+&lt;ol&gt;
+&lt;li&gt;通过提供不同版本的训练数据集，使模型对真实世界的数据更健壮(robust)&lt;/li&gt;
+&lt;li&gt;实践数据可能导致模型的性能降低，或者与训练数据略有不同。&lt;/li&gt;
+&lt;li&gt;使用增强数据集，模型不太可能适合特定类型的训练数据，而将更多地学习一般的模式。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;图像的数据增强可以很容易地做到，一些标准的数据增强方式有：&lt;strong&gt;图像翻转&lt;/strong&gt;(flipping),&lt;strong&gt;几何变换&lt;/strong&gt;（例如旋转，在某个方向上拉长），&lt;strong&gt;用不同的色块覆盖图像的各个部分&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163954.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;那么我们如何对文本做一样的事情呢？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;单词丢弃&lt;/strong&gt;(word dropout)：最简单并且最流行的方式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;单词丢弃是最简单的正则化方法：对每个样本，我们将随机选取几个单词（例如每个单词被选中的概率为$10%$），并使用特殊的token &lt;code&gt;UNK&lt;/code&gt;或者词表中任意一个token来代替。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164007.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这种方法背后的动机其实很简单：&lt;strong&gt;我们教会模型不应过分依赖单个token，而是要考虑整个文本的上下文。&lt;/strong&gt; 在上图的例子中，我们将&lt;code&gt;great&lt;/code&gt;掩盖，此时模型就需要学习基于其他单词来理解这段文本的情感(sentiment)。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: make use of a more global context.            &lt;br&gt;
+这一点其实与图像中用色块掩盖图像部分区域的思想是一致的，即通过掩盖图像部分，迫使模型不应只依赖局部的特征，而是充分利用整个图像信息。&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164026.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;使用外部资源&lt;/strong&gt;，例如同义词词典(thesaurus): 有点复杂&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;一种有点复杂的方法是使用其同义词替换单词或短语。棘手的部分在于如何这些同义词：对于英语，我们可以使用&lt;strong&gt;同义词词典&lt;/strong&gt;（或者WordNet)，然而除英语以外的其他语言很少使用。其次，对于一些形态丰富的语言（如俄语），简单的替换同义词有可能会违反语法规定。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164043.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;借助外部模型&lt;/strong&gt;： 甚至更复杂&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;更复杂的方法是使用外部模型解释整个句子。一种流行的释义方法是&lt;strong&gt;将句子翻译成某种语言然后再翻译回来&lt;/strong&gt;，例如使用谷歌翻译、百度翻译等。需要注意的是，我们可以将翻译系统和语言结合起来以获取多个释义。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164059.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: 后两种方法对应图像中的几何变换：&lt;strong&gt;我们想要改变文本，但是要保留原有的含义&lt;/strong&gt;。&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164147.png&#34; style=&#34;zoom: 50%;&#34; /&gt;
+这与单词丢弃不同，单词丢弃是将一些部分整个消除。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;分析与可解释性&#34;&gt;分析与可解释性&lt;/h2&gt;
+&lt;h3 id=&#34;卷积可以学到什么东西分析卷积过滤器&#34;&gt;卷积可以学到什么东西？分析卷积过滤器&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;在计算机视觉中：卷积学习视觉模式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;卷积最初是为图像而开发的，并且已经对不同类型的过滤器捕获了什么以及如何从不同层次结构的层中过滤有了很好的理解。虽然较低的层可以捕获简单的视觉图案（例如线条或圆圈），但最后一层可以捕获整个图片，如动物，人等。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164307.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;caption&#34;&gt;◎ &lt;a href=&#34;https://distill.pub/2019/activation-atlas/&#34;&gt;distill.pub&lt;/a&gt;上的实例&lt;/span&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在文本中，卷积学到什么&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;对于图像，过滤器捕获对分类很重要的局部视觉模式。对于文本，此类局部模式为单词的n-grams。CNNs如何用于文本的主要发现如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;卷积滤波器用作n-grams检测器
+&lt;ol&gt;
+&lt;li&gt;每个过滤器专注于一个或几个密切相关的n-gram家族&lt;/li&gt;
+&lt;li&gt;过滤器不是同质的，即一个过滤器可以检测多个明显不同的n-gram家族&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;最大池化：诱导阈值行为
+&lt;ol&gt;
+&lt;li&gt;进行预测时，低于给定阈值的值将被忽略（即不相关）。&lt;/li&gt;
+&lt;li&gt;该&lt;a href=&#34;https://arxiv.org/pdf/1809.08037.pdf&#34;&gt;研究&lt;/a&gt;表明平均可以减少40％的池化n-gram，而不会降低性能。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;了解网络捕获内容的最简单方法是查看哪些模式激活了其神经元。对于卷积，我们选择一个过滤器并找到最能激活该过滤器的n-grams(即过滤器获得的向量中值最大维度对应的n-grams)。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164655.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;下图展示每个过滤器中激活得分最高的n-grams:
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164748.png&#34; style=&#34;zoom:30%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;可以发现在&lt;strong&gt;过滤器4&lt;/strong&gt;中，激活得分排名靠前的n-grams都有着非常相似的含义。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;类比视觉中不同层次的卷积识别到不同层次的模式，在文本中，不同的卷积过滤器能识别到不同的n-grams模式，并且发掘对文本具有较高价值的n-grams以及其含义相近的n-grams家族。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;研究反思&#34;&gt;研究反思&lt;/h2&gt;
+&lt;h3 id=&#34;经典方法&#34;&gt;经典方法&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164857.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;最简单的朴素贝叶斯使用tokens作为特征，然而这并非总是好的方法，因为完全不同的文本也可以拥有相同的特征。&lt;/p&gt;
+&lt;p&gt;❓  &lt;strong&gt;&lt;a href=&#34;https://derooce.github.io/posts/text-classification-notes/#%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8naive-bayes-classifier&#34;&gt;朴素贝叶斯&lt;/a&gt;最大的问题在于其对文本一无所知。当然我们不能移除“朴素”假设，否则就不再是朴素贝叶斯方法了。那么我们应该如何改进特征提取部分呢？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;想法&lt;/strong&gt;： 向特征中添加高频的n-grams！&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314165052.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;除了单独使用单词作为特征，我们还可以使用单词的n-grams.由于使用所有的n-grams
+会降低效率，那么我们可以只加入高频的n-grams.&lt;/p&gt;
+&lt;p&gt;❓ &lt;strong&gt;还可以想出什么其他类型的特征？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;注意到，朴素贝叶斯可以使用任何分类特征(categorical features)。我们可以执行任何操作，只要可以计算计数获得概率即可。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;文本长度
+&lt;ol&gt;
+&lt;li&gt;有可能正面的评价可能比负面的评价更长。我们可以将长度为1-20的tokens组成一个特征，长度为21-30的tokens组成另一个特征，等等。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;token的频率
+&lt;ol&gt;
+&lt;li&gt;正面或负面评论可能使用更多奇怪的词。可以使用最少、最多、平均等统计特征表示token的频率&lt;/li&gt;
+&lt;li&gt;记得最终需要将特征做分类化(categorize)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;句法(syntactical)特征
+&lt;ol&gt;
+&lt;li&gt;依赖树深度（最大/最小/平均）,这可以代替文本的复杂性。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;其他你想出的方法：Just try!&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;分类是否同等地需要所有单词？如果不是，我们如何修改该方法？&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;想法&lt;/strong&gt;：不要使用不重要的单词。&lt;/p&gt;
+&lt;p&gt;如果我们知道哪些单词绝对不会影响分类的概率，那么我们可以将其从特征中移除。例如，我们可以移除停用词(stop-words): 确定词(determiners)，介词(prepositions)等。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314165159.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;神经网络方法&#34;&gt;神经网络方法&lt;/h3&gt;
+&lt;p&gt;❓ &lt;strong&gt;对于微调后的嵌入，为什么以及什么时候会有用？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在训练模型之前，我们首先需要思考为什么&lt;strong&gt;微调&lt;/strong&gt;会有用，以及哪一种类型的样本将会受益于微调。记住词嵌入是如何训练的：&lt;strong&gt;在文本中用法相近的单词具有非常相近的词嵌入&lt;/strong&gt;。因此，有时反义词彼此最接近，例如&lt;strong&gt;descent&lt;/strong&gt;和&lt;strong&gt;ascent&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;想象我们想要使用词嵌入做情感分类。&lt;strong&gt;你能找到反义词的词嵌入非常紧密例子吗&lt;/strong&gt;？如果有，这样的情况将会影响情感分类的结果？如果你找到这样的例子，这意味着最好要进行微调！&lt;/p&gt;
+&lt;p&gt;如果没有使用微调，那么最接近&lt;strong&gt;bad&lt;/strong&gt;的词嵌入将是&lt;strong&gt;good&lt;/strong&gt;!&lt;/p&gt;
+&lt;p&gt;下图显示了在使用微调的前后，Word2Vec中词嵌入最接近的几个单词。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314165313.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;如果不进行微调，模型将很难使用这些词嵌入来区分情感分类。微调还可以帮助提高对token的理解，例如&lt;strong&gt;n&#39;t&lt;/strong&gt;: 这个单词在我们训练词嵌入的语料中很少见，但在我们关注的语料库中并不罕见。&lt;/p&gt;
+&lt;p&gt;更一般而言，如果我们的特定任务的训练数据与词嵌入的预训练数据不同，则微调是个好主意。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;reference&#34;&gt;Reference&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://lena-voita.github.io/nlp_course/text_classification.html&#34;&gt;Yandex: NLP Course&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;section class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34; role=&#34;doc-endnote&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;https://towardsdatascience.com/understanding-binary-cross-entropy-log-loss-a-visual-explanation-a3ac6025181a&#34;&gt;Understanding binary cross-entropy/log loss: a visual explanation&lt;/a&gt; &lt;a href=&#34;https://derooce.github.io/posts/text-classification-notes/#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/section&gt;
+</description>
+                
+                
+                
+                
+                
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/categories/nlp/">NLP</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/categories/text-classification/">Text Classification</category>
+                                
+                            
+                        
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/tags/nlp/">NLP</category>
+                                
+                            
+                        
+                    
+                
+            </item>
+        
+            <item>
+                <title>NLP Notes series: Word Embeddings</title>
+                <link>https://derooce.github.io/posts/word-embeddings-notes/</link>
+                <guid isPermaLink="true">https://derooce.github.io/posts/word-embeddings-notes/</guid>
+                <pubDate>Sun, 14 Mar 2021 12:38:10 &#43;0800</pubDate>
+                
+                    <author>vanace.jc@gmail.com (DEROOCE)</author>
+                
+                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
+                
+                    <description>&lt;h1 id=&#34;word-embeddings&#34;&gt;Word Embeddings&lt;/h1&gt;
+&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
+&lt;p&gt;对于一段文本&amp;quot;&lt;strong&gt;I saw a cat&lt;/strong&gt;&amp;quot;,人类可以轻易理解其含义。然而，对于计算机模型却无法做到，它们需要特征向量(vectors of features),这样的向量，或者称“word embeddings&amp;quot;(词嵌入)可以作为文本的一种表示，并且模型也能够“理解”与处理这种表示。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131010.png&#34; style=&#34;zoom:80%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;然而，如何或者这种词嵌入表示呢？答案是：使用&lt;strong&gt;查找表&lt;/strong&gt;(Look-up table),或者称&lt;strong&gt;词表&lt;/strong&gt;(Vocabulary)。&lt;/p&gt;
+&lt;p&gt;在实践中，你有一个词表，其中包含着所有的许可词(allowed words),并且这个词表是提前选取好的。对于每一个词，查找表中都包含着其对应的嵌入表示，并且可以根据词在词表中的索引轻易地找到对应的嵌入表示,即根据词表中的索引，在查找表中寻找对应的嵌入表示。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://lena-voita.github.io/resources/lectures/word_emb/lookup_table.gif&#34; alt=&#34;&#34; title=&#34;词嵌入表示的查找&#34;&gt;&lt;/p&gt;
+&lt;p&gt;此外，考虑到存在未知的词,即那些不在词表中的词，通常一个词表中包含着一个特殊的词--&lt;strong&gt;UNK&lt;/strong&gt;（unknown)。此外，未知词也可以直接忽略或是赋予一个0值向量。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131337.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;本文的主要目的就是：&lt;strong&gt;如何获得这些词嵌入向量(Word Embeddings)？&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;离散符号的表示one-hot-vectors&#34;&gt;离散符号的表示：One-hot vectors&lt;/h2&gt;
+&lt;p&gt;表示这些词的最简单方式就是使用&lt;strong&gt;独热编码&lt;/strong&gt;(one-hot vectors): 词表的第$i$个词对应的表示向量中，除第$i$维的值为1外，其他维度的值都为0。在机器学习中，这也是表示分类特征的最简单方式。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131424.png&#34; style=&#34;zoom: 50%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;然而，这样的表示存在许多问题：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;当词表很大时，这些独热向量的维度也会非常大，即$d=|\mathcal{V}|$&lt;/li&gt;
+&lt;li&gt;这两个向量是正交的，独热向量无法表示对应词的任意信息&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;其中第二点是独热编码最大的缺点。例如，在词表中&lt;strong&gt;cat&lt;/strong&gt;和&lt;strong&gt;dog&lt;/strong&gt;的索引距离较近，因而独热编码也会认为&lt;strong&gt;cat&lt;/strong&gt;和&lt;strong&gt;dog&lt;/strong&gt;的意思相近，而这显然不合理。可以肯定地说，独热向量无法捕获词的含义。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;但是我们如何知道词的含义呢？&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;分布式语义&#34;&gt;分布式语义&lt;/h2&gt;
+&lt;p&gt;为了捕获在这些向量中词的含义，我们首先需要定义在实践中可以被使用的含义记号。为此，先了解人类是如何理解哪些单词具有相似的含义。&lt;/p&gt;
+
+    &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css&#34;&gt;
+    
+    &lt;div class=&#34;swiper-container&#34;&gt;
+        &lt;div class=&#34;swiper-wrapper&#34;&gt;
+            
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131524.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131627.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131653.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131711.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131727.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131744.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131806.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131823.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131841.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+        &lt;div class=&#34;swiper-pagination&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js&#34;&gt;&lt;/script&gt;
+     
+     &lt;script&gt;
+        var swiper = new Swiper(&#39;.swiper-container&#39;, {
+            pagination: &#39;.swiper-pagination&#39;,
+            paginationClickable: true,
+        });
+        &lt;/script&gt;
+
+
+&lt;p&gt;&lt;span  class=&#34;caption&#34;&gt;◎ 分布式语义假设(Distributional Semantics Hypothesis)&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;一旦我们知道了在不同的上下文中，未知词是如何使用的，我们将有能力去理解该词的含义。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;分布式假设&lt;/strong&gt;:  频繁出现在&lt;strong&gt;相似语境&lt;/strong&gt;的词之间有&lt;strong&gt;相似的含义&lt;/strong&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;根据分布式假设，我们的大脑将会搜索其他可以用于相同语境的词。在该例中，红酒(wine)一词符合该语境中的使用，因此，得到结论：&lt;strong&gt;tezgüino&lt;/strong&gt;一词与wine具有相似的含义。&lt;/p&gt;
+&lt;p&gt;这个想法非常具有价值，甚至在实践中也可以被用来使词向量捕捉其词的含义。根据分布式假设，“捕获词的含义”和“捕获上下文”其实内在意义是相同的。因此，我们所要做的就是&lt;strong&gt;将词的上下文信息加入词的表示中&lt;/strong&gt;,而获得的词向量其实就是词的分布式语义表示(distribution semantics representation)。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;u&gt;Main idea&lt;/u&gt;: We need to put information about word contexts into word representation.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Distributional_semantics&#34;&gt;&lt;em&gt;J.R.Firth’s hypothesis&lt;/em&gt;&lt;/a&gt; from 1957, “&lt;em&gt;You shall know a word by the company it keeps.&lt;/em&gt;”&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;本文主要阐述的也就是实现这种想法的不同方法。&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;word-embeddings的性质&#34;&gt;Word Embeddings的性质&lt;/h2&gt;
+&lt;p&gt;通过各种嵌入算法得到的词嵌入的简单性质：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;余弦相似度 cosine similarity
+&lt;ol&gt;
+&lt;li&gt;为了估计词/上下文之间的相似性，通常我们需要衡量标准化(normalized)后的词/上下文向量的点积(dot-product),即余弦相似度(cosine similarity)。&lt;/li&gt;
+&lt;li&gt;两个词之间的相似度(在$[-1,1]$之间)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;词嵌入可以通过线性代数解决词之间的类比关系(analogy relationships)
+&lt;ol&gt;
+&lt;li&gt;例如已知两个词&lt;code&gt;man:woman&lt;/code&gt;,以及一个词&lt;code&gt;king&lt;/code&gt;,寻找其对应的类比词&lt;/li&gt;
+&lt;li&gt;解法：寻找一个向量$w$，能够使得$v_{king}-w$与$v_{man}-v_{woman}$之间最相近，即最小化$||v_w - v_{king} + v_{man} - v_{woman}||^2.$&lt;/li&gt;
+&lt;li&gt;这种简单的思想可以在一些标准测试中解决$75\%$的词类比问题。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;embeddings模型需要关注的地方以及其作用&#34;&gt;Embeddings模型需要关注的地方以及其作用&lt;/h2&gt;
+&lt;p&gt;自然地，&lt;strong&gt;对于每个以词表中的单词作为输入&lt;/strong&gt;，&lt;strong&gt;并将单词转换为向量嵌入到低维空间中&lt;/strong&gt;，&lt;strong&gt;并通过反向传播算法微调&lt;/strong&gt;的前馈神经网络，都必然会生成词的嵌入表示，并将其作为第一层的权重，这一层通常被称为&lt;strong&gt;嵌入层&lt;/strong&gt;(Embedding Layer)&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;网络方法：词的嵌入表示只是训练过程中的附带物(by-product)&lt;/li&gt;
+&lt;li&gt;Word2Vec方法：显式的目标就是生成词嵌入&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;而网络方法和Word2Vec类型方法的主要区别在于它们的&lt;strong&gt;计算复杂度&lt;/strong&gt;。对于很大的词表，使用非常深的网络架构训练生成词嵌入很容易造成计算成本过大。这也是为什么直到2013年Word Embeddings研究才会在NLP领域爆炸性增长的原因--计算资源！ 计算复杂度是词嵌入模型的关键权衡点。&lt;/p&gt;
+
+&lt;div class=&#34;notice notice-info&#34; &gt;
+    &lt;div class=&#34;notice-title&#34;&gt;&lt;svg xmlns=&#34;http://www.w3.org/2000/svg&#34; class=&#34;icon notice-icon&#34; viewBox=&#34;0 0 512 512&#34;&gt;&lt;path d=&#34;M256 8a248 248 0 100 496 248 248 0 000-496zm0 110a42 42 0 110 84 42 42 0 010-84zm56 254c0 7-5 12-12 12h-88c-7 0-12-5-12-12v-24c0-7 5-12 12-12h12v-64h-12c-7 0-12-5-12-12v-24c0-7 5-12 12-12h64c7 0 12 5 12 12v100h12c7 0 12 5 12 12v24z&#34;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;p&gt;As a side-note, word2vec and Glove might be said to be to NLP what
+VGGNet is to vision, i.e. a common weight initialisation that
+provides generally helpful features without the need for lengthy
+training.&lt;/p &gt;&lt;/div&gt;
+
+&lt;hr&gt;
+&lt;h2 id=&#34;基于计数的方法&#34;&gt;基于计数的方法&lt;/h2&gt;
+&lt;h3 id=&#34;介绍&#34;&gt;介绍&lt;/h3&gt;
+&lt;p&gt;基于计数的方法(Counted-Based methods)手动地将全局语料库的统计信息加入到词表示中。&lt;/p&gt;
+&lt;p&gt;主要的步骤可以分为两步：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;构建一个词的上下文矩阵&lt;/li&gt;
+&lt;li&gt;降低矩阵的维度&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314133105.png&#34; alt=&#34;&#34; title=&#34;矩阵降维方法-SVD&#34;&gt;&lt;/p&gt;
+&lt;p&gt;降低维度的原因为：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;初始的上下文矩阵会非常大&lt;/li&gt;
+&lt;li&gt;可能有很多词只出现在少量的上下文中，初始矩阵可能包含着很多无信息的元素，例如0元素&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;为了定义一个基于计数的方法，我们需要先定义两件事：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;什么是“词的上下文(contexts)”，以及什么是“词在上下文中的含义”&lt;/li&gt;
+&lt;li&gt;关联(association)的概念，即计算上下文矩阵元素的公式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314133641.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;共现计数-co-occurrence-counts&#34;&gt;共现计数 Co-Occurrence Counts&lt;/h3&gt;
+&lt;p&gt;Offconvex博客中提出的观点&lt;sup id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#fn:2&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;：&lt;/p&gt;
+&lt;blockquote class=&#34;quote-center&#34;&gt;
+        &lt;p&gt;All embedding methods try to leverage word &lt;strong&gt;co-occurence statistics&lt;/strong&gt;.&lt;/p&gt;&lt;/blockquote&gt; 
+
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314134630.png&#34; alt=&#34;&#34; title=&#34;词的上下文定义&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;共现计数&lt;/strong&gt;是一种非常简单的计数方法。以每个词周围$L$长度的窗口作为其对应的上下文。上下文矩阵元素的定义为词$w$在上下文$c$中出现的&lt;strong&gt;次数&lt;/strong&gt;$N(w,c)$。这是获得嵌入表示的最基础，并且非常古老的方法。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314134920.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;正点互信息-positive-pointwise-mutual-information-ppmi&#34;&gt;正点互信息: Positive Pointwise Mutual Information (PPMI)&lt;/h3&gt;
+&lt;p&gt;在该方法中，上下文的定义方式与共数计数中的定义相同,但衡量词语上下文之间关联性的方式更加聪明：正PMI (PPMI)。PPMI曾一度被广泛认为是&lt;strong&gt;分布式-相似度&lt;/strong&gt;(distributional-similarity)模型的最先进的度量方法。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135251.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;令$p(w,w&#39;)$是词$w$在以$w&#39;$为中心的5个单词组成的窗口内出现的经验概率，$p(w)$是词$w$在文本中出现的概率，$p(w&#39;)$是词$w&#39;$在文本中出现的概率。则对应的点互信息(PMI)计算为:
+$$
+PMI(w, w&#39;) = \log (\frac{p(w, w&#39;)}{p(w) p(w&#39;)})  \qquad \mbox{(Pointwise mutual information (PMI))}
+$$&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🔥&lt;u&gt;Important&lt;/u&gt;: 一些我们将会使用到的神经网络方法(如，Word2Vec)，隐式地近似（移位的，shifted）PMI矩阵的因式分解 $\color{#888}{u_{c}^T}\color{#88bd33}{v_{w}}\color{black} =PMI(\color{#88bd33}{w}\color{black}, \color{#888}{c}\color{black})-\log k$,其中$k$表示&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#%E6%9B%B4%E5%BF%AB%E7%9A%84%E8%AE%AD%E7%BB%83%E6%96%B9%E5%BC%8F%E8%B4%9F%E9%87%87%E6%A0%B7&#34;&gt;负采样&lt;/a&gt;的样本个数。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;潜在语义分析-latent-semantic-analysis-lsa-understanding-documents&#34;&gt;潜在语义分析 Latent Semantic Analysis (LSA): Understanding Documents&lt;/h3&gt;
+&lt;p&gt;潜在语义分析(LSA)分析&lt;strong&gt;文件集合&lt;/strong&gt;。在之前的方法中，上下文的作用仅是为了获得词向量，用完之后就会被抛弃。然而。在LSA中，上下文仍然被作为关心的信息，或者在该方法中称为&lt;strong&gt;文档向量&lt;/strong&gt;(document vectors)。LSA是最简单的主题模型(topic models)之一:文档向量之间的余弦相似度用于衡量文档之间的相似性。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135719.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;“LSA”有时指代对&lt;strong&gt;一个文档矩阵(term-document matrix)应用SVD&lt;/strong&gt;的更广泛的方法。文档矩阵的元素可以使用不同方式计算，例如简单的&lt;strong&gt;共现计数&lt;/strong&gt;、&lt;strong&gt;tf-idf&lt;/strong&gt;或者其他权重方法。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;基于预测的方法word2vec&#34;&gt;基于预测的方法：Word2Vec&lt;/h2&gt;
+&lt;h3 id=&#34;原理&#34;&gt;原理&lt;/h3&gt;
+&lt;p&gt;首先，我们不要忘记这些方法的主要依据思想：&lt;strong&gt;将上下文中的信息加入到此向量中&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;基于计数的方法很好地体现了主要依据思想，而Word2Vec从另一个方式体现：&lt;strong&gt;通过教模型预测上下文来学习词向量&lt;/strong&gt;。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;u&gt;How&lt;/u&gt;: &lt;strong&gt;Learn&lt;/strong&gt; word vectors by teaching them to &lt;strong&gt;predict contexts&lt;/strong&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Word2Vec的参数为词向量。这些参数针对特定目标进行了迭代优化。这个目标迫使词向量理解词应该出现在什么样的上下文中：&lt;strong&gt;对向量进行训练以预测相应单词的可能上下文&lt;/strong&gt;。如果还记得我们的分布式假设，如果词向量能理解上下文，那么这些向量也就能知道词的含义。
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135832.png&#34; style=&#34;zoom: 25%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Word2Vec是一种迭代的方法，它的主要思想如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;使用一个巨大的预料库&lt;/li&gt;
+&lt;li&gt;通过一个滑动窗口遍历所有的文本，窗口每次移动一个单词。在每一步，都有一个中心词(center word)和上下文词(context  words)&lt;/li&gt;
+&lt;li&gt;对于中心词，计算其对应的上下文词的概率&lt;/li&gt;
+&lt;li&gt;调整词向量，增加上下文词的概率&lt;/li&gt;
+&lt;/ol&gt;
+
+    &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css&#34;&gt;
+    
+    &lt;div class=&#34;swiper-container&#34;&gt;
+        &lt;div class=&#34;swiper-wrapper&#34;&gt;
+            
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140001.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140015.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140029.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140044.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140054.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140111.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+        &lt;div class=&#34;swiper-pagination&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js&#34;&gt;&lt;/script&gt;
+     
+     &lt;script&gt;
+        var swiper = new Swiper(&#39;.swiper-container&#39;, {
+            pagination: &#39;.swiper-pagination&#39;,
+            paginationClickable: true,
+        });
+        &lt;/script&gt;
+
+
+&lt;p&gt;&lt;span class=&#34;caption&#34;&gt;◎  Word2Vec计算流程示意&lt;/span&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;目标函数负对数似然&#34;&gt;目标函数：负对数似然&lt;/h3&gt;
+&lt;p&gt;对于文本预料的每个位置$t=1,...,T$, 给定中心词$\color{#88bd33}{w_t}$,Word2Vec将根据一个$m$-大小的窗口来预测上下文词:
+$$
+\color{#88bd33}{\mbox{Likelihood}} \color{black}= L(\theta)= \prod\limits_{t=1}^T\prod\limits_{-m\le j \le m, j\neq 0}P(\color{#888}{w_{t+j}}|\color{#88bd33}{w_t}\color{black}, \theta),
+$$
+其中$\theta$是所有需要优化的变量。目标函数(aka. 损失函数、成本函数)$J(\theta)$是平均负对数似然：
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140317.png&#34; alt=&#34;&#34; title=&#34;似然函数取对数&#34;&gt;&lt;/p&gt;
+&lt;p&gt;注意，负对数似然函数与我们所期望的目标的相符程度: &lt;strong&gt;使用一个滑动窗口遍历整个文本，并且计算上下文的概率值&lt;/strong&gt;。现在，我们来弄清楚如何计算概率值$P(\color{#888}{w_{t+j}}\color{black}|\color{#88bd33}{w_t}\color{black}, \theta)$：&lt;/p&gt;
+&lt;p&gt;对每个词$w$,我们将会获得两个向量：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$\color{#88bd33}{v_w}$: 当$w$是中心词时&lt;/li&gt;
+&lt;li&gt;$\color{#888}{u_w}$： 当$w$是上下文词时&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140428.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;一旦向量经过训练后，通常我们将会丢弃所有的上下文词向量，而保留词向量。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;对于中心词$\color{#88bd33}{c}$ (c-central)，上下文词$\color{#888}{o}$ (o-outside)以中心词为条件的条件概率为：
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140459.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;一个词将用有两个向量对应:$u,v$,而在网络训练学习这些词嵌入时，这些向量首先&lt;strong&gt;随机初始化&lt;/strong&gt;，赋予它们一个初值，然后根据后续的优化算法逐步学习出一个好的嵌入向量。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;注意到上述的函数形式其实就是softmax函数$\mathbb{R}^n\rightarrow \mathbb{R}^n$：
+$$
+softmax(x_i)=\frac{\exp(x_i)}{\sum\limits_{j=i}^n\exp(x_j)}.
+$$&lt;/p&gt;
+&lt;p&gt;Softmax函数将任意的值$x_i$映射成一个概率分布$p_i$:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&amp;quot;max&amp;quot;表示最大的$x_i$值将会有最大的概率值$p_i$&lt;/li&gt;
+&lt;li&gt;&amp;quot;soft&amp;quot;表示所有的概率都非零,即使是一些小的$x_i$值也会被赋予一定的概率值&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;font color=&#34;#88bd33&#34;&gt;中心词：central words&lt;/font&gt;和&lt;font color=&#34;#888&#34;&gt;上下文词：context words&lt;/font&gt;，下面将给出一个图例帮助理解整个概率值的生成过程。假设第一个中心词是$a$,将其记为$\color{#88bd33}{v_a}$，而当窗口滑动，$a$成为上下文词时，将其记为$\color{#888}{u_a}$。&lt;/p&gt;
+
+    &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css&#34;&gt;
+    
+    &lt;div class=&#34;swiper-container&#34;&gt;
+        &lt;div class=&#34;swiper-wrapper&#34;&gt;
+            
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140800.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140816.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140827.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140838.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140850.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140901.png&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+        &lt;div class=&#34;swiper-pagination&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js&#34;&gt;&lt;/script&gt;
+     
+     &lt;script&gt;
+        var swiper = new Swiper(&#39;.swiper-container&#39;, {
+            pagination: &#39;.swiper-pagination&#39;,
+            paginationClickable: true,
+        });
+        &lt;/script&gt;
+
+
+&lt;p&gt;&lt;span class=&#34;caption&#34;&gt;◎ 条件概率的生成示例&lt;/span&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;如何训练&#34;&gt;如何训练&lt;/h3&gt;
+&lt;h4 id=&#34;梯度下降&#34;&gt;梯度下降&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;通过梯度下降，一次更新一个词&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;回忆我们所需学习的参数$\theta$为词表中所有词的$\color{#88bd33}{v_w}$和$\color{#888}{u_w}$。通过对目标函数使用梯度下降算法来学习这些词向量参数：
+$$
+\theta^{new} = \theta^{old} - \alpha \nabla_{\theta} J(\theta).
+$$&lt;/p&gt;
+&lt;p&gt;需要注意的是$\theta$表示的是模型的所有参数。对于一个大小为$|V|$的词表，每个嵌入向量维度为$d$,而这些向量都将包含在$\theta$内，如下图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted image 20210310211302.png&#34; style=&#34;zoom: 50%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;u&gt;一次更新一个词&lt;/u&gt;：每次只更新一个(中心词-上下文词)配对。损失函数为：&lt;/p&gt;
+&lt;div&gt;
+    $$
+    \begin{aligned}
+\color{#88bd33}{\mbox{Loss}}\color{black} =J(\theta)= -\frac{1}{T}\log L(\theta)&amp;=
+    -\frac{1}{T}\sum\limits_{t=1}^T
+    \sum\limits_{-m\le j \le m, j\neq 0}\log P(\color{#888}{w_{t+j}}\color{black}|\color{#88bd33}{w_t}\color{black}, \theta) \\&amp;=
+    \frac{1}{T} \sum\limits_{t=1}^T
+    \sum\limits_{-m\le j \le m, j\neq 0} J_{t,j}(\theta). 
+	\end{aligned}
+    $$
+&lt;/div&gt;
+&lt;p&gt;对于每个中心词$\color{#88bd33}{w_t}$,损失函数包含一个与其上下文词$\color{#888}{w_{t+j}}$对应的项$J_{t,j}(\theta)=-\log P(\color{#888}{w_{t+j}}\color{black}|\color{#88bd33}{w_t}\color{black}, \theta)$.&lt;/p&gt;
+&lt;p&gt;为理解整个训练过程，先看一个例子。对于如下序列语句：
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314141106.png&#34; alt=&#34;&#34;&gt;
+中心词为$\color{#88bd33}\mathrm{cat}$,以及含有四个上下文词。在训练时，我们先从中选出一个上下文词，假设选择$\color{#888}\mathrm{cute}$,那么这个($\color{#88bd33}\mathrm{cat}$,$\color{#888}\mathrm{cute}$)配对的损失函数项为:&lt;/p&gt;
+&lt;div&gt;
+    $$
+    \begin{aligned}
+ J_{t,j}(\theta)= -\log P(\color{#888}{cute}\color{black}|\color{#88bd33}{cat}\color{black}) &amp;=
+        -\log \frac{\exp\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}}{
+       \sum\limits_{w\in Voc}\exp{\color{#888}{u_w^T}\color{#88bd33}{v_{cat}} }} \\ &amp;=
+    -\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}\color{black}
+        + \log \sum\limits_{w\in Voc}\exp{\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}\color{black}{.}
+		\end{aligned}
+    $$
+&lt;/div&gt;
+&lt;div&gt;
+    $$
+    \begin{aligned}
+\frac{\partial}{\partial v_c}(u_0^Tv_c)-\frac{\partial}{\partial v_c}\log \sum_{w\in Voc}\exp (u_o^Tv_c)&amp;=u_o-\sum_{x=1}^{V}\frac{\exp(u_x^Tv_c)}{\sum_{w\in Woc}\exp(u_w^Tv_c)}\cdot u_x\\
+&amp;=u_o-\sum_{x=1}^{V}p(x|c)\cdot u_x
+\end{aligned}
+    $$
+&lt;/div&gt;
+&lt;p&gt;现在注意到该步的参数：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;中心词的词向量参数: $\color{#88bd33}{v_{cat}}$&lt;/li&gt;
+&lt;li&gt;上下文词的词向量参数：所有的$\color{#888}{u_w}$（词表中的所有词）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;只有这些参数在当前训练步上需要更新。更新步骤有如下图示：
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314141222.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;为了更新参数以最小化损失函数项$J_{t,j}(\theta)$,我们需要强制增加$\color{#88bd33}{v_{cat}}$和$\color{#888}{u_{cute}}$的相似度(即点积)，并同时降低$\color{#88bd33}{v_{cat}}$和词表中所有词$w$的上下文词$\color{#888}{u_{w}}$之间的相似度。
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314141355.png&#34; alt=&#34;&#34; title=&#34;训练策略&#34;&gt;&lt;/p&gt;
+&lt;p&gt;但是这里可能会出现一个疑问：&lt;strong&gt;为什么还需要降低&lt;span&gt;$\color{#88bd33}{v_{cat}}$&lt;/span&gt;和其他所有词之间的相似度&lt;/strong&gt;？ 如果其他词中也包括有效的上下文词（例如该例中的$\color{#888}\mathrm{grey,playing}$等）,这样做岂不是会降低其他上下文词预测的概率吗？&lt;/p&gt;
+&lt;p&gt;但我们其实不必担心：因为我们会对每个上下文词都进行更新,在在本次更新中，降低相似度的上下文词会在另一些更新中 增加其相似度。于是&lt;u&gt;平均而言&lt;/u&gt;，在所有的更新结束后，最终优化后的向量会学习到可能的上下文词的分布。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;更快的训练方式负采样&#34;&gt;更快的训练方式：负采样&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;Negative Sampling&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在之前的例子中，对于每个(中心词,上下文词)配对，我们都需要更新所有的上下文词向量。这样会导致显著的低效率性，每一步的计算时间复杂度都与词表的大小成正比。&lt;/p&gt;
+&lt;p&gt;因此，我们将会产生疑惑：&lt;strong&gt;为什么一定要在每一步中都更新所有的上下文词向量&lt;/strong&gt;？举例来说，假设在当前步，我们不考虑所有词的上下文词，而只考了当前(中心词，上下文词)配对中的上下文词(上例中是$\color{#888}\mathrm{cute}$)以及随机选择词表中的几个词。下图将展示这个想法：
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314141841.png&#34; alt=&#34;&#34; title=&#34;负采样方法只随机选取K个词&#34;&gt;&lt;/p&gt;
+&lt;p&gt;与梯度下降算法中一样，我们更新都需要提高$\color{#88bd33}{v_{cat}}$和$\color{#888}{u_{cute}}$的相似度，但不同的是，在&lt;strong&gt;负采样&lt;/strong&gt;方法中，我们不需要降低$\color{#88bd33}{v_{cat}}$与所有词的上下文词之间的相似度，而&lt;strong&gt;只需随机选择词表中大小为$K$的&amp;quot;负”(negative)词&lt;/strong&gt;，并降低其与中心词间的相似度。&lt;/p&gt;
+&lt;p&gt;因为我们具有很大的语料数据，因此&lt;u&gt;平均所有的更新而言&lt;/u&gt;(on average over all updates)，即使每一步不使用所有的上下文词更新，只要我们更新的次数足够多，最终学习到的词向量也能很好地学习到此之间的关系。&lt;/p&gt;
+&lt;p&gt;如果需要正式地说明，当前步的新损失函数可以表达为：
+$$
+J_{t,j}(\theta)=
+-\log\sigma(\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}\color{black}) -
+\sum\limits_{w\in {w_{i_1},\dots, w_{i_K}}}\log\sigma({-\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}\color{black}),
+$$
+其中$w_{i_1},\dots, w_{i_K}$表示在当前步上随机选择的$K$个负样本，以及$\sigma(x)=\frac{1}{1+e^{-x}}$表示sigmoid函数。&lt;/p&gt;
+&lt;p&gt;注意到$\sigma(-x)=\frac{1}{1+e^{x}}=\frac{1\cdot e^{-x}}{(1+e^{x})\cdot e^{-x}} =
+\frac{e^{-x}}{1+e^{-x}}= 1- \frac{1}{1+e^{x}}=1-\sigma(x)$,因此损失函数还可以改写为：&lt;/p&gt;
+&lt;p&gt;$$
+J_{t,j}(\theta)=
+-\log\sigma(\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}\color{black}) -
+\sum\limits_{w\in {w_{i_1},\dots, w_{i_K}}}\log(1-\sigma({\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}\color{black})).
+$$&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;strong&gt;关于&lt;em&gt;负&lt;/em&gt;采样&lt;/strong&gt;的几点说明：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;由于滑动窗口大小的限制，每个中心词只对应着几个“正”上下文词。因此，随机选择的词很可能并不是真正上下文词中的一个，因此称其为&amp;quot;负“(negative)样本
+&lt;ol&gt;
+&lt;li&gt;这种采样的思想不仅在Word2Vec中得到使用，其他应用中也存在这种思想&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;Word2Vec根据词的&lt;strong&gt;经验分布&lt;/strong&gt;(empirical distribution)来随机选择负样本
+&lt;ol&gt;
+&lt;li&gt;假设$U(w)$是一个&lt;strong&gt;一元模型分布&lt;/strong&gt;（unigram distribution），即$U(w)$表示此$w$在文本语料中出现的频率&lt;/li&gt;
+&lt;li&gt;Word2Vec通过对这种分布进行调整，使得在语料中出现频率少的词被选中的概率增加,而改良后的一元模型分布形式为$U^{3/4}(w)$,将其称为&lt;strong&gt;平滑&lt;/strong&gt;一元模型分布(&lt;strong&gt;Smoothed unigram distribution&lt;/strong&gt;)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果将改进后的分布具体写出，则其形式如下：
+$$P\left(w_{i}\right)=\frac{f\left(w_{i}\right)^{3 / 4}}{\sum_{j=0}^{n}\left(f\left(w_{j}\right)^{3 / 4}\right)}$$
+其中$f(w_i)$表示词在文本语料中出现的频率。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;改进分布中的$3/4$是有实验经验获得的结果，在实验中,指数选择$3/4$的效果最佳。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;后加工&#34;&gt;后加工&lt;/h3&gt;
+&lt;h4 id=&#34;加入上下文向量&#34;&gt;加入上下文向量&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;Adding context vectors&lt;/strong&gt;: GloVe的作者建议将词向量和上下文向量合并一起作为最终的输出向量，即&lt;span&gt;$\vec{v}_{\text{cat}} = \vec{w}_{\text{cat}} + \vec{c}_{\text{cat}}$&lt;/span&gt;。这样输出增加了一阶相似度， 即&lt;span&gt;$w\cdot v$&lt;/span&gt;。&lt;/p&gt;
+
+&lt;div class=&#34;notice notice-warning&#34; &gt;
+    &lt;div class=&#34;notice-title&#34;&gt;&lt;svg xmlns=&#34;http://www.w3.org/2000/svg&#34; class=&#34;icon notice-icon&#34; viewBox=&#34;0 0 576 512&#34;&gt;&lt;path d=&#34;M570 440c18 32-5 72-42 72H48c-37 0-60-40-42-72L246 24c19-32 65-32 84 0l240 416zm-282-86a46 46 0 100 92 46 46 0 000-92zm-44-165l8 136c0 6 5 11 12 11h48c7 0 12-5 12-11l8-136c0-7-5-13-12-13h-64c-7 0-12 6-12 13z&#34;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;p&gt;然而，该处理不能被应用与PMI(点互信息)，因为PMI生成的向量是稀疏的。&lt;/p &gt;&lt;/div&gt;
+
+&lt;h4 id=&#34;向量标准化&#34;&gt;向量标准化&lt;/h4&gt;
+&lt;p&gt;将所有向量归一化.&lt;/p&gt;
+&lt;h3 id=&#34;推荐训练技巧&#34;&gt;推荐训练技巧&lt;/h3&gt;
+&lt;p&gt;Takeaways&lt;sup id=&#34;fnref:3&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#fn:3&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;DON&#39;T&lt;/strong&gt; use shifted PPMI with SVD.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;DON&#39;T&lt;/strong&gt; use SVD &amp;quot;correctly&amp;quot;, i.e. without eigenvector weighting (performance drops 15 points compared to with eigenvalue weighting with p=0.5).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;DO&lt;/strong&gt; use PPMI and SVD with short contexts (window size of 22).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;DO&lt;/strong&gt; use many negative samples with SGNS.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;DO&lt;/strong&gt; always use context distribution smoothing (raise &lt;strong&gt;unigram distribution&lt;/strong&gt; to the power of $\alpha$=0.75) for all methods.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;DO&lt;/strong&gt; use SGNS as a baseline (robust, fast and cheap to train).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;DO&lt;/strong&gt; try adding context vectors in SGNS and GloVe.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;word2vec变种skip-gram和cbow&#34;&gt;Word2Vec变种：Skip-Gram和CBOW&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;u&gt;Skip-Gram&lt;/u&gt;: 与Word2Vec的主体思想一致，即给定中心词来预测其上下文词。使用负采样更新的Skip-Gram模型(Skip-Gram with Negative Sampling,SGNS)是最常用的方法之一
+&lt;ul&gt;
+&lt;li&gt;SGNS: 隐式地近似(偏移 shifted)PMI矩阵的因式分解&lt;/li&gt;
+&lt;li&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314142917.png&#34; style=&#34;zoom: 50%;&#34; /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;u&gt;CBOW&lt;/u&gt;(Continuous Bag-of-Words): 与Word2Vec思想恰好相反，&lt;strong&gt;根据&lt;/strong&gt;上下文词向量的累加和来预测中心词，而这种简单的词向量累加结果称为&lt;strong&gt;Bag of words&lt;/strong&gt;,CBOW模型也是因此得名
+&lt;ul&gt;
+&lt;li&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314142902.png&#34; style=&#34;zoom: 50%;&#34; /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143033.png&#34; alt=&#34;&#34; title=&#34;Skip-Gram vs. CBOW&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;额外笔记&#34;&gt;额外笔记&lt;/h3&gt;
+&lt;p&gt;&lt;u&gt;The Idea is Not New&lt;/u&gt;: 这种根据上下文词学习中心词的想法其实不是特别新的想法，然而Word2Vec出人意料的地方在于其可以学习到&lt;u&gt;高质量&lt;/u&gt;(high-quality)的词向量，以及可以在很大的语料数据集和词表中&lt;u&gt;非常快速&lt;/u&gt;地学习。&lt;/p&gt;
+&lt;p&gt;&lt;u&gt;Why Two Vectors?&lt;/u&gt;: 回忆Word2Vec中的内容，我们需要训练两个向量：中心词向量和其对应的上下文向量，并且在训练结束后，上下文词向量将会直接丢弃，不需再使用，那么为什么还需要使用两个向量? 其实这就使得Word2Vec模型简单高效的技巧所在。我们再看一下某一步更新的损失函数：
+$$
+J_{t,j}(\theta)=
+-\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}\color{black} -
+\log \sum\limits_{w\in V}\exp{\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}\color{black}{.}
+$$
+当中心词和上下文词使用不同的向量，在损失函数（负采样方法中的损失函数也是同理）的第一项和第二项指数内的点积其实都关于参数(即词向量)是线性的，因此梯度可以非常容易地计算，从而训练速度也会非常快。&lt;/p&gt;
+&lt;p&gt;&lt;u&gt;滑动窗口的大小选择&lt;/u&gt;: 滑动窗口的大小对向量相似度的计算有很大的影响。有研究表明：越大的窗口越能产生主题相关的相似度(topical similarities),例如walked,run,walking等词会分类在一起，词向量会比较接近；而越小的窗口越能产生更多功能与句法(functional and syntactic)上的相似度，例如Walking,running,approaching等。&lt;/p&gt;
+&lt;p&gt;&lt;u&gt;某种程度上的标准超参数设置&lt;/u&gt;: 通常超参数的选择取决于需要解决的任务，不过根据一些研究的经验，得到某种程度上的一个标准：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;模型选择: 使用负采样的Skip-Gram模型&lt;/li&gt;
+&lt;li&gt;负采样的个数：
+&lt;ol&gt;
+&lt;li&gt;小数据集：15-20个采样样本&lt;/li&gt;
+&lt;li&gt;大数据集： 2-5个采样样本&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;嵌入表示的维度：通常选择的维度大小为300维，但是其他变种，如50或100也可能有效&lt;/li&gt;
+&lt;li&gt;滑动窗口的大小：5-10&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;glove-global-vectors-for-word-representation&#34;&gt;Glove: Global Vectors for Word Representation&lt;/h2&gt;
+&lt;p&gt;Glove模型(全局向量)是基于计数的方法和基于预测的方法的结合。Glove表示&lt;strong&gt;Glo&lt;/strong&gt;bal &lt;strong&gt;Ve&lt;/strong&gt;ctors,其反映的思想是：&lt;strong&gt;使用整个文本语料的全局信息来学习词向量&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#%E5%9F%BA%E4%BA%8E%E8%AE%A1%E6%95%B0%E7%9A%84%E6%96%B9%E6%B3%95&#34;&gt;在之前章节&lt;/a&gt;,最简单的基于计数的方法采用共现计数来衡量中心词$\color{#88bd33}w$和上下文词$\color{#888}c$之间的关联度$N({\color{#88bd33}w},{\color{#888}c})$。Glove也使用该计数方法构建其损失函数：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143459.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;与Word2Vec思想相似，Glove也需要学习中心词向量和上下文词向量。此外，Glove还分别对两个向量加入了偏置项，而偏置项也同样是需要学习的参数。&lt;/p&gt;
+&lt;p&gt;Glove中非常有趣的一个地方在于其控制出现频率低的词和出现频率高的词对损失函数影响大小的方式：&lt;strong&gt;在损失函数中，每个中心词-上下文词配对$({\color{#88bd33}w},{\color{#888}c})$对损失函数的影响都会有一个对应的权重&lt;/strong&gt;。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;出现频率低的词将会被惩罚&lt;/li&gt;
+&lt;li&gt;出现频率高的词也不会有过于大的权重&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;词嵌入表示的评估&#34;&gt;词嵌入表示的评估&lt;/h2&gt;
+&lt;p&gt;我们如何评估一个方法获得的词嵌入表示比另一个方法的效果好坏呢？通常有两种评估方法（不仅适用于词嵌入的评估）：&lt;strong&gt;内部任务评价&lt;/strong&gt;（&lt;em&gt;Intrinsic&lt;/em&gt; Evaluation）和&lt;strong&gt;外部任务评价&lt;/strong&gt;（extrinsic evaluations）。&lt;/p&gt;
+&lt;p&gt;&lt;u&gt;内在任务评价&lt;/u&gt;: 基于内在的属性&lt;/p&gt;
+&lt;p&gt;这种评价方法着眼于嵌入的内在属性，例如这些词嵌入捕获词的含义的能力好坏。
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143707.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;u&gt;外在任务评价&lt;/u&gt;: 在真实任务中测试&lt;/p&gt;
+&lt;p&gt;这种评估方法可以检验哪种嵌入更适合真正关心的任务，例如文本分类等。在这种评估方法中，我们需要在真实任务中，训练多次模型/算法：&lt;strong&gt;一个模型获得一个对应的词嵌入&lt;/strong&gt;，接着，检查这些模型的性能来决定哪个词嵌入更好。
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143736.png&#34; style=&#34;zoom:40%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;u&gt;如何选择&lt;/u&gt;&lt;/p&gt;
+&lt;p&gt;在此之前，我们应该知道在所有的情形中，并不存在什么完美方法以及正确的解答。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143846.png&#34; style=&#34;zoom:30%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;对于评估方法，我们通常关注地是我们想要解决任务的质量(quality)。因此，我们更可能倾向于使用外在任务评估。然而在真实任务中，模型通常需要很多时间和资源来训练，而训练多个模型更是成本太高。&lt;/p&gt;
+&lt;p&gt;总而言之，这需要看你自己的能力（你的资源）来决定 :)&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;分析与可解释性&#34;&gt;分析与可解释性&lt;/h2&gt;
+&lt;p&gt;本节将重点关注模型在训练过程中学习到了什么，即模型解释性的问题。&lt;/p&gt;
+&lt;h3 id=&#34;语义空间&#34;&gt;语义空间&lt;/h3&gt;
+&lt;p&gt;语义空间专注于创造捕获自然语言含义的表示。我们可以说（好的）词嵌入形成了语义空间，并将多维空间中的一组词向量称为“语义空间”。&lt;/p&gt;
+&lt;p&gt;下图将展示使用twitter数据获得的Glove向量组成的语义空间。向量使用t-SNE映射到2维空间中，并只展示前3k个最常见的单词。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144026.png&#34; style=&#34;zoom:75%;&#34; /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;最近邻&#34;&gt;最近邻&lt;/h3&gt;
+&lt;p&gt;在语义空间中，距离较近的点（向量）通常具有相近的含义。有时，即使是一些极少出现的词也能很好地理解。例如下图所示，leptodactylidae和litoria非常接近于frog。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144109.png&#34; style=&#34;zoom: 26%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;caption&#34;&gt;◎ &lt;a href=&#34;https://nlp.stanford.edu/projects/glove/&#34;&gt;GloVe项目上的例子&lt;/a&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;u&gt;词相似度基准&lt;/u&gt;&lt;/p&gt;
+&lt;p&gt;通过余弦相似度或欧式距离来获得最近邻，查看最近邻是估计词表示质量的常用方法之一。有几个单词相似性基准（测试集），它们由根据人类的判断具有相似性分数的单词对组成。词嵌入的质量使用两个相似性得分（来自模型和来自人类）之间的相关性来估计。
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144426.png&#34; style=&#34;zoom:30%;&#34; /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;线性结构&#34;&gt;线性结构&lt;/h3&gt;
+&lt;p&gt;尽管词相似度的结果令人鼓舞，但并不令人惊讶：毕竟，词嵌入本意就是通过专门的训练来反映单词的相似度。然而，令人惊讶地是词之间的许多语义和句法关系在词向量空间中（几乎）是线性的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144449.png&#34; style=&#34;zoom:30%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;上图就显示了这种线性关系。king和queen之间的距离几乎与man和woman之间的距离相同，可以说$\mathrm{man-woman}\approx \mathrm{king-queen}$；又或是kings与king相似，则同样也有queens和queen。&lt;/p&gt;
+&lt;p&gt;下图的例子显示了国家-首都的关系，以及一些句法上的关系。
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144518.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;u&gt;词类比基准&lt;/u&gt;&lt;/p&gt;
+&lt;p&gt;这种词向量之间的(近乎)线性关系启发了一种新的评价方法：&lt;strong&gt;词类比评估&lt;/strong&gt;(word analogy evaluation)。
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144543.png&#34; alt=&#34;&#34; title=&#34;类比词任务&#34;&gt;&lt;/p&gt;
+&lt;p&gt;给定相同关系的两个单词对,例如(man,woman)和(king,queen)，任务是检测我们是否能根据三个单词来识别剩余的一个单词。具体来说，我们需要检测与向量$\mathrm{king-man+woman}$最接近的向量是否是$\mathrm{queen}$。
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144633.png&#34; style=&#34;zoom:57%;&#34; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;几个类比基准数据：these include the standard benchmarks (&lt;a href=&#34;https://www.aclweb.org/anthology/N13-1090.pdf&#34;&gt;MSR&lt;/a&gt; + &lt;a href=&#34;https://arxiv.org/pdf/1301.3781.pdf&#34;&gt;Google analogy&lt;/a&gt; test sets) and &lt;a href=&#34;https://www.aclweb.org/anthology/N16-2002.pdf&#34;&gt;BATS (the Bigger Analogy Test Set)&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;跨语言的相似度&#34;&gt;跨语言的相似度&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#%E7%BA%BF%E6%80%A7%E7%BB%93%E6%9E%84&#34;&gt;在之前的小节中&lt;/a&gt;，我们知道在词嵌入空间中，词向量的关系是(近乎)线性的。然而，当跨语言时将会发生什么？结果表明，语义空间之间的关系也在某种程度上是线性的：&lt;strong&gt;你可以将一个语义空间线性地映射到另一个语义空间，以使两种语言中的相应单词在新的联合语义空间中匹配&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144744.png&#34; alt=&#34;&#34; title=&#34;两种语言中的对应单词配对&#34;&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The figure above illustrates &lt;a href=&#34;https://arxiv.org/pdf/1309.4168.pdf&#34;&gt;the approach proposed by Tomas Mikolov et al. in 2013&lt;/a&gt; not long after the original Word2Vec.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在形式上，给定一组词配对以及它们的向量表示配对${\color{#88a635}{x_i}\color{black}, \color{#547dbf}{z_i}\color{black} }_{i=1}^n$,其中$\color{#88a635}{x_i}$和$\color{#547dbf}{z_i}$分别是源语言(source language)中的第$i$个词，以及目标语言(target language)中对应的翻译单词。我们希望找到一个映射矩阵$W$，使得$W\color{#547dbf}{z_i}$近似于$\color{#88a635}{x_i}$,也即从两个语言的字典中找到匹配的单词。&lt;/p&gt;
+&lt;p&gt;我们将根据如下准则选取$W$:
+$$
+W = \arg \min\limits_{W}\sum\limits_{i=1}^n\parallel W\color{#547dbf}{z_i}\color{black} - \color{#88a635}{x_i}\color{black}\parallel^2,
+$$
+并且通过梯度下降算法优化。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在&lt;a href=&#34;https://arxiv.org/pdf/1309.4168.pdf&#34;&gt;原始论文中&lt;/a&gt;，初始对应的词表由5k个常见的单词与其对应的翻译组成，剩下的单词翻译配对将由学习得到。然而在&lt;a href=&#34;https://arxiv.org/pdf/1710.04087.pdf&#34;&gt;之后的研究中&lt;/a&gt;表明，我们根本不需要建立字典，&lt;u&gt;即使我们对语言一无所知&lt;/u&gt;，我们也可以在语义空间之间建立映射！&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这种对不同的嵌入式表示集合进行线性映射以进行集合中元素匹配的想法可以被应用到许多不同任务中。&lt;/p&gt;
+&lt;p&gt;❓ 语言之间的“真实”映射是否确实是线性的或更复杂？&lt;/p&gt;
+&lt;p&gt;在&lt;a href=&#34;https://lena-voita.github.io/nlp_course/word_embeddings.html#papers_analyzing_geometry&#34;&gt;一些研究中&lt;/a&gt;发现，我们可以根据学习到的语义空间的几何特性进行检验。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;问题探讨-rethinking&#34;&gt;问题探讨 Rethinking&lt;/h2&gt;
+&lt;h3 id=&#34;问题1&#34;&gt;问题1&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145043.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;❓ &lt;strong&gt;与中心词距离不同的上下文词对中心词是同等重要的吗？如果不是，如何改进&lt;/strong&gt;
+&lt;strong&gt;共现计数方法？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在直觉上，与中心词越接近的上下文词应该更加重要一些。例如，比起距离3的单词，近邻的信息量更大。因此，我们可以改进这个模型：当计数时，给距离中心词更近的上下文词更多的权重。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This idea was used in the &lt;a href=&#34;https://link.springer.com/content/pdf/10.3758/BF03204766.pdf&#34;&gt;HAL model (1996)&lt;/a&gt;, which once was very famous.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145216.png&#34; style=&#34;zoom:25%;&#34; /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;问题2&#34;&gt;问题2&lt;/h3&gt;
+&lt;p&gt;❓ &lt;strong&gt;在语言中，词的出现顺序很重要，具体来说，左右的上下文词具有不同的含义。我们应该如果区分左右上下文词呢？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当需要区分左右上下文词时，修改权重的方法将不再有效，因为我们不能断言左边还是右边的上下文词更重要。我们所需做的是分别计算左边和右边的共现次数。&lt;/p&gt;
+&lt;p&gt;对每个上下文词，我们都有两种不同的计数：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;当该上下文词处于中心词左边时&lt;/li&gt;
+&lt;li&gt;当该上下文词处于中心词右边时&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这意味着共现计数矩阵的大小应为$|V|\times 2|V|$。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This idea was also used in the &lt;a href=&#34;https://link.springer.com/content/pdf/10.3758/BF03204766.pdf&#34;&gt;HAL model (1996)&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145339.png&#34; style=&#34;zoom:25%;&#34; /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;问题3&#34;&gt;问题3&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145425.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;❓ &lt;strong&gt;所有的上下文词都是同等重要的吗？是否存在某些类型的上下文词能比其他类型的上下文词提供更多的信息？考虑有哪些特征可以影响上下文词的重要性。&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;u&gt;word frequency&lt;/u&gt; : 词出现的频率
+&lt;ol&gt;
+&lt;li&gt;我们可以预期，与罕见词相比，常见词通常所提供的信息更少。&lt;/li&gt;
+&lt;li&gt;E.g: 在上图例子中，&lt;code&gt;in&lt;/code&gt;为&lt;code&gt;cat&lt;/code&gt;的上下文词并出现多次，然而&lt;code&gt;in&lt;/code&gt;同时也作为其他很多词的上下文词，却没有提供有用信息。然而，例如&lt;code&gt;cute&lt;/code&gt;、&lt;code&gt;grey&lt;/code&gt;和&lt;code&gt;playing&lt;/code&gt;这些出现较少的上下文词，却提供了一些关于&lt;code&gt;cat&lt;/code&gt;的特征信息&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;u&gt;Distance from the central word&lt;/u&gt;: 上下文词与中心词的距离
+&lt;ol&gt;
+&lt;li&gt;正如我们在&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#%E9%97%AE%E9%A2%981&#34;&gt;问题1&lt;/a&gt;中讨论的，越接近中心词的上下文词可能越重要&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;问题4&#34;&gt;问题4&lt;/h3&gt;
+&lt;p&gt;❓ &lt;strong&gt;我们应该如何改进训练过程?&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;根据词的频率&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145527.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;由&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#%E9%97%AE%E9%A2%983&#34;&gt;问题3&lt;/a&gt;中得到的启发，我们考虑出现频率低和出现频率高的词所带来的信息量。Word2Vec使用了一个简单的下采样(subsampling)方法：&lt;strong&gt;在训练集中的每个词$w_i$，都以一定的概率被忽略&lt;/strong&gt;。忽略概率值计算如下：
+$$
+P(w_i)=1 - \sqrt{\frac{thr}{f(w_i)}}
+$$&lt;/p&gt;
+&lt;p&gt;其中$f(w_i)$表示词$w_i$出现的频率，$thr$表示选择的阈值(在Word2Vec原始论文中，采用$thr=10^{-5}$)。该等式保留了词出现频率的排序，但对出现频率大于阈值$thr$的词积极地进行了下采样。&lt;/p&gt;
+&lt;p&gt;有趣的是，这种启发式方法在实践中效果很好：它加快了学习速度，甚至显着提高了出现频率低的单词的学习向量的准确性。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;根据与中心词的距离&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#%E9%97%AE%E9%A2%981&#34;&gt;之前的问题中&lt;/a&gt;中，我们给距离中心词近的上下文词赋予了更大的权重。乍一看，在原始Word2Vec实现中并没有体现出任何权重调整。然而，在每一步中，它都从$1$到$L$采样上下文窗口的大小。因此，距离中心词近的词将会比距离远的词得到更多的采样。在原始工作中，这样做（可能）是为了提高效率（每个步骤的更新次数较少），但这也与分配不同权重具有相似的效果。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;问题5&#34;&gt;问题5&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145553.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;通常在查询表(look-up table)中，每个词都被赋予一个对应的向量。通过构造，这些向量对它们组成的&lt;strong&gt;子词&lt;/strong&gt;(subwords)一无所知：&lt;strong&gt;它们拥有的所有信息都是从上下文中学到的&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;❓ &lt;strong&gt;如果词嵌入对它们组成的子词有一定的了解，这样会带来什么好处？&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;更好地了解词的形态&lt;/strong&gt;(morphology)，例如动词时态
+&lt;ul&gt;
+&lt;li&gt;通过给每次词赋予不同的向量，我们这时就忽略了单词的形态。&lt;/li&gt;
+&lt;li&gt;如果给定了子词的信息，那么模型就能发掘一些不同的词其实是由同一个词组成的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;未知单词的表示&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;通常我们只表示存在于词表中的词&lt;/li&gt;
+&lt;li&gt;如果给定子词的信息，将有助于未知词的拼写来表示这些未知词&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;处理拼写错误&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;即使单词中只有一个字符出错，那也将会成为另一个单词，因此也就会学习到一个完全不同的嵌入表示(甚至是一个未知词的嵌入表示)&lt;/li&gt;
+&lt;li&gt;如果给定子词的信息，则拼写错误的单词的嵌入表示也将会和原始单词的嵌入表示相近&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;问题6&#34;&gt;问题6&lt;/h3&gt;
+&lt;p&gt;❓ &lt;strong&gt;我们如何将子词的信息整合进词的嵌入表示（例如使用负采样的Skip-Gram）中？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;假设训练流程是固定的，例如采用SGNS(Skip-Gram with Negative Sampling)。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145807.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;一种可能的方法是使用子词的向量来组成该词的词向量。例如，流行的 &lt;a href=&#34;https://arxiv.org/pdf/1607.04606.pdf&#34;&gt;FastText embeddings&lt;/a&gt;，对每一个词，都添加特殊的起始字符(start characters)和终止字符(end characters)；接着，除了使用该原始词的词向量，FastText也使用&lt;strong&gt;字符n-grams&lt;/strong&gt;(characters n-grams)的向量，而这些字符n-grams也在词表中存在；最终，原始词的词嵌入表示由&lt;strong&gt;该词的词向量和子词的词向量的累加&lt;/strong&gt;组成的向量构成。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意，这种方法仅改变了我们形成单词向量的方式。整个训练流程与标准的Word2Vec相同。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;问题7&#34;&gt;问题7&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145857.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;假设我们有一个从不同来源组成的文本语料：时间段(time periods)，人口(populations)，地理区域(geographic regions)等。在数字人文科学(digital humanities) 和计算社会科学(computation social science)中,人们通常想找到在这些语料中语法不同的单词。&lt;/p&gt;
+&lt;p&gt;❓ &lt;strong&gt;给定两个语料，我们如何检查一个单词在这两个语料中的含义/用法是否不同？&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;ACL 2020&lt;/strong&gt;: train embeddings, look at the neighbors&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;一种非常简单的方法是训练嵌入表示（例如Word2Vec）并查看最近邻。如果一个单词在两个语料中的最近邻不相同，则判断该词在两个语料中的含义不同。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;请记住，&lt;strong&gt;词嵌入反映了它们所处的上下文&lt;/strong&gt;！如果词嵌入都不同，那么上下文含义也不同，那么也反映该词在不同的上下文中的含义也不相同。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145930.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这个方法在 &lt;a href=&#34;https://www.aclweb.org/anthology/2020.acl-main.51.pdf&#34;&gt;ACL 2020 paper&lt;/a&gt;中被提出。正式地，对于每个单词，作者都在两个嵌入集合中选择$k$个最近邻的嵌入，并且计算这两个最近邻集合中有多少个相同元素。大交集意味着该单词的含义在两个语料中没有不同，小交集意味着含义不同。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Previous popular approach&lt;/strong&gt;: align two embedding sets &lt;strong&gt;对齐&lt;/strong&gt;两个嵌入集&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145944.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;在&lt;a href=&#34;https://www.aclweb.org/anthology/P16-1141.pdf&#34;&gt;之前的研究&lt;/a&gt;中，对齐两个嵌入集并找到嵌入不匹配的单词。在形式上，令$\color{#88a635}{W_1}\color{black}, \color{#547dbf}{W_2}\color{black} \in \mathbb{R}^{d\times |V|}$为在不同语料中训练得到的嵌入集合。为了对齐学习到的嵌入，作者找到一种旋转方法(rotation)$R = \arg \max\limits_{Q^TQ=I}\parallel \color{#547dbf}{W_2}\color{black}Q - \color{#88a635}{W_1}\color{black}\parallel_F$,这被称为$\mathrm{Orthogonal ~~Procrustes}$(正交普鲁克).&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;普鲁克问题：&lt;/p&gt;
+&lt;div&gt;
+    $$
+    W^{*}=\operatorname{argmin}_{W} \sum_{i=1}^{n}\left\|W x_{i}-y_{i}\right\|_{2}
+    $$
+&lt;/div&gt;
+&lt;p&gt;or&lt;/p&gt;
+&lt;div&gt;
+    $$
+    W^{*}=\arg \min _{W}\|W X-Y\|_{F}
+    $$
+&lt;/div&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;普鲁克：在希腊神话中，Procrustes或“the stretcher”是来自Attica的流氓史密斯和强盗，他们通过拉伸或切断腿部来攻击人们，以迫使他们&lt;strong&gt;适应铁床(iron bed)的大小&lt;/strong&gt;。
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314150003.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;我们使用原嵌入空间来做同样“糟糕”的事情。我们的Procrustean床是目标嵌入空间。&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted-image-20210306201514.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;通过使用这种旋转，我们可以将嵌入集合对齐，并且找到没有对齐的单词，而这些没有对齐的单词表示在不同语料中的含义发生了改变。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;reference&#34;&gt;Reference&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://lena-voita.github.io/nlp_course/word_embeddings.html&#34;&gt;Lena Voita: word_embeddings&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://ruder.io/word-embeddings-1/index.html&#34;&gt;Sebastian Ruder Blog&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.offconvex.org/2015/12/12/word-embeddings-1/&#34;&gt;offconvex: word embedding&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;section class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34; role=&#34;doc-endnote&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;https://ruder.io/word-embeddings-1/index.html&#34;&gt;Sebastian Ruder: On word Embeddings - Part 1&lt;/a&gt; &lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:2&#34; role=&#34;doc-endnote&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.offconvex.org/2016/02/14/word-embeddings-2/&#34;&gt;Offconvex: Word Embedding&lt;/a&gt; &lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#fnref:2&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:3&#34; role=&#34;doc-endnote&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;https://ruder.io/secret-word2vec/index.html#results&#34;&gt;Sebastian Ruder: On word Embeddings - Part 3&lt;/a&gt; &lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#fnref:3&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/section&gt;
+</description>
+                
+                
+                
+                
+                
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/categories/nlp/">NLP</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/categories/word-embeddings/">Word Embeddings</category>
+                                
+                            
+                        
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/tags/nlp/">NLP</category>
+                                
+                            
+                        
+                    
+                
+            </item>
         
             <item>
                 <title>资 源 集 锦</title>
@@ -215,6 +2390,7 @@
 &lt;ul&gt;
 &lt;li&gt;MEME特殊强调符号： &lt;code&gt;..emphasis..&lt;/code&gt; &lt;code&gt;..强调..&lt;/code&gt; ..强调..&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;MEME&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;◎&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div&gt;
     $$\mathrm{Hello ~~~World}$$
@@ -326,6 +2502,10 @@ This is warning
 
 &lt;div class=&#34;notice notice-tip&#34; &gt;
     &lt;div class=&#34;notice-title&#34;&gt;&lt;svg xmlns=&#34;http://www.w3.org/2000/svg&#34; class=&#34;icon notice-icon&#34; viewBox=&#34;0 0 512 512&#34;&gt;&lt;path d=&#34;M504 256a248 248 0 11-496 0 248 248 0 01496 0zM227 387l184-184c7-6 7-16 0-22l-22-23c-7-6-17-6-23 0L216 308l-70-70c-6-6-16-6-23 0l-22 23c-7 6-7 16 0 22l104 104c6 7 16 7 22 0z&#34;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;p&gt;This is tip&lt;/p &gt;&lt;/div&gt;
+
+
+&lt;div class=&#34;notice notice-note&#34; &gt;
+    &lt;div class=&#34;notice-title&#34;&gt;&lt;svg xmlns=&#34;http://www.w3.org/2000/svg&#34; class=&#34;icon notice-icon&#34; viewBox=&#34;0 0 512 512&#34;&gt;&lt;path d=&#34;M504 256a248 248 0 11-496 0 248 248 0 01496 0zm-248 50a46 46 0 100 92 46 46 0 000-92zm-44-165l8 136c0 6 5 11 12 11h48c7 0 12-5 12-11l8-136c0-7-5-13-12-13h-64c-7 0-12 6-12 13z&#34;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;p&gt;This is note&lt;/p &gt;&lt;/div&gt;
 
 &lt;h3 id=&#34;添加轮播图&#34;&gt;添加轮播图&lt;/h3&gt;
 &lt;p&gt;轮播图&lt;sup id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fn:2&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;

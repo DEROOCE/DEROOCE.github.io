@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+    <meta charset="UTF-8" />
+
+    <meta name="generator" content="Hugo 0.81.0" /><meta name="theme-color" content="#fff" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+    
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    <title>NLP Notes series: Text Classification | DEROOCE</title>
+
+    <link rel="stylesheet" href="/css/meme.min.bd228e51eabb42a0ea6503719e2b4dda800632f17a462b176d1a00cd448a9dd5.css"/>
+
+    
+    
+        <script src="/js/meme.min.4194bf2034241e3757fbbbf5fe4db43d0ff17c81f4496e6bc931504f0978cbd2.js"></script>
+
+    
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Martel:wght@200;300;400;600&amp;family=Lora:ital,wght@1,500&amp;family=Shippori&#43;Mincho:wght@400;500;600&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" media="print" onload="this.media='all'" />
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Martel:wght@200;300;400;600&amp;family=Lora:ital,wght@1,500&amp;family=Shippori&#43;Mincho:wght@400;500;600&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" /></noscript>
+
+    <meta name="author" content="DEROOCE" /><meta name="description" content="文本分类 简介 文本分类是一个非常流行的任务。例如在你在使用邮件系统时，就享受到了文本分类器的便利：正常邮件与垃圾邮件分类。其他应用还包括文档分类(document classification)、评论分类(review classification)等。 var swiper = new Swiper(&#39;.swiper-container&#39;, { pagination: &#39;.swiper-pagination&#39;, paginationClickable: true, }); ◎ 文本分类任务 文本分类通常不是……" />
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#2a6df4" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="DEROOCE" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="DEROOCE" />
+    <meta name="msapplication-starturl" content="../../" />
+    <meta name="msapplication-TileColor" content="#fff" />
+    <meta name="msapplication-TileImage" content="../../icons/mstile-150x150.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <script src="https://kit.fontawesome.com/e2d29a5fca.js" crossorigin="anonymous"></script>
+    
+    
+
+    
+    <link rel="canonical" href="https://derooce.github.io/posts/text-classification-notes/" />
+    
+
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "datePublished": "2021-03-14T12:38:29+08:00",
+        "dateModified": "2021-03-14T16:53:41+08:00",
+        "url": "https://derooce.github.io/posts/text-classification-notes/",
+        "headline": "NLP Notes series: Text Classification",
+        "description": "文本分类 简介 文本分类是一个非常流行的任务。例如在你在使用邮件系统时，就享受到了文本分类器的便利：正常邮件与垃圾邮件分类。其他应用还包括文档分类(document classification)、评论分类(review classification)等。 var swiper = new Swiper('.swiper-container', { pagination: '.swiper-pagination', paginationClickable: true, }); ◎ 文本分类任务 文本分类通常不是……",
+        "inLanguage" : "zh-CN",
+        "articleSection": "posts",
+        "wordCount":  13952 ,
+        "image": ["https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151716.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151738.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151755.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151811.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314152841.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153022.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153041.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153140.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153149.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153331.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153905.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154125.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154245.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154535.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155544.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155621.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155656.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155730.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155910.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155952.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160254.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160338.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160458.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160534.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160559.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160625.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160643.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160713.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160745.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160809.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160819.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160905.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted-image-20210309122959.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161226.png","https://lena-voita.github.io/resources/lectures/models/cnn/several_filters_read.gif","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161255.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161355.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted-image0210309123102.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161650.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161739.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161759.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161846.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161948.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162047.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162101.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162242.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162359.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162923.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162944.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163200.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163218.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163328.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163341.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163356.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163407.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163424.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163439.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163517.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163538.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163632.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163749.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163800.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163954.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164007.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164026.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164043.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164059.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164147.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164307.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164655.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164748.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164857.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314165052.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314165159.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314165313.png"],
+        "author": {
+            "@type": "Person",
+            "description": "Do or die",
+            "email": "vanace.jc@gmail.com",
+            "image": "https://derooce.github.io/icons/apple-touch-icon.png",
+            "url": "https://derooce.github.io/",
+            "name": "DEROOCE"
+        },
+        "license": "[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)",
+        "publisher": {
+            "@type": "Organization",
+            "name": "DEROOCE",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://derooce.github.io/icons/apple-touch-icon.png"
+            },
+            "url": "https://derooce.github.io/"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebSite",
+            "@id": "https://derooce.github.io/"
+        }
+    }
+</script>
+
+    
+
+<meta name="twitter:card" content="summary_large_image" />
+
+
+<meta name="twitter:site" content="@vanace_jc" />
+<meta name="twitter:creator" content="@vanace_jc" />
+
+    
+
+
+
+<meta property="og:title" content="NLP Notes series: Text Classification" />
+<meta property="og:description" content="文本分类 简介 文本分类是一个非常流行的任务。例如在你在使用邮件系统时，就享受到了文本分类器的便利：正常邮件与垃圾邮件分类。其他应用还包括文档分类(document classification)、评论分类(review classification)等。 var swiper = new Swiper(&#39;.swiper-container&#39;, { pagination: &#39;.swiper-pagination&#39;, paginationClickable: true, }); ◎ 文本分类任务 文本分类通常不是……" />
+<meta property="og:url" content="https://derooce.github.io/posts/text-classification-notes/" />
+<meta property="og:site_name" content="DEROOCE" />
+<meta property="og:locale" content="zh" /><meta property="og:image" content="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151716.png" />
+<meta property="og:type" content="article" />
+    <meta property="article:published_time" content="2021-03-14T12:38:29&#43;08:00" />
+    <meta property="article:modified_time" content="2021-03-14T16:53:41&#43;08:00" />
+    
+    <meta property="article:section" content="posts" />
+
+
+
+    
+</head>
+
+    <body>
+        <div class="container">
+            
+    <header class="header">
+        
+            <div class="header-wrapper">
+                <div class="header-inner single">
+                    
+    <div class="site-brand">
+        
+            <a href="/" class="brand">DEROOCE</a>
+        
+    </div>
+
+                    <nav class="nav">
+    <ul class="menu" id="menu">
+        
+            
+        
+        
+        
+        
+            
+                <li class="menu-item"><a href="/posts/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon archive"><path d="M32 448c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32V160H32v288zm160-212c0-6.6 5.4-12 12-12h104c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12H204c-6.6 0-12-5.4-12-12v-8zM480 32H32C14.3 32 0 46.3 0 64v48c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16V64c0-17.7-14.3-32-32-32z"/></svg><span class="menu-item-name">文章</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/categories/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon th"><path d="M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"/></svg><span class="menu-item-name">分类</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/tags/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="icon tags"><path d="M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"/></svg><span class="menu-item-name">标签</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/about/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon user-circle"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/></svg><span class="menu-item-name">关于</span></a>
+                </li>
+            
+        
+            
+                
+                    
+                    
+                        <li class="menu-item">
+                            <a id="theme-switcher" href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-light"><path d="M193.2 104.5l48.8-97.5a18 18 0 0128 0l48.8 97.5 103.4 -34.5a18 18 0 0119.8 19.8l-34.5 103.4l97.5 48.8a18 18 0 010 28l-97.5 48.8 34.5 103.4a18 18 0 01-19.8 19.8l-103.4-34.5-48.8 97.5a18 18 0 01-28 0l-48.8-97.5l-103.4 34.5a18 18 0 01-19.8-19.8l34.5-103.4-97.5-48.8a18 18 0 010-28l97.5-48.8-34.5-103.4a18 18 0 0119.8-19.8zM256 128a128 128 0 10.01 0M256 160a96 96 0 10.01 0"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-dark"><path d="M27 412a256 256 0 10154-407a11.5 11.5 0 00-5 20a201.5 201.5 0 01-134 374a11.5 11.5 0 00-15 13"/></svg></a>
+                        </li>
+                    
+                
+            
+        
+    </ul>
+</nav>
+
+                    
+                </div>
+            </div>
+            
+    <input type="checkbox" id="nav-toggle" aria-hidden="true" />
+    <label for="nav-toggle" class="nav-toggle"></label>
+    <label for="nav-toggle" class="nav-curtain"></label>
+
+
+        
+    </header>
+
+
+
+
+            
+            
+    <main class="main single" id="main">
+    <div class="main-inner">
+
+        
+
+        <article class="content post h-entry" data-align="justify" data-type="posts" data-toc-num="true">
+
+            <h1 class="post-title p-name">NLP Notes series: Text Classification</h1>
+
+            
+
+            
+                
+            
+
+            
+                
+
+<div class="post-meta">
+    
+        
+        <time datetime="2021-03-14T12:38:29&#43;08:00" class="post-meta-item published dt-published"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>&nbsp;2021.3.14</time>
+    
+    
+    
+    
+        
+        
+        
+            
+                <span class="post-meta-item category"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M464 128H272l-54.63-54.63c-6-6-14.14-9.37-22.63-9.37H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48zm0 272H48V112h140.12l54.63 54.63c6 6 14.14 9.37 22.63 9.37H464v224z"/></svg>&nbsp;<a href="/categories/nlp/" class="category-link p-category">NLP</a>/<a href="/categories/text-classification/" class="category-link p-category">Text Classification</a></span>
+            
+        
+    
+    
+        
+        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;13952</span>
+    
+    
+    
+    
+</div>
+
+            
+
+            <nav class="contents">
+  <h2 id="contents" class="contents-title">目录</h2><ol class="toc">
+    <li><a id="contents:简介" href="#简介">简介</a></li>
+    <li><a id="contents:分类数据集" href="#分类数据集">分类数据集</a></li>
+    <li><a id="contents:总览" href="#总览">总览</a>
+      <ol>
+        <li><a id="contents:获取特征表示并分类" href="#获取特征表示并分类">获取特征表示并分类</a></li>
+        <li><a id="contents:生成模型和判别模型" href="#生成模型和判别模型">生成模型和判别模型</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:文本分类的传统方法" href="#文本分类的传统方法">文本分类的传统方法</a>
+      <ol>
+        <li><a id="contents:朴素贝叶斯分类器naive-bayes-classifier" href="#朴素贝叶斯分类器naive-bayes-classifier">朴素贝叶斯分类器Naive-Bayes-Classifier</a>
+          <ol>
+            <li><a id="contents:原理" href="#原理">原理</a></li>
+            <li><a id="contents:如何定义pxyk和pyk" href="#如何定义pxyk和pyk">如何定义$P(x|y=k)$和$P(y=k)$</a></li>
+            <li><a id="contents:进行预测" href="#进行预测">进行预测</a></li>
+            <li><a id="contents:额外笔记" href="#额外笔记">额外笔记</a></li>
+          </ol>
+        </li>
+        <li><a id="contents:最大熵分类器-aka-逻辑回归" href="#最大熵分类器-aka-逻辑回归">最大熵分类器-aka-逻辑回归</a>
+          <ol>
+            <li><a id="contents:原理-1" href="#原理-1">原理</a></li>
+            <li><a id="contents:训练极大似然估计" href="#训练极大似然估计">训练：极大似然估计</a></li>
+          </ol>
+        </li>
+        <li><a id="contents:朴素贝叶斯-vs-逻辑回归" href="#朴素贝叶斯-vs-逻辑回归">朴素贝叶斯 vs 逻辑回归</a></li>
+        <li><a id="contents:使用svm做文本分类" href="#使用svm做文本分类">使用SVM做文本分类</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:基于神经网络的文本分类" href="#基于神经网络的文本分类">基于神经网络的文本分类</a>
+      <ol>
+        <li><a id="contents:原理-2" href="#原理-2">原理</a></li>
+        <li><a id="contents:训练过程与交叉熵损失" href="#训练过程与交叉熵损失">训练过程与交叉熵损失</a></li>
+        <li><a id="contents:基于网络的文本分类模型" href="#基于网络的文本分类模型">基于网络的文本分类模型</a>
+          <ol>
+            <li><a id="contents:基础嵌入袋boe和加权boe" href="#基础嵌入袋boe和加权boe">基础：嵌入袋(BOE)和加权BOE</a></li>
+            <li><a id="contents:循环网络模型rnnlstmetc" href="#循环网络模型rnnlstmetc">循环网络模型(RNN/LSTM/etc)</a>
+              <ol>
+                <li><a id="contents:原理-3" href="#原理-3">原理</a></li>
+                <li><a id="contents:用于文本分类的循环神经网络" href="#用于文本分类的循环神经网络">用于文本分类的循环神经网络</a></li>
+              </ol>
+            </li>
+            <li><a id="contents:卷积神经网络cnn" href="#卷积神经网络cnn">卷积神经网络（CNN）</a>
+              <ol>
+                <li><a id="contents:图像卷积和平移不变性convolutions-for-images-and-translation-invariance" href="#图像卷积和平移不变性convolutions-for-images-and-translation-invariance">图像卷积和平移不变性（Convolutions for Images and Translation Invariance）</a></li>
+                <li><a id="contents:将卷积用于文本的原理" href="#将卷积用于文本的原理">将卷积用于文本的原理</a></li>
+                <li><a id="contents:用于文本的卷积层" href="#用于文本的卷积层">用于文本的卷积层</a></li>
+                <li><a id="contents:池化操作" href="#池化操作">池化操作</a></li>
+                <li><a id="contents:使用cnn做文本分类" href="#使用cnn做文本分类">使用CNN做文本分类</a></li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a id="contents:多标签分类" href="#多标签分类">多标签分类</a>
+      <ol>
+        <li><a id="contents:简介-1" href="#简介-1">简介</a></li>
+        <li><a id="contents:模型softmax-rightarrow-元素向sigmoid" href="#模型softmax-rightarrow-元素向sigmoid">模型：Softmax $\rightarrow$ 元素向Sigmoid</a></li>
+        <li><a id="contents:损失函数每个类别使用二值交叉熵" href="#损失函数每个类别使用二值交叉熵">损失函数：每个类别使用二值交叉熵</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:实践技巧" href="#实践技巧">实践技巧</a>
+      <ol>
+        <li><a id="contents:词嵌入如何处理" href="#词嵌入如何处理">词嵌入：如何处理？</a></li>
+        <li><a id="contents:数据增强免费获得更多的数据的方法" href="#数据增强免费获得更多的数据的方法">数据增强：“免费”获得更多的数据的方法</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:分析与可解释性" href="#分析与可解释性">分析与可解释性</a>
+      <ol>
+        <li><a id="contents:卷积可以学到什么东西分析卷积过滤器" href="#卷积可以学到什么东西分析卷积过滤器">卷积可以学到什么东西？分析卷积过滤器</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:研究反思" href="#研究反思">研究反思</a>
+      <ol>
+        <li><a id="contents:经典方法" href="#经典方法">经典方法</a></li>
+        <li><a id="contents:神经网络方法" href="#神经网络方法">神经网络方法</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:reference" href="#reference">Reference</a></li>
+  </ol>
+</nav><div class="post-body e-content">
+              <h1 id="文本分类"><a href="#文本分类" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:文本分类" class="headings">文本分类</a></h1>
+<h2 id="简介"><a href="#简介" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:简介" class="headings">简介</a></h2>
+<p>文本分类是一个非常流行的任务。例如在你在使用邮件系统时，就享受到了文本分类器的便利：正常邮件与垃圾邮件分类。其他应用还包括文档分类(document classification)、评论分类(review classification)等。</p>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css">
+    
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151716.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151738.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151755.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151811.png" alt="">
+            </div>
+            
+        </div>
+        
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js"></script>
+     
+     <script>
+        var swiper = new Swiper('.swiper-container', {
+            pagination: '.swiper-pagination',
+            paginationClickable: true,
+        });
+        </script>
+
+
+<p><span class="caption">◎ 文本分类任务</span></p>
+<p>文本分类通常不是作为一个单独的任务，而是一个更大的任务流程中的一部分。例如，语音助手对你的话语进行分类，以了解你想要完成的动作（如设置闹钟、叫一个出租车或者就是与语音助手聊天），根据语音助手中的分类器的决策，将这些信息传递给不同模型来完成相应动作。另一个例子是网络搜索引擎：它可以使用分类器来识别查询语言来预测你查询的类型，例如信息、导航、交易等。</p>
+<p>因为大多数的分类数据集都假设一个数据只有一个对应正确标签，即单标签分类(single-label classification)。此外，也存在多标签分类问题(multi-label classification)。</p>
+<hr>
+<h2 id="分类数据集"><a href="#分类数据集" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:分类数据集" class="headings">分类数据集</a></h2>
+<p>用于文本分类的数据集在大小（数据集大小和示例大小）、分类内容和标签数量方面都存在很大差异。下图显示了一些文本分类数据集的统计差异：</p>
+<div class="table-container"><table>
+<thead>
+<tr>
+<th style="text-align:left"><strong>数据集</strong></th>
+<th style="text-align:left"><strong>类型</strong></th>
+<th style="text-align:center"><strong>标签数量</strong></th>
+<th style="text-align:center"><strong>（训练集/测试集)大小</strong></th>
+<th style="text-align:center">每个token的平均长度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><a href="https://nlp.stanford.edu/sentiment/index.html" target="_blank" rel="noopener">SST</a></td>
+<td style="text-align:left">情感</td>
+<td style="text-align:center">5 or 2</td>
+<td style="text-align:center">8.5k / 1.1k</td>
+<td style="text-align:center">19</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://ai.stanford.edu/~amaas/data/sentiment/" target="_blank" rel="noopener">IMDB 影评</a></td>
+<td style="text-align:left">情感</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">25k / 25k</td>
+<td style="text-align:center">271</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.kaggle.com/yelp-dataset/yelp-dataset" target="_blank" rel="noopener">Yelp 评价</a></td>
+<td style="text-align:left">情感</td>
+<td style="text-align:center">5 or 2</td>
+<td style="text-align:center">650k / 50k</td>
+<td style="text-align:center">179</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.kaggle.com/bittlingmayer/amazonreviews" target="_blank" rel="noopener">Amazon 评价</a></td>
+<td style="text-align:left">情感</td>
+<td style="text-align:center">5 or 2</td>
+<td style="text-align:center">3m / 650k</td>
+<td style="text-align:center">79</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://cogcomp.seas.upenn.edu/Data/QA/QC/" target="_blank" rel="noopener">TREC</a></td>
+<td style="text-align:left">问题</td>
+<td style="text-align:center">6</td>
+<td style="text-align:center">5.5k / 0.5k</td>
+<td style="text-align:center">10</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://www.kaggle.com/soumikrakshit/yahoo-answers-dataset" target="_blank" rel="noopener">Yahoo! Answers</a></td>
+<td style="text-align:left">问题</td>
+<td style="text-align:center">10</td>
+<td style="text-align:center">1.4m / 60k</td>
+<td style="text-align:center">131</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="http://groups.di.unipi.it/~gulli/AG_corpus_of_news_articles.html" target="_blank" rel="noopener">AG's 新闻</a></td>
+<td style="text-align:left">主题</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">120k / 7.6k</td>
+<td style="text-align:center">44</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="http://www.sogou.com/labs/resource/cs.php" target="_blank" rel="noopener">Sogou 新闻</a></td>
+<td style="text-align:left">主题</td>
+<td style="text-align:center">6</td>
+<td style="text-align:center">54k / 6k</td>
+<td style="text-align:center">737</td>
+</tr>
+<tr>
+<td style="text-align:left"><a href="https://wiki.dbpedia.org/services-resources/dbpedia-data-set-2014" target="_blank" rel="noopener">DBPedia</a></td>
+<td style="text-align:left">主题</td>
+<td style="text-align:center">14</td>
+<td style="text-align:center">560k / 70k</td>
+<td style="text-align:center">67</td>
+</tr>
+</tbody>
+</table></div>
+<p>其中最流行的数据集是情感分类(sentiment classification)数据集。这样的数据由电影评论、景点评论、饭店评论、产品评论等组成。此外，也存在一些问题分类数据集和主题分类数据集。</p>
+<p>为了更好理解典型的分类任务，我们以SST数据集的描述为例。</p>
+<ul>
+<li>SST: 一个情感分类数据集，由电影评论组成
+<ul>
+<li>该数据集由句子的分析树组成，不仅是整个句子，较小的短语也都有对应的情感标签。</li>
+<li>一个有5个标签：1(非常消极),2(消极),3(中性),4(积极),5(非常积极)</li>
+<li>SST存在一个二分类的变种数据集——SST-2，其中标签只有积极和消极两种</li>
+<li>SST一共包含215,154个短语，这些短语将组成各个影评</li>
+<li><em>Makes even the claustrophobic on-board quarters seem fun.</em><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314152841.png" style="zoom:23%;" /></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="总览"><a href="#总览" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:总览" class="headings">总览</a></h2>
+<p>假设我们有一个带有真实标签(ground-truth)的文档集合。一个分类器的输入是一个文档$x=(x_1, \dots, x_n)$,其中$(x_1, \dots, x_n)$是tokens,输出是标签$y\in 1\dots k$.通常。一个分类器会估计所有类别的概率分布，并且以概率值最高的类别作为预测输出。</p>
+<hr>
+<h3 id="获取特征表示并分类"><a href="#获取特征表示并分类" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:获取特征表示并分类" class="headings">获取特征表示并分类</a></h3>
+<p>文本分类器有如下结构：</p>
+<ul>
+<li>特征提取器 feature extractor</li>
+</ul>
+<p>一个特征提取器要么被手动定义（例如传统的机器学习方法），要么可以自动学习得到（例如基于神经网络的方法）。</p>
+<ul>
+<li>分类器</li>
+</ul>
+<p>给定文本的特征表示，一个分类器需要给标签赋予概率值。最常见的方法是通过<strong>逻辑回归</strong>获得概率值。当然也存在其他变形，例如朴素贝叶斯分类器或者SVM。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153022.png" style="zoom:40%;" /></p>
+<hr>
+<h3 id="生成模型和判别模型"><a href="#生成模型和判别模型" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:生成模型和判别模型" class="headings">生成模型和判别模型</a></h3>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153041.png" alt=""><span class="caption">◎ 生成模型与判别模型区别</span></p>
+<p><strong>一个分类模型要么是生成模型(generative)要么是判别模型(discriminative)</strong>。</p>
+<ul>
+<li>生成模型</li>
+</ul>
+<p>生成模型学习数据的联合分布$p(x, y) = p(x|y)\cdot p(y)$。为了根据输入$x$获得一个预测，生成模型将以联合概率最高的类别作为预测：
+$$
+y = \arg \max\limits_{k}p(x|y=k)\cdot p(y=k)
+$$</p>
+<ul>
+<li>判别模型</li>
+</ul>
+<p>判别模型只对条件概率$p(y|x)$感兴趣，即它们只学习<strong>类别间的边界</strong>。为了根据给定输入$x$进行预测，判别模型将以条件概率最大的类别作为预测：
+$$
+y = \arg \max\limits_{k}p(y=k|x)
+$$</p>
+<hr>
+<h2 id="文本分类的传统方法"><a href="#文本分类的传统方法" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:文本分类的传统方法" class="headings">文本分类的传统方法</a></h2>
+<h3 id="朴素贝叶斯分类器naive-bayes-classifier"><a href="#朴素贝叶斯分类器naive-bayes-classifier" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:朴素贝叶斯分类器naive-bayes-classifier" class="headings">朴素贝叶斯分类器Naive-Bayes-Classifier</a></h3>
+<h4 id="原理"><a href="#原理" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:原理" class="headings">原理</a></h4>
+<p>朴素贝叶斯方法的高层次思想是：根据贝叶斯定理，给出类别的条件概率另一形式，并且最终归结为计算$P(x|y=k)\cdot P(y=k)$</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153140.png" alt=""></p>
+<p>由于朴素贝叶斯方法通过对数据的联合分布建模，因此朴素贝叶斯方法是一个<strong>生成模型</strong>，
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153149.png" alt=""><span class="caption">◎ 朴素贝叶斯模型的思想</span></p>
+<p>我们对使用到的术语进行如下描述：</p>
+<ul>
+<li>先验概率$P(y=k)$: 在浏览观测数据之前（即在得到$x$之前），经验式的类别概率</li>
+<li>后验概率$P(y=k|x)$(posterior): 在浏览观测数据之后（即在得知具体的$x$值后）的类别概率</li>
+<li>联合概率$P(x,y)$: 数据的联合概率，即样本$x$和标签$y$</li>
+<li>最大后验估计(Maximum a posteriori estimate, MAP): 选取后验概率最高的类别作为估计</li>
+</ul>
+<hr>
+<h4 id="如何定义pxyk和pyk"><a href="#如何定义pxyk和pyk" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:如何定义pxyk和pyk" class="headings">如何定义$P(x|y=k)$和$P(y=k)$</a></h4>
+<ul>
+<li>$P(y=k)$: 通过计算标签出现的频数</li>
+</ul>
+<p>$P(y=k)$非常容易计算：我们只需要计算标签$k$在文档中出现的频率(这个是最大似然估计MLE的结果)，即：
+$$
+P(y=k)=\frac{N(y=k)}{\sum\limits_{i}N(y=i)},
+$$</p>
+<p>其中$N(y=k)$是文档中标签为$k$的样本数。</p>
+<ul>
+<li>$P(x|y=k)$: 使用“朴素”假设，再计数、</li>
+</ul>
+<p>首先，我们假设文档$x$由一组特征表示，例如一组单词$(x_1, \dots, x_n)$，则有：
+$$
+P(x| y=k)=P(x_1, \dots, x_n|y).
+$$</p>
+<p>朴素贝叶斯假设为：</p>
+<ul>
+<li>词袋假设(Bag of words assumption): 单词的顺序不重要</li>
+<li>条件独立假设： 给定类别，特征(单词)之间是相互独立的</li>
+</ul>
+<p>直觉上，我们假设标签为$k$的词在文档中出现的概率不取决于其所在的上下文,也不取决于单词顺序和其他的单词。例如，我们可以说<strong>awesome,brilliant,great</strong>更容易出现在积极情感的文档中；<strong>awful,boring,bad</strong>更容易出现在消极情感的文档中，<strong>但是我们却不知道这些词会怎么影响到其他的单词</strong>。</p>
+<p>有了这些朴素假设，我们可以得到$P(x|y=k)$的计算式：
+$$
+P(x| y=k)=P(x_1, \dots, x_n|y)=\prod\limits_{t=1}^nP(x_t|y=k).
+$$</p>
+<p>概率$P(x_i|y=k)$由单词$x_i$在$k$类文档中的所有单词中出现频数为估计：
+$$
+P(x_i|y=k)=\frac{N(x_i, y=k)}{\sum\limits_{t=1}^{|V|}N(x_t, y=k)},
+$$
+其中如果$N(x_i, y=k)=0$，即在训练中，在$k$类文档中并没有出现$x_i$，那么整个$P(x|y=k)$的值都将会归零，这显然不是我们想要的。
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153331.png" alt=""><span class="caption">◎ 部分词未在文档中出现时</span>
+例如， 在训练集的积极样本中，**一些罕见的词,如pterodactyl或abracadabra没有出现，但这并不代表这些词不可能包含在一个积极情感的文档中**。</p>
+<p>为了避免这个情况，我们可以使用到一个简单的技巧：对所有词的计数结果都加上一个很小的平滑值$\delta$：
+$$
+P(x_i|y=k)=\frac{\color{red}{\delta} +\color{black} N(x_i, y=k)
+}{\sum\limits_{t=1}^{|V|}(\color{red}{\delta} +\color{black}N(x_t, y=k))} =
+\frac{\color{red}{\delta} +\color{black} N(x_i, y=k)
+}{\color{red}{\delta\cdot |V|}\color{black}  + \sum\limits_{t=1}^{|V|}\color{black}N(x_t, y=k)}
+,
+$$</p>
+
+<div class="notice notice-tip" >
+    <div class="notice-title"><svg xmlns="http://www.w3.org/2000/svg" class="icon notice-icon" viewBox="0 0 512 512"><path d="M504 256a248 248 0 11-496 0 248 248 0 01496 0zM227 387l184-184c7-6 7-16 0-22l-22-23c-7-6-17-6-23 0L216 308l-70-70c-6-6-16-6-23 0l-22 23c-7 6-7 16 0 22l104 104c6 7 16 7 22 0z"/></svg></div><p>其中$\delta$值可以使用<strong>交叉验证</strong>获取。</p ></div>
+
+<blockquote>
+<p>当$\delta=1$时，上式平滑方式就是<strong>拉普拉斯平滑</strong>(Laplace smoothing)。</p>
+</blockquote>
+<hr>
+<h4 id="进行预测"><a href="#进行预测" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:进行预测" class="headings">进行预测</a></h4>
+<p>在上述内容中提到，朴素贝叶斯（或者更广泛一点：生成模型）是基于数据和类别间的联合分布做出预测：
+$$
+y^{\ast} = \arg \max\limits_{k}P(x, y=k) = \arg \max\limits_{k} P(y=k)\cdot P(x|y=k).
+$$</p>
+<p>直觉上，朴素贝叶斯期待一些词能够成为类别指示器(class indicators)。例如，在情感分类中，如果给定文本类别是积极情感，则像<strong>awesome</strong>,
+<strong>brilliant</strong>, <strong>great</strong>这一类词通常会比在消极文本中有更高的概率，即$P( \mathrm{awesome} \mid {\color{#88bd33}{y=+}}) \gg P( awesome \mid {\color{red}{y=-}})$。
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153905.png" style="zoom:30%;" /></p>
+<hr>
+<h4 id="额外笔记"><a href="#额外笔记" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:额外笔记" class="headings">额外笔记</a></h4>
+<ul>
+<li><strong>实践技巧</strong>： 使用<strong>对数概率和</strong>而不是概率乘积。</li>
+</ul>
+<blockquote>
+<p>Sum of Log-Probabilities Instead of Product of Probabilities.</p>
+</blockquote>
+<p>朴素贝叶斯用于分类的主要表达式是概率乘积：
+$$
+P(x, y=k)=P(y=k)\cdot P(x_1, \dots, x_n|y)=P(y=k)\cdot \prod\limits_{t=1}^nP(x_t|y=k).
+$$</p>
+<p>然而，许多概率的乘积可能会导致数值不稳定，因此，通常我们不使用$P(x,y)$，而是使用$\log P(x,y)$:
+$$
+\log P(x, y=k)=\log P(y=k) + \sum\limits_{t=1}^n\log P(x_t|y=k).
+$$
+由于我们的目的是求$\arg\max$，因此将$P(x,y)$替换我$\log P(x,y)$并不会影响分类结果。</p>
+<ul>
+<li>通用框架</li>
+</ul>
+<p>在朴素贝叶斯中，我们的特征是单词，以及特征表示为词袋(Bag-of-Words, BOW)表示——单词的独热编码的累加和。事实上，为了估计$P(x,y)$,我们只需要计算每个单词在文档中出现的频数即可。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154125.png" style="zoom:33%;" /></p>
+<ul>
+<li>特征设计</li>
+</ul>
+<p>在标准的设计中，我们将单词作为特征输入。然而，我们也可以使用其他类型的特征，例如网站地址(URL)、用户ID等。</p>
+<hr>
+<h3 id="最大熵分类器-aka-逻辑回归"><a href="#最大熵分类器-aka-逻辑回归" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:最大熵分类器-aka-逻辑回归" class="headings">最大熵分类器-aka-逻辑回归</a></h3>
+<h4 id="原理-1"><a href="#原理-1" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:原理-1" class="headings">原理</a></h4>
+<p>与朴素贝叶斯算法不同，MaxEnt分类器(Maximum Entropy)是一个<strong>判别模型</strong>，即我们的关注点在于$P(y=k|x)$而不是联合分布$P(x,y)$。同时，在MaxEnt模型中，我们需要<strong>学习如何使用特征</strong>，而朴素贝叶斯是需要我们<strong>自定义使用特征</strong>的方法。</p>
+
+<div class="notice notice-note" >
+    <div class="notice-title"><svg xmlns="http://www.w3.org/2000/svg" class="icon notice-icon" viewBox="0 0 512 512"><path d="M504 256a248 248 0 11-496 0 248 248 0 01496 0zm-248 50a46 46 0 100 92 46 46 0 000-92zm-44-165l8 136c0 6 5 11 12 11h48c7 0 12-5 12-11l8-136c0-7-5-13-12-13h-64c-7 0-12 6-12 13z"/></svg></div><p>MaxEnt分类器同样需要我们手动定义特征，但是自由度更高：特征不需要一定是分类类型(categorical),而<strong>在朴素贝叶斯中，数据必须为分类类型</strong>。我们可以使用BOW表示或者使用一些更有意思的特征表示方法。</p ></div>
+
+<p>一个寻常的分类流程为：</p>
+<ul>
+<li>获取输入文本的特征表示: $\color{#7aab00}{h}\color{black}=(\color{#7aab00}{f_1}\color{black},\color{#7aab00}{f_2}\color{black}, \dots,           \color{#7aab00}{f_n}\color{black}{)}$</li>
+<li>获取每个类别的特征权重向量： $w^{(i)}=(w_1^{(i)}, \dots, w_n^{(i)})$， <strong>一个类别对应一个权重向量</strong></li>
+<li>对每个类别，将特征进行加权，即将特征表示$\color{#7aab00}{h}$与特征权重向量$w^{(k)}$做点积: $w^{(k)}\color{#7aab00}{h}\color{black} =w_1^{(k)}\cdot\color{#7aab00}{f_1}\color{black}+\dots+w_n^{(k)}\cdot\color{#7aab00}{f_n}\color{black}{, \ \ \ \ \ k=1, \dots, K.}$
+<ul>
+<li>为了在上述累加和中加入偏置项，我们定义一个值为1的特征$\color{#7aab00}{f_0}=1$,则有$w^{(k)}\color{#7aab00}{h}\color{black} = \color{red}{w_0^{(k)}}\color{black} + w_1^{(k)}\cdot\color{#7aab00}{f_1}\color{black}+\dots+ w_n^{(k)}\cdot\color{#7aab00}{f_{n}}\color{black}{, \ \ \ \ \ k=1, \dots, K.}$</li>
+</ul>
+</li>
+<li>使用softmax函数获得每个类别的概率：
+$$
+P(class=k|\color{#7aab00}{h}\color{black})=
+\frac{\exp(w^{(k)}\color{#7aab00}{h}\color{black})}{\sum\limits_{i=1}^K
+\exp(w^{(i)}\color{#7aab00}{h}\color{black})}.
+$$</li>
+</ul>
+<blockquote>
+<p>Softmax将在上一步中做点积获得的$K$个值归一化为输出类上的概率分布。</p>
+</blockquote>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154245.png" alt=""><span class="caption">◎ 每个类别的权重向量$w_k$与文本的特征表示$h$做点积</span></p>
+<hr>
+<h4 id="训练极大似然估计"><a href="#训练极大似然估计" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:训练极大似然估计" class="headings">训练：极大似然估计</a></h4>
+<p>给定训练样本$x^1, \dots, x^N$以及对应的标签$y^1, \dots, y^N$,其中$y^i\in{1, \dots, K}$。我们需要优化的是每个类别对应的特征选择向量$w^{(k)}, k=1..K$。通过在训练集数据中最大化如下概率，获得$w^{(k)}$的最优解：
+$$
+w^{\ast}=\arg \max\limits_{w}\sum\limits_{i=1}^N\log P(y=y^i|x^i).
+$$
+换句话说，我们选择参数使得数据${x^i,y^i}_{i=1}^N$出现的概率最大。因此，这个训练目标也称为参数的**极大似然估计**(maximum likelihood estimate, MLE)。</p>
+<p>为了寻找使得数据的对数似然函数值最大的参数，我们使用梯度下降算法进行优化：通过多次对数据迭代更新，逐步改进权重向量$w$。最终，给定样本$x^i$，获得正确标签$y^i$的概率值最大。</p>
+<p><b><u>等价于最小化交叉熵</u></b>: 最大化数据的对数似然，其实等价于<strong>最小化目标标签的概率分布</strong> $p^{\ast} = (0, \dots, 0, 1, 0, \dots)$(1表示目标标签，0表示其他标签) <strong>与模型预测的标签分布</strong> $p=(p_1, \dots, p_K), p_i=p(i|x)$<strong>之间的交叉熵函数</strong>：</p>
+<div>
+    $$
+    Loss(p^{\ast}, p^{})= - p^{\ast} \log(p) = -\sum\limits_{i=1}^{K}p_i^{\ast} \log(p_i).
+    $$
+</div>
+<p>因为$p^{\ast}$中只有一个$p_i^{\ast}$不为0，即目标标签$k$为1，其余标签为0,我们可以将上式简化：</p>
+<div>
+    $$
+    Loss(p^{\ast}, p) = -\log(p_{k})=-\log(p(k| x)).
+    $$
+</div>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154535.png" style="zoom: 33%;" /></p>
+
+<div class="notice notice-note" >
+    <div class="notice-title"><svg xmlns="http://www.w3.org/2000/svg" class="icon notice-icon" viewBox="0 0 512 512"><path d="M504 256a248 248 0 11-496 0 248 248 0 01496 0zm-248 50a46 46 0 100 92 46 46 0 000-92zm-44-165l8 136c0 6 5 11 12 11h48c7 0 12-5 12-11l8-136c0-7-5-13-12-13h-64c-7 0-12 6-12 13z"/></svg></div><p>这种等价性对于理解逻辑回归很重要：当使用神经网络的方法时，通常会采用最小化交叉熵损失的方法优化。<strong>不要忘记其实这也与最大化数据的对数似然是等价的</strong>。</p ></div>
+
+<hr>
+<h3 id="朴素贝叶斯-vs-逻辑回归"><a href="#朴素贝叶斯-vs-逻辑回归" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:朴素贝叶斯-vs-逻辑回归" class="headings">朴素贝叶斯 vs 逻辑回归</a></h3>
+<p>最后，对比两个方法的优缺点。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155544.png" style="zoom:32%;" /></p>
+<ul>
+<li>简洁性：
+<ul>
+<li>两个方法都非常简单，而朴素贝叶斯要更加简单一点</li>
+</ul>
+</li>
+<li>可解释性：
+<ul>
+<li>两个方法都具有较好的解释性，可以清楚知道哪些特征(词)对文本的分类具有影响</li>
+</ul>
+</li>
+<li>训练速度：
+<ul>
+<li>朴素贝叶斯的训练速度非常快，只需要将训练数据前馈一次用于统计频数，即可获得预测</li>
+<li>逻辑回归需要多次梯度下降更新才能收敛</li>
+</ul>
+</li>
+<li>独立性假设：
+<ul>
+<li>朴素贝叶斯是真的很“朴素”，因为它假设了给定类别，特征(词)之间是相互独立的</li>
+<li>逻辑回归不需要这样的假设</li>
+</ul>
+</li>
+<li>文本表示: 手动 manual
+<ul>
+<li>两个方法都需要手动定义特征表示，在朴素贝叶斯中，通常使用BOW作为标准选择，但也可以自己设定</li>
+<li>有时，一种定义特征的方法可能对于模型的解释性有帮助，然而却可能降低模型预测性能</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="使用svm做文本分类"><a href="#使用svm做文本分类" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:使用svm做文本分类" class="headings">使用SVM做文本分类</a></h3>
+<p>使用SVM做文本分类时，也需要手动定义特征。最基本也是最流行定义特征的方式是BOW和Bag-of-ngrams(n-grams是n个词组成的元组)。有了这些简单的特征，使用线性核函数的SVMs就比朴素贝叶斯的分类性能要更佳。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155621.png" style="zoom:35%;" /></p>
+<hr>
+<h2 id="基于神经网络的文本分类"><a href="#基于神经网络的文本分类" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:基于神经网络的文本分类" class="headings">基于神经网络的文本分类</a></h2>
+<h3 id="原理-2"><a href="#原理-2" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:原理-2" class="headings">原理</a></h3>
+<p>基于神经网络的文本分类的主要思想：通过使用神经网络，可以自动获得输入文本的特征表示。我们将输入tokens的嵌入表示传给神经网络，然后该网络会返回给我们输入文本的向量表示。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155656.png" alt=""><span class="caption">◎ 传统分类方法与神经网络方法对比</span></p>
+<p>当处理神经网络时，我们可以使用一种简单的方式考虑分类部分（即如何从文本的向量表示中获得类别的概率）。</p>
+<p>文本的向量表示假设有$d$维，但最后我们只需要一个$K$维的向量来表示各个类别的概率。为了从一个$d$维向量中获得一个$K$维的向量，我们可以使用一个线性层。一旦我们有了$K$维向量，剩下只需要将该向量交给softmax函数，将该$K$维向量转换为各个类别的概率。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155730.png" style="zoom:50%;" /></p>
+<p><strong>分类部分：这是一个逻辑回归</strong></p>
+<p>如果仔细观察神经网络分类器，我们处理输入文本的向量表示的方式与<a href="https://derooce.github.io/posts/text-classification-notes/#%E6%9C%80%E5%A4%A7%E7%86%B5%E5%88%86%E7%B1%BB%E5%99%A8-aka-%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92" target="_blank" rel="noopener">逻辑回归</a>中的处理方式一致。我们根据每个类别的特征权重，对特征加权。而两者的唯一区别在于：<strong>特征的来源</strong>；要么是手动定义的，要么通过网络获得。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155910.png" alt=""><span class="caption">◎ 逻辑回归的分类步骤与神经网络的分类步骤对比</span></p>
+<p>直觉：<strong>文本表示(text representation)向量 $h$ 指向类表示(Class representation)向量 $w$ 的方向</strong>。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155952.png" alt=""></p>
+<p>如果我们仔细观察最后的线性层，可以发现线性层权重矩阵的列元素即为向量$w_i$。这些向量可以被认为是<strong>类别的向量表示</strong>。一个好的神经网络将学会以这样的方式表示输入文本：<strong>文本向量将指向相应类向量的方向</strong>。</p>
+<hr>
+<h3 id="训练过程与交叉熵损失"><a href="#训练过程与交叉熵损失" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:训练过程与交叉熵损失" class="headings">训练过程与交叉熵损失</a></h3>
+<p>神经网络分类器经过训练来预测各个类别的概率分布。直觉上，在每一步中，我们都将模型分配给正确类别的概率最大化。</p>
+<p>标准的损失函数为交叉熵损失。对于目标概率分布$p^{\ast} = (0, \dots, 0, 1, 0, \dots)$（1代表目标标签，0表示其他标签）和由模型预测获得的概率分布$p=(p_1, \dots, p_K), p_i=p(i|x)$,两者的交叉熵损失函数为：</p>
+<p>$$
+Loss(p^{\ast}, p^{})= - p^{\ast} \log(p) = -\sum\limits_{i=1}^{K}p_i^{\ast} \log(p_i).
+$$</p>
+<p>由于$p_i^{\ast}$中只有对应目标标签$k$的元素不为0 ，为1。因此，损失函数可以化简为$Loss(p^{\ast}, p) = -\log(p_{k})=-\log(p(k| x)).$</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160254.png" alt=""></p>
+<p>在训练中，我们通过对数据多次迭代更新，逐步改进模型的权重：我们对所有训练数据(或者批次训练数据)训练，并更新梯度。在每一步，我们将模型分配给正确类别的概率最大化。同时，我们也相等于最小化了错误类别的概率和：<strong>由于所有概率的总和为常数(1),通过增大其中一个概率，其他概率和就会随着减小</strong>。</p>
+<video width="70%" height="auto" loop="" autoplay="" muted="" style="margin-center: 20px;" controls="">
+         <source src="https://lena-voita.github.io/resources/lectures/text_clf/neural/nn_clf_training.mp4">
+     </video>
+<blockquote>
+<p>回忆：最小化交叉熵损失函数等价于最大似然函数。</p>
+</blockquote>
+<hr>
+<h3 id="基于网络的文本分类模型"><a href="#基于网络的文本分类模型" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:基于网络的文本分类模型" class="headings">基于网络的文本分类模型</a></h3>
+<blockquote>
+<p>我们需要一个可以对不同长度的输入产生一个固定长度的向量。</p>
+</blockquote>
+<p>在这个部分，我们将研究使用神经网络获取输入文本的向量表示的不同方法。注意到当输入文本可以有不同的长度，而文本的输出向量表示的大小是固定的，否则，网络将无法“工作”。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160338.png" style="zoom:50%;" /></p>
+<p>我们从仅使用词嵌入的最简单方法开始（不在其顶层添加模型），然后我们再研究循环和卷积神经网络。</p>
+<hr>
+<h4 id="基础嵌入袋boe和加权boe"><a href="#基础嵌入袋boe和加权boe" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:基础嵌入袋boe和加权boe" class="headings">基础：嵌入袋(BOE)和加权BOE</a></h4>
+<p>最简单的文本处理方法是仅使用单词嵌入，而不再其后增加任何神经网络。为了获得一段文本的向量表示，我们要么将所有的tokens的嵌入累加(Bag of Embeddings, BOE),或者使用这些嵌入的加权和(权重，可以是<a href="https://zh.wikipedia.org/wiki/Tf-idf" target="_blank" rel="noopener">TF-IDF算法</a>等)</p>
+<p>嵌入袋(BOE)（<strong>最好搭配朴素贝叶斯</strong>）应该是任何具有神经网络的模型的基准(Baseline)。如果最终效果没有基准好，那么就不值得使用神经网络模型，不过这种情况可能是因为我们没有足够多的数据。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160458.png" alt=""></p>
+<p>虽然有时嵌入袋(BOE)也被称为词袋(BOW)，但请注意这两个概念是非常不同的。BOE是多个嵌入表示的累加和，而BOW是多个独热编码向量的累加和。<strong>BOE相比BOW，具有更多语言的信息</strong>。预训练的嵌入(例如Word2Vec,Glove)可以理解单词之间的相似性。例如，在BOE中，<strong>awesome,brilliant,great</strong>由相似的词向量表示，而在BOW中却使用毫无关联的特征表示。</p>
+<p>此外，为了使用多个嵌入的加权和，我们需要想出一种获取权重的方法。然而，这恰恰是我们想要通过使用神经网络避免的事情：<strong>我们不希望加入手动定义的特征，而是使用神经网络去学习有用的模式(pattern)</strong>。</p>
+<blockquote>
+<p>可以试试在BOE的基础上使用SVM算法。SVM与传统算法区分开的是核函数的选择：一般RBF核会更好。</p>
+</blockquote>
+<hr>
+<h4 id="循环网络模型rnnlstmetc"><a href="#循环网络模型rnnlstmetc" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:循环网络模型rnnlstmetc" class="headings">循环网络模型(RNN/LSTM/etc)</a></h4>
+<h5 id="原理-3"><a href="#原理-3" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:原理-3" class="headings">原理</a></h5>
+<p>循环神经网络是一种非常自然地处理文本的方法，与人类相似，通过一个一个单词地阅读句子并处理这些信息，并可望网络的每一步都将“记住”它以前阅读过的所有内容。</p>
+<ul>
+<li>RNN 单元</li>
+</ul>
+<p>在每个时间步上，一个RNN将接受一个新的输入向量（例如，token的嵌入）以及之前时间步RNN的隐藏状态（可望该隐藏状态可将之前所有的信息都编码进去）。通过使用这两个输入，RNN单元计算得到新的隐藏状态，并以此获得对应时间步的输出。这个新的隐藏状态包含着当前输入以及过去时间步输入的信息。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160534.png" style="zoom:33%;" /></p>
+<ul>
+<li>RNN读取tokens组成的序列</li>
+</ul>
+<p>RNN通过一个一个token的方式读取序列。在每个时间步上，RNN使用新读取token的嵌入和之前时间步的隐藏状态。</p>
+<video width="90%" height="auto" loop="" autoplay="" muted="" style="margin-center: 20px;" controls="">
+             <source src="https://lena-voita.github.io/resources/lectures/text_clf/neural/rnn/rnn_reads_text.mp4">
+        </video>
+<blockquote>
+<p>每个时间步上的RNN单元都是相同的。</p>
+</blockquote>
+<ul>
+<li>Vanilla RNN</li>
+</ul>
+<p>最简单的RNN架构-Vanilla RNN,将之前时间步的隐藏状态$h_{t-1}$和当前时间步的输入数据$x_t$进行**线性变换**(矩阵乘积)，然后再使用一个非线性激活函数转换(通常选择$\mathrm{tanh}$函数):</p>
+<p>$$
+h_t = \tanh(h_{t-1}W_h + x_tW_t).
+$$</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160559.png" style="zoom:33%;" /></p>
+<p>然而Vanilla RNN容易遭受梯度消失和梯度爆炸的问题。为了减缓这个问题，一些更复杂的循环网络单元被提出(如LSTM、GRU等)。</p>
+<hr>
+<h5 id="用于文本分类的循环神经网络"><a href="#用于文本分类的循环神经网络" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:用于文本分类的循环神经网络" class="headings">用于文本分类的循环神经网络</a></h5>
+<p>本小节将介绍循环网络是如何应用在文本分类任务中的。本节所有的循环网络通指&quot;RNN&quot;(如vanilla RNN, LSTM, GRU等)。</p>
+<blockquote>
+<p>We need a model that can produce a <strong>fixed-sized</strong> vector for inputs of <strong>different</strong> lengths.</p>
+</blockquote>
+<ul>
+<li>简单的RNN：读取文本，并进入最终状态</li>
+</ul>
+<p>大多数简单的循环网络模型都是<strong>单层</strong>的RNN网络。在这种网络结构中，我们必须采用具有输入文本的大部分信息的隐藏状态。因此，我们必须使用最后一个时间步上的隐藏状态（因为最后一个时间步的隐藏状态将遍历了所有的输入tokens）。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160625.png" style="zoom:40%;" /></p>
+<ul>
+<li>多层结构：将一层RNN的隐藏状态传递给下一层RNN</li>
+</ul>
+<p>为了获得更好的文本表示，我们可以叠加多层网络。例如下图中，高层的RNN输入来自之前层RNN输出的表示。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160643.png" style="zoom:50%;" /></p>
+<p>多层结构的主要假设是：有了多层网络，低层次的网络可以捕捉到文本的局部现象（例如，短语等），而高层次的网络可以学习到更高层次的信息（如文本主题）。</p>
+<ul>
+<li>双向结构：使用前向和反向RNNs的最终状态</li>
+</ul>
+<p>之前的循环网络结构都存在一个问题：<strong>最后时间步的隐藏状态很容易忘记之前的tokens信息</strong>，即使是非常强健的LSTM模型也会遭遇这个问题。</p>
+<p>为了避免这个问题，我们可以使用两个RNNs：</p>
+<ol>
+<li><font style="color:#d192ba">前向</font>(forward):从左到右读取输入</li>
+<li><font style="color:#88bd33">反向</font>(backward): 从右到左读取输入</li>
+</ol>
+<p>然后，我们可以使用两个循环网络结构的最终隐藏状态：一个网络会更好地记住文本的末尾部分，而另一个会更好地记住文本的开始部分。这些状态可以连接在一起，或者累加，或者做些别的操作。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160713.png" style="zoom:40%;" /></p>
+<blockquote>
+<p>有了这些RNNs结构，我们就可以像搭积木一样，自由组合多种RNNs结构。</p>
+</blockquote>
+<hr>
+<h4 id="卷积神经网络cnn"><a href="#卷积神经网络cnn" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:卷积神经网络cnn" class="headings">卷积神经网络（CNN）</a></h4>
+<h5 id="图像卷积和平移不变性convolutions-for-images-and-translation-invariance"><a href="#图像卷积和平移不变性convolutions-for-images-and-translation-invariance" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:图像卷积和平移不变性convolutions-for-images-and-translation-invariance" class="headings">图像卷积和平移不变性（Convolutions for Images and Translation Invariance）</a></h5>
+<p>卷积神经网络最初发明用于计算机视觉任务。因此，首先了解用于图像的卷积模型背后的直觉。</p>
+<p>想象我们想要将图像分成多个类别，例如cat,dog,airplane等。在这个例子中，如果我们在图像中找到一只猫，<strong>我们不需要关系这只猫在图像的哪个位置</strong>，我们只需要关系猫是否在图像上。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160745.png" alt=""></p>
+<p>卷积网络将相同的操作应用于图像的一小部分，这也是卷积网络如何提取特征的方式。每个操作都在寻找与模式匹配的内容，网络将学习到哪些模式有用。有了许多网络层，学习到的特征将会越来越复杂：从低层网络中学习到的线条特征到高层网络学习到的非常复杂的模式（如整只猫或狗）。</p>
+<video width="50%" height="auto" loop="" autoplay="" muted="" style="margin-center: 20px;" controls="">
+                <source src="https://lena-voita.github.io/resources/lectures/models/cnn/cnn_with_cat.mp4">
+                </video>
+<p>而卷积网络的这种特性被称为<strong>平移不变性</strong>(translation invariance):<strong>平移</strong>是因为我们讨论的是在空间的中移动，而<strong>不变形</strong>是因为我们想要的是空间中的移动对图像类别的识别没有影响。</p>
+<hr>
+<h5 id="将卷积用于文本的原理"><a href="#将卷积用于文本的原理" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:将卷积用于文本的原理" class="headings">将卷积用于文本的原理</a></h5>
+<p>对于图像，这个问题非常清楚，例如我们能够移动猫在图像上的位置，因为我们并不需要在乎猫在哪里。然而那文本呢？第一眼看，这个问题并不简单：<strong>我们不能轻易地移动文本中的短语</strong>——文本的含义会发生变化或者我们将获得一些说不通的语句。</p>
+<p>然而，在某些应用中，我们可以想到相同的直觉。想象我们正在对文本进行分类，不是像图像一样分类cat,dog，而是分类为积极情感或消极情感。接着，文本中的一些单词和短语可能会具有非常多的信息暗示(cues)（例如<strong>It's been great, bored, absolutely amazing</strong>）,而其他一些单词就不那么重要。也就是说，<strong>我们不需要太关心这些具有很大信息暗示的单词和短语在文本中出现的位置，就可以大概理解文本的情感</strong>！</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160809.png" alt=""></p>
+<p><strong>一个经典的CNN模型：卷积+池化块</strong></p>
+<p>跟从上述想象中的直觉，我们想要识别出一些模式，但是我们并不需要对这些模式出现的位置过于关心。这样的行为可以通过两个网络层实现:</p>
+<ul>
+<li>卷积层(convolution): 找到这些模式的匹配项</li>
+<li>池化(pooling): 将这些匹配项汇总（要么局部汇总，要么全局汇总）</li>
+</ul>
+<p>为了获得输入文本的向量表示，一个卷积网络通过一个非线性映射（通常是$\mathrm{ReLU}$）和一个池化操作，获得词嵌入。该获取表示，并用于分类的方式与其他网络是相似的。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160819.png" alt=""><span class="caption">◎ 用于文本分类的CNN架构</span></p>
+<hr>
+<h5 id="用于文本的卷积层"><a href="#用于文本的卷积层" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:用于文本的卷积层" class="headings">用于文本的卷积层</a></h5>
+<p>卷积的想法是通过滑动窗口，遍历图像，并对每个窗口应用相同的操作，即<strong>卷积滤波器</strong>(convolution filter)。</p>
+<p>用于图像的卷积是二维的，因为图像也是二维的（高和宽）。而与图像不同，文本只有一个维度，因此卷积操作也是一维的。</p>
+<video width="60%" height="auto" loop="" autoplay="" muted="" style="margin-center: 20px;" controls="">
+                <source src="https://lena-voita.github.io/resources/lectures/models/cnn/cnn_filter_reads_text.mp4">
+                </video>
+<p>卷积是应用于每个输入窗口的<strong>线性层</strong>（紧随其后的是非线性变换）。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160905.png" alt=""><span class="caption">◎ 对文本的卷积操作</span></p>
+<p>形式上，我们做出如下假设：</p>
+<ul>
+<li>$(x_1, \dots, x_n)$表示输入单词的表示，其中$x_i\in \mathbb{R}^d$</li>
+<li>$d$（输入通道）：输入词嵌入的大小</li>
+<li>$k$（核的大小）：卷积窗口的长度（在图示中是$k=3$）</li>
+<li>$m$（输出通道）：卷积滤波器的数量</li>
+</ul>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted-image-20210309122959.png" alt=""></p>
+<p>卷积层是一个线性变换层，其变换矩阵为$W\in\mathbb{R}^{(k\cdot d)\times m}$。对于一个大小为$k$的窗口$(x_i, \dots x_{i+k-1})$,卷积接受这些向量的连接( concatenation):
+$$
+u_i = [x_i, \dots x_{i+k-1}]\in\mathbb{R}^{k\cdot d}
+$$
+然后与卷积矩阵相乘：
+$$
+F_i = u_i \times W.
+$$
+卷积通过使用滑动窗口，遍历所有的输入，并对每个窗口应用相同的线性变换。</p>
+<blockquote>
+<p>直觉：每个过滤器提取一个特征。</p>
+</blockquote>
+<ul>
+<li>一个过滤器——一个特征提取器</li>
+</ul>
+<p>一个过滤器采用当前窗口下的词表示，并将其线性转换成一个特征。形式上，对于窗口$u_i = [x_i, \dots x_{i+k-1}]\in\mathbb{R}^{k\cdot d}$,过滤器$f\in\mathbb{R}^{k\cdot d}$计算点积：
+$$
+F_i^{(f)} = (f, u_i).
+$$</p>
+<p>数值$F_i^{(f)}$（提取到的特征）是将过滤器$f$施加给窗口$(x_i, \dots x_{i+k-1})$的结果。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161226.png" style="zoom:33%;" /></p>
+<ul>
+<li>$m$个过滤器——$m$个特征提取器</li>
+</ul>
+<p><img src="https://lena-voita.github.io/resources/lectures/models/cnn/several_filters_read.gif" alt=""></p>
+<p>一个过滤器提取一种特征，那么我们使用多个过滤器即可提取多种特征。每个过滤器读取输入文本，并提到不同的特征。<strong>过滤器的数量是我们想要获得的输出特征的数量</strong>。有了$m$个过滤器，之前讨论的卷积矩阵大小将变为$(k\cdot d)\times m$。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161255.png" style="zoom:37%;" /></p>
+<p><strong>这是并行完成的</strong>(parallel)！在上述图示中展示了CNN如何“读取”文本，而实际上这些计算是并行进行的。</p>
+<hr>
+<h5 id="池化操作"><a href="#池化操作" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:池化操作" class="headings">池化操作</a></h5>
+<p>在卷积层从每个窗口提取到$m$个特征后，池化层将整合了某些区域的特征。池化层被用于降低输入维度，因此也可以降低网络使用的参数数量。</p>
+<ul>
+<li>最大和平均池化(Max/Mean Pooling)</li>
+</ul>
+<p>最流行的做法是最大池化：它将选取每个维度上的最大值，即选取每个特征的最大值输出。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161355.png" alt=""></p>
+<p>平均池化与最大池化的工作原理相似，不过其操作是取每个特征的均值而不是最大值。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted-image0210309123102.png" alt=""><span class="caption">◎ k-max池化： 选取k个概率最高的值</span></p>
+<ul>
+<li>池化与全局池化(global pooling)</li>
+</ul>
+<p>与卷积相似，池化也被用于几个元素组成的窗口中。池化还有一个<strong>步长</strong>(stride)参数，最常见的方法是对不重叠的窗口分别进行池化。为了做到这个操作，我们需要将步长设置为池化窗口大小一致。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161650.png" alt=""></p>
+<p>池化与全局池化的差异在于池化将独立应用于每个窗口中的特征，而全局池化将对整个输入执行池化操作。全局池化通常被用于获取整个文本的单一向量表示；这种全局池化被称为<strong>max-over-time</strong>池化，其中“时间”轴从第一个输入token到最后一个token。
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161739.png" alt=""></p>
+<p>直觉上，每个特征在看到某种模式时都会“触发”，例如图像中的视觉模式（线条、纹理、猫爪等）或者一个文本模式（例如短语）。在池化操作后，我们将输出一个向量来说明有哪些模式存在于输入中。</p>
+<hr>
+<h5 id="使用cnn做文本分类"><a href="#使用cnn做文本分类" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:使用cnn做文本分类" class="headings">使用CNN做文本分类</a></h5>
+<p>我们需要构建一个将文本表示为单个向量的卷积模型。</p>
+<p>下图展示使用CNN做文本分类的基础模型框架：
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161759.png" alt=""><span class="caption">◎ 文本分类CNN的基本框架</span></p>
+<p>在卷积操作后，我们采用的<strong>max-over-time</strong>的池化操作。这是一个非常关键的步骤:<strong>它将文本压缩为单个向量</strong>。模型本身可以有所不同，但是使用池化操作时，它必须使用<strong>全局池化</strong>来将整个输入文本压缩为单个向量。</p>
+<ul>
+<li>几个使用不同大小核的卷积</li>
+</ul>
+<p>除了使用只有一种大小核的卷积操作，我们还可以使用具有不同核大小的多个卷积。步骤很简单：对数据应用每个不同大小核的卷积，在每个卷积之后添加非线性和全局池化，然后合并结果（在图示中，为简单起见，省略了非线性）。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161846.png" alt=""><span class="caption">◎ 使用多种大小核的卷积，并最终连接成一个文本的向量表示</span></p>
+<p>以上就是获取用于分类文本的向量表示的方式。</p>
+<ul>
+<li>堆叠多个卷积+池化块</li>
+</ul>
+<p>除了使用单个卷积-池化层，我们还可以卷积-池化层作为模块，叠加使用。在使用多个卷积-池化层模块后（可以使用一般的池化），我们可以叠加另一种卷积-池化层模块，而这一层池化需要使用到全局池化。</p>
+<blockquote>
+<p>请记住：<strong>因为我们必须获得一个固定大小的向量，为此，需要使用全局池化</strong>。</p>
+</blockquote>
+<p>当您的文本很长时，这种多层卷积可能会很有用。例如，如果当模型是字符级(character-level)的（而不是单词级word-level的）。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161948.png" alt=""><span class="caption">◎ 多层卷积+池化</span></p>
+<hr>
+<h2 id="多标签分类"><a href="#多标签分类" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:多标签分类" class="headings">多标签分类</a></h2>
+<h3 id="简介-1"><a href="#简介-1" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:简介-1" class="headings">简介</a></h3>
+<p>多标签分类(Multi-label classification)与之前讨论的单标签分类任务不同，多标签分类中每个输入都可以有多个正确的标签。例如，一条推特可以有多个标签(hashtags),一个用户可以有多种主题的兴趣等。</p>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css">
+    
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162047.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162101.png" alt="">
+            </div>
+            
+        </div>
+        
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js"></script>
+     
+     <script>
+        var swiper = new Swiper('.swiper-container', {
+            pagination: '.swiper-pagination',
+            paginationClickable: true,
+        });
+        </script>
+
+
+<p><span class="caption">◎ 多标签任务举例</span></p>
+<p>对于多标签问题，相较于单标签问题，我们需要改变以下两个内容：</p>
+<ul>
+<li>模型：如何估计类别的概率</li>
+<li>损失函数</li>
+</ul>
+<hr>
+<h3 id="模型softmax-rightarrow-元素向sigmoid"><a href="#模型softmax-rightarrow-元素向sigmoid" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:模型softmax-rightarrow-元素向sigmoid" class="headings">模型：Softmax $\rightarrow$ 元素向Sigmoid</a></h3>
+<p>在最后的线性层之后，我们有$K$个类别对应的$K$个值，而我们需要将这些值转换为对应类别的概率。</p>
+<p>在单标签问题中，我们使用softmax函数来做到这件事情，其将$K$个值转换为一个概率分布，即所有类别的概率和为1，而<strong>这意味着所有类别共享<font style="color:red">相同的概率密度</font></strong>。如果一个类别的概率很高，那么其他类别就不会有高的概率值。</p>
+<p>而对于多标签问题，我们需要将这$K$个值转换为<strong>类别间相互独立</strong>的相应类别概率。具体来说，我们将对这$K$个值分别使用sigmoid函数 $\sigma(x)=\frac{1}{1+e^{-x}}$.</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162242.png" style="zoom:50%;" /></p>
+<p>在直觉上，我们可以将<strong>多标签问题等价为$K$个独立的二分类问题</strong>。</p>
+<hr>
+<h3 id="损失函数每个类别使用二值交叉熵"><a href="#损失函数每个类别使用二值交叉熵" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:损失函数每个类别使用二值交叉熵" class="headings">损失函数：每个类别使用二值交叉熵</a></h3>
+<p>在多标签问题中，损失函数需要作出一定的改变来应用于多个标签：<strong>对每个类别，我们都使用二值交叉熵函数(binary cross-entropy loss)</strong>。</p>
+<p>$$H_{p}(q)=-\frac{1}{N} \sum_{i=1}^{N} y_{i} \cdot \log \left(p\left(y_{i}\right)\right)+\left(1-y_{i}\right) \cdot \log \left(1-p\left(y_{i}\right)\right)$$</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162359.png" alt=""></p>
+<p>下图展示了二值交叉熵的直观推导流程<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">[1]</a></sup></p>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css">
+    
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162923.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162944.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163200.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163218.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163328.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163341.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163356.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163407.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163424.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163439.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163517.png" alt="">
+            </div>
+            
+            <div class="swiper-slide">
+                <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163538.png" alt="">
+            </div>
+            
+        </div>
+        
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js"></script>
+     
+     <script>
+        var swiper = new Swiper('.swiper-container', {
+            pagination: '.swiper-pagination',
+            paginationClickable: true,
+        });
+        </script>
+
+
+<p><span class="caption">◎ 二值交叉熵函数推导</span></p>
+<hr>
+<h2 id="实践技巧"><a href="#实践技巧" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:实践技巧" class="headings">实践技巧</a></h2>
+<h3 id="词嵌入如何处理"><a href="#词嵌入如何处理" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:词嵌入如何处理" class="headings">词嵌入：如何处理？</a></h3>
+<p>网络的输入由词嵌入表示，我们有三种选择获得这些词嵌入。</p>
+<ul>
+<li>作为模型的一部分，从头开始训练
+<ul>
+<li>只使用特定任务的语料训练词嵌入</li>
+</ul>
+</li>
+<li>使用预训练的词嵌入(如Word2Vec,Glove等)，并固定（将其作为静态向量使用）</li>
+<li>使用预训练的词嵌入进行初始化，然后通过网络对其进行训练（“微调”）。</li>
+</ul>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163632.png" style="zoom:33%;" /></p>
+<p>用于分类的训练数据是带有标记的，并且是与特定任务相应的，但是带有标记的数据通常很难获得。因此，这个语料库可能不会很大（至少），或者不会多样化，或者两者兼而有之。相反，词嵌入的训练数据是无需标记的，并且纯文本就足够了。因此，这些数据集可能庞大而多样，可以供网络学习很多东西。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163749.png" alt=""></p>
+<p>现在，让我们根据对词嵌入的处理方式来考虑模型将学习的内容。</p>
+<ul>
+<li>如果词嵌入是从头开始训练得到的，那么模型将会只“知道”分类数据，而不足够良好地学习单词之间的关系。</li>
+<li>如果使用预训练的词嵌入，那么模型将知道一个很大的预料库，并且学习到很多内容
+<ul>
+<li>为了将这些词嵌入适用于我们手头特定的任务，我们可以通过整个网络训练这些预训练的词嵌入，对其进行微调。这样的做法可以使模型性能获得一定提升</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163800.png" alt=""></p>
+<p>当我们使用预训练的词嵌入时，其实就是迁移学习的一种体现：<strong>通过预训练的词嵌入，我们将预训练中的训练数据的知识“迁移”到我们特定的任务中</strong>。</p>
+<blockquote>
+<p><strong>那我们是否应该使用微调的预训练词嵌入呢? </strong><br>
+在训练模型之前，可以首先考虑微调为什么会有用，以及哪些类型的任务可以从中受益,再做决定。</p>
+</blockquote>
+<hr>
+<h3 id="数据增强免费获得更多的数据的方法"><a href="#数据增强免费获得更多的数据的方法" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:数据增强免费获得更多的数据的方法" class="headings">数据增强：“免费”获得更多的数据的方法</a></h3>
+<p>数据增强以不同的方式更改数据集，以获取同一训练数据集的“加强”版本。数据增强可以增加：</p>
+<ol>
+<li>训练数据的数量
+<ol>
+<li>模型的质量很大程度上取决于样本的数量。对于深度学习模型，拥有大数据集至关重要</li>
+</ol>
+</li>
+<li>数据的多样性
+<ol>
+<li>通过提供不同版本的训练数据集，使模型对真实世界的数据更健壮(robust)</li>
+<li>实践数据可能导致模型的性能降低，或者与训练数据略有不同。</li>
+<li>使用增强数据集，模型不太可能适合特定类型的训练数据，而将更多地学习一般的模式。</li>
+</ol>
+</li>
+</ol>
+<p>图像的数据增强可以很容易地做到，一些标准的数据增强方式有：<strong>图像翻转</strong>(flipping),<strong>几何变换</strong>（例如旋转，在某个方向上拉长），<strong>用不同的色块覆盖图像的各个部分</strong>。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163954.png" alt=""></p>
+<p>那么我们如何对文本做一样的事情呢？</p>
+<ul>
+<li><strong>单词丢弃</strong>(word dropout)：最简单并且最流行的方式</li>
+</ul>
+<p>单词丢弃是最简单的正则化方法：对每个样本，我们将随机选取几个单词（例如每个单词被选中的概率为$10%$），并使用特殊的token <code>UNK</code>或者词表中任意一个token来代替。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164007.png" alt=""></p>
+<p>这种方法背后的动机其实很简单：<strong>我们教会模型不应过分依赖单个token，而是要考虑整个文本的上下文。</strong> 在上图的例子中，我们将<code>great</code>掩盖，此时模型就需要学习基于其他单词来理解这段文本的情感(sentiment)。</p>
+<blockquote>
+<p><strong>Note</strong>: make use of a more global context.            <br>
+这一点其实与图像中用色块掩盖图像部分区域的思想是一致的，即通过掩盖图像部分，迫使模型不应只依赖局部的特征，而是充分利用整个图像信息。<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164026.png" style="zoom:50%;" /></p>
+</blockquote>
+<ul>
+<li><strong>使用外部资源</strong>，例如同义词词典(thesaurus): 有点复杂</li>
+</ul>
+<p>一种有点复杂的方法是使用其同义词替换单词或短语。棘手的部分在于如何这些同义词：对于英语，我们可以使用<strong>同义词词典</strong>（或者WordNet)，然而除英语以外的其他语言很少使用。其次，对于一些形态丰富的语言（如俄语），简单的替换同义词有可能会违反语法规定。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164043.png" alt=""></p>
+<ul>
+<li><strong>借助外部模型</strong>： 甚至更复杂</li>
+</ul>
+<p>更复杂的方法是使用外部模型解释整个句子。一种流行的释义方法是<strong>将句子翻译成某种语言然后再翻译回来</strong>，例如使用谷歌翻译、百度翻译等。需要注意的是，我们可以将翻译系统和语言结合起来以获取多个释义。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164059.png" alt=""></p>
+<blockquote>
+<p><strong>Note</strong>: 后两种方法对应图像中的几何变换：<strong>我们想要改变文本，但是要保留原有的含义</strong>。<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164147.png" style="zoom: 50%;" />
+这与单词丢弃不同，单词丢弃是将一些部分整个消除。</p>
+</blockquote>
+<hr>
+<h2 id="分析与可解释性"><a href="#分析与可解释性" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:分析与可解释性" class="headings">分析与可解释性</a></h2>
+<h3 id="卷积可以学到什么东西分析卷积过滤器"><a href="#卷积可以学到什么东西分析卷积过滤器" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:卷积可以学到什么东西分析卷积过滤器" class="headings">卷积可以学到什么东西？分析卷积过滤器</a></h3>
+<ul>
+<li>在计算机视觉中：卷积学习视觉模式</li>
+</ul>
+<p>卷积最初是为图像而开发的，并且已经对不同类型的过滤器捕获了什么以及如何从不同层次结构的层中过滤有了很好的理解。虽然较低的层可以捕获简单的视觉图案（例如线条或圆圈），但最后一层可以捕获整个图片，如动物，人等。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164307.png" alt=""></p>
+<p><span class="caption">◎ <a href="https://distill.pub/2019/activation-atlas/" target="_blank" rel="noopener">distill.pub</a>上的实例</span></p>
+<ul>
+<li>在文本中，卷积学到什么</li>
+</ul>
+<p>对于图像，过滤器捕获对分类很重要的局部视觉模式。对于文本，此类局部模式为单词的n-grams。CNNs如何用于文本的主要发现如下：</p>
+<ol>
+<li>卷积滤波器用作n-grams检测器
+<ol>
+<li>每个过滤器专注于一个或几个密切相关的n-gram家族</li>
+<li>过滤器不是同质的，即一个过滤器可以检测多个明显不同的n-gram家族</li>
+</ol>
+</li>
+<li>最大池化：诱导阈值行为
+<ol>
+<li>进行预测时，低于给定阈值的值将被忽略（即不相关）。</li>
+<li>该<a href="https://arxiv.org/pdf/1809.08037.pdf" target="_blank" rel="noopener">研究</a>表明平均可以减少40％的池化n-gram，而不会降低性能。</li>
+</ol>
+</li>
+</ol>
+<p>了解网络捕获内容的最简单方法是查看哪些模式激活了其神经元。对于卷积，我们选择一个过滤器并找到最能激活该过滤器的n-grams(即过滤器获得的向量中值最大维度对应的n-grams)。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164655.png" style="zoom:50%;" /></p>
+<p>下图展示每个过滤器中激活得分最高的n-grams:
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164748.png" style="zoom:30%;" /></p>
+<p>可以发现在<strong>过滤器4</strong>中，激活得分排名靠前的n-grams都有着非常相似的含义。</p>
+<blockquote>
+<p>类比视觉中不同层次的卷积识别到不同层次的模式，在文本中，不同的卷积过滤器能识别到不同的n-grams模式，并且发掘对文本具有较高价值的n-grams以及其含义相近的n-grams家族。</p>
+</blockquote>
+<hr>
+<h2 id="研究反思"><a href="#研究反思" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:研究反思" class="headings">研究反思</a></h2>
+<h3 id="经典方法"><a href="#经典方法" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:经典方法" class="headings">经典方法</a></h3>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164857.png" alt=""></p>
+<p>最简单的朴素贝叶斯使用tokens作为特征，然而这并非总是好的方法，因为完全不同的文本也可以拥有相同的特征。</p>
+<p>❓  <strong><a href="https://derooce.github.io/posts/text-classification-notes/#%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8naive-bayes-classifier" target="_blank" rel="noopener">朴素贝叶斯</a>最大的问题在于其对文本一无所知。当然我们不能移除“朴素”假设，否则就不再是朴素贝叶斯方法了。那么我们应该如何改进特征提取部分呢？</strong></p>
+<p><strong>想法</strong>： 向特征中添加高频的n-grams！</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314165052.png" alt=""></p>
+<p>除了单独使用单词作为特征，我们还可以使用单词的n-grams.由于使用所有的n-grams
+会降低效率，那么我们可以只加入高频的n-grams.</p>
+<p>❓ <strong>还可以想出什么其他类型的特征？</strong></p>
+<p>注意到，朴素贝叶斯可以使用任何分类特征(categorical features)。我们可以执行任何操作，只要可以计算计数获得概率即可。</p>
+<ol>
+<li>文本长度
+<ol>
+<li>有可能正面的评价可能比负面的评价更长。我们可以将长度为1-20的tokens组成一个特征，长度为21-30的tokens组成另一个特征，等等。</li>
+</ol>
+</li>
+<li>token的频率
+<ol>
+<li>正面或负面评论可能使用更多奇怪的词。可以使用最少、最多、平均等统计特征表示token的频率</li>
+<li>记得最终需要将特征做分类化(categorize)</li>
+</ol>
+</li>
+<li>句法(syntactical)特征
+<ol>
+<li>依赖树深度（最大/最小/平均）,这可以代替文本的复杂性。</li>
+</ol>
+</li>
+<li>其他你想出的方法：Just try!</li>
+</ol>
+<ul>
+<li>分类是否同等地需要所有单词？如果不是，我们如何修改该方法？</li>
+</ul>
+<p><strong>想法</strong>：不要使用不重要的单词。</p>
+<p>如果我们知道哪些单词绝对不会影响分类的概率，那么我们可以将其从特征中移除。例如，我们可以移除停用词(stop-words): 确定词(determiners)，介词(prepositions)等。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314165159.png" style="zoom:33%;" /></p>
+<hr>
+<h3 id="神经网络方法"><a href="#神经网络方法" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:神经网络方法" class="headings">神经网络方法</a></h3>
+<p>❓ <strong>对于微调后的嵌入，为什么以及什么时候会有用？</strong></p>
+<p>在训练模型之前，我们首先需要思考为什么<strong>微调</strong>会有用，以及哪一种类型的样本将会受益于微调。记住词嵌入是如何训练的：<strong>在文本中用法相近的单词具有非常相近的词嵌入</strong>。因此，有时反义词彼此最接近，例如<strong>descent</strong>和<strong>ascent</strong>。</p>
+<p>想象我们想要使用词嵌入做情感分类。<strong>你能找到反义词的词嵌入非常紧密例子吗</strong>？如果有，这样的情况将会影响情感分类的结果？如果你找到这样的例子，这意味着最好要进行微调！</p>
+<p>如果没有使用微调，那么最接近<strong>bad</strong>的词嵌入将是<strong>good</strong>!</p>
+<p>下图显示了在使用微调的前后，Word2Vec中词嵌入最接近的几个单词。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314165313.png" alt=""></p>
+<p>如果不进行微调，模型将很难使用这些词嵌入来区分情感分类。微调还可以帮助提高对token的理解，例如<strong>n't</strong>: 这个单词在我们训练词嵌入的语料中很少见，但在我们关注的语料库中并不罕见。</p>
+<p>更一般而言，如果我们的特定任务的训练数据与词嵌入的预训练数据不同，则微调是个好主意。</p>
+<hr>
+<h2 id="reference"><a href="#reference" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:reference" class="headings">Reference</a></h2>
+<ol>
+<li><a href="https://lena-voita.github.io/nlp_course/text_classification.html" target="_blank" rel="noopener">Yandex: NLP Course</a></li>
+</ol>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p><a href="https://towardsdatascience.com/understanding-binary-cross-entropy-log-loss-a-visual-explanation-a3ac6025181a" target="_blank" rel="noopener">Understanding binary cross-entropy/log loss: a visual explanation</a> <a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+
+            </div>
+
+            
+
+
+        </article>
+
+        
+
+        
+    <div class="updated-badge-container">
+        <span title="Updated @ 2021-03-14 16:53:41 CST" style="cursor:help">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2021-03-14</text><text x="915" y="140" textLength="650" transform="scale(.1)">2021-03-14</text></g></svg>
+        </span></div>
+
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+    
+        <div class="post-tags">
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/nlp/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>NLP</a>
+                
+            
+        </div>
+    
+
+
+
+        
+
+
+        
+
+
+        
+    
+        
+        
+    
+    
+    
+    
+        <ul class="post-nav">
+            
+                <li class="post-nav-prev">
+                    <a href="/posts/language-modeling-notes/" rel="prev">&lt; NLP Notes series: Language Modeling</a>
+                </li>
+            
+            
+                <li class="post-nav-next">
+                    <a href="/posts/word-embeddings-notes/" rel="next">NLP Notes series: Word Embeddings &gt;</a>
+                </li>
+            
+        </ul>
+    
+
+
+
+        
+    
+
+        <div class="load-comments">
+            <div id="load-comments">加载评论</div>
+        </div>
+
+        
+            <div id="disqus_thread"></div>
+        
+
+        
+
+        
+
+    
+
+
+
+    </div>
+</main>
+
+
+            
+    <div id="back-to-top" class="back-to-top">
+        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon arrow-up"><path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"/></svg></a>
+    </div>
+
+
+            
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="site-info">&nbsp;DEROOCE&nbsp;&nbsp;©&nbsp;2021–2021</div><div class="site-copyright"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></div><div class="custom-footer">愚蠢的人总是对事情很确定，而聪明的人总是充满疑惑</div>
+
+            
+
+
+            
+        </div>
+    </footer>
+
+
+        </div>
+        
+
+        
+
+
+    <script>
+    if (typeof MathJax === 'undefined') {
+        window.MathJax = {
+            loader: {
+                load: ['[tex]/mhchem']
+            },
+            
+            tex: {
+                inlineMath: {'[+]': [['$', '$']]},
+                tags: 'ams',
+                packages: {'[+]': ['mhchem']}
+            }
+        };
+        (function() {
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+            script.defer = true;
+            document.head.appendChild(script);
+        })();
+    } else {
+        MathJax.texReset();
+        MathJax.typeset();
+    }
+</script>
+
+
+
+
+
+
+    
+
+        
+            <script>
+    function loadComments() {
+        if (typeof DISQUS === 'undefined') {
+            var disqus_config = function() {
+                this.page.url = 'https:\/\/derooce.github.io\/posts\/text-classification-notes\/';
+                this.page.identifier = '\/posts\/text-classification-notes\/';
+                this.page.title = 'NLP Notes series: Text Classification';
+            };
+            (function() {
+                var d = document, s = d.createElement('script'); s.async = true;
+                s.src = 'https://derooce.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        } else {
+            DISQUS.reset({
+                reload: true,
+                config: function() {
+                    this.page.url = 'https:\/\/derooce.github.io\/posts\/text-classification-notes\/';
+                    this.page.identifier = '\/posts\/text-classification-notes\/';
+                    this.page.title = 'NLP Notes series: Text Classification';
+                }
+            });
+        }
+    }
+</script>
+
+        
+
+        
+
+        
+
+    
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@latest/dist/medium-zoom.min.js"></script>
+
+<script>
+    mediumZoom(document.querySelectorAll('div.post-body img'), {
+        background: 'hsla(var(--color-bg-h), var(--color-bg-s), var(--color-bg-l), 0.95)'
+    })
+</script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/instant.page@5.1.0/instantpage.min.js" type="module" defer></script>
+
+
+
+
+
+
+
+    </body>
+</html>
