@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">MemE 是一个强大且可高度定制的 GoHugo 博客主题，专为个人博客设计。</subtitle>
-    <updated>2021-03-14T00:08:04&#43;08:00</updated>
+    <updated>2021-03-14T09:53:13&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -27,7 +27,7 @@
                     <uri>https://derooce.github.io/</uri>
                     <email>vanace.jc@gmail.com</email>
                     </author>
-            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">资源集锦 图像资源 名称 描述 open peeps 免费,可商业……</summary>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">资源集锦 图像资源 名称 描述 open peeps 免费,可商业化的手绘向量图库 favicon.io 网站icon制作 Font Awesome 免费图标库，可插入网页 RealFaviconGenerator 网站icon制作 字体 名称 描述 Google font 谷歌字体</summary>
             
                 <content type="html">&lt;h1 id=&#34;资源集锦&#34;&gt;资源集锦&lt;/h1&gt;
 &lt;h2 id=&#34;图像资源&#34;&gt;图像资源&lt;/h2&gt;
@@ -119,7 +119,7 @@
                     <uri>https://derooce.github.io/</uri>
                     <email>vanace.jc@gmail.com</email>
                     </author>
-            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">博客页面的css style记录（备忘） 图……</summary>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">博客页面的css style记录（备忘） 图片浮动在页面右端： 1 &amp;lt;img src=&amp;#34;image.jpg&amp;#34; style=&amp;#34;float:right; margin: 5px;&amp;#34; /&amp;gt; 实现段落两端对齐 1 2 3 4 p { text-align: justify; /* 文本两端对齐 */ text-justify: inter-ideograph; /* 调整表意文字间距以保持两端对齐 */ }</summary>
             
                 <content type="html">&lt;h2 id=&#34;博客页面的css-style记录备忘&#34;&gt;博客页面的css style记录（备忘）&lt;/h2&gt;
 &lt;ul&gt;
@@ -203,7 +203,7 @@
                     <uri>https://derooce.github.io/</uri>
                     <email>vanace.jc@gmail.com</email>
                     </author>
-            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">Hello Hugo default.md中设定slug为……</summary>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">Hello Hugo default.md中设定slug为网页网址的一部分。 MEME特殊强调符号： ..emphasis.. ..强调.. ..强调.. MEME $$\mathrm{Hello ~~~World}$$ $$ \begin{align} \nabla \times \vec{\mathbf{B}} -, \frac1c, \frac{\partial\vec{\mathbf{E}}}{\partial t} &amp;amp; = \frac{4\pi}{c}\vec{\mathbf{j}} \newline \nabla \cdot \vec{\mathbf{E}} &amp;amp; = 4 \pi \rho \newline \nabla \times \vec{\mathbf{E}}, +, \frac1c, \frac{\partial\vec{\mathbf{B}}}{\partial t} &amp;amp; = \vec{\mathbf{0}} \newline \nabla \cdot \vec{\mathbf{B}} &amp;amp; = 0\end{align} $$ 段内公式：$\sum_{i=1}^ki$ 1 2 3 4 5 &amp;lt;div&amp;gt; $$Math Block$$ &amp;lt;/div&amp;gt; &amp;lt;span&amp;gt;$inline math$&amp;lt;/span&amp;gt; \_ 你好 你好世界 1 print(&amp;#34;Hello Hugo&amp;#34;) 这是一个注释 。 特殊符号 &amp;amp;lt: &amp;lt;……</summary>
             
                 <content type="html">&lt;h2 id=&#34;hello-hugo&#34;&gt;Hello Hugo&lt;/h2&gt;
 &lt;blockquote&gt;
