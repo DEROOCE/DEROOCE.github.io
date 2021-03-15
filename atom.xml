@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">Writing and Sharing something insightful!</subtitle>
-    <updated>2021-03-14T23:36:27&#43;08:00</updated>
+    <updated>2021-03-15T18:46:10&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -16,6 +16,145 @@
             </author>
     <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights>
     <generator uri="https://gohugo.io/" version="0.81.0">Hugo</generator>
+        <entry>
+            <title type="text">NLP 论文阅读系列: 第1期</title>
+            <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/nlp-paper-reading-1/" />
+            <id>https://derooce.github.io/posts/nlp-paper-reading-1/</id>
+            <updated>2021-03-15T18:45:31&#43;08:00</updated>
+            <published>2021-03-15T14:40:09&#43;08:00</published>
+            <author>
+                    <name>DEROOCE</name>
+                    <uri>https://derooce.github.io/</uri>
+                    <email>vanace.jc@gmail.com</email>
+                    </author>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">摘要 向量空间的词表示(Vector-space word representations)在许多NLP任务中都取得了巨大的成功。然而，在大多数现有工作中，单词都被视为独立的实体(entities)。在建模过程中，没有显式地体现出形态相关(morphologically related)的单词之间的关系。结果导致……</summary>
+            
+                <content type="html">&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210315145158.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;摘要&#34;&gt;摘要&lt;/h2&gt;
+&lt;p&gt;向量空间的词表示(Vector-space word representations)在许多NLP任务中都取得了巨大的成功。然而，在大多数现有工作中，单词都被视为&lt;strong&gt;独立&lt;/strong&gt;的实体(entities)。在建模过程中，没有显式地体现出&lt;strong&gt;形态相关&lt;/strong&gt;(morphologically related)的单词之间的关系。结果导致一些少见和复杂单词的估计效果很差，以及所有未知单词(unknown words)仅使用一个或几个向量来粗略地表示。&lt;/p&gt;
+&lt;p&gt;例如，在维基百科文档中，&lt;strong&gt;distinct&lt;/strong&gt;共计出现了35323次，&lt;strong&gt;distinctness&lt;/strong&gt;共计只出现了141次。由于distinct出现频率较高，嵌入算法可以很好地估计出它的词向量。而distinctness因为出现频率低，最终的估计结果也很糟糕。如果按照形态学(morphology)角度，distinctness其实是源自于distinct,只是增加了&lt;strong&gt;ness&lt;/strong&gt;后缀而导致形态不同，而这两个单词的含义应该比较接近。这种直觉在之前的模型中没有得到体现。&lt;/p&gt;
+&lt;p&gt;这篇论文通过提出一种新颖的模型来解决这一缺点。通过结合RNNs和神经语言模型(Neural Language Models, NLMs)，学习具有&lt;strong&gt;形态学意识&lt;/strong&gt;的词表示。其中，&lt;strong&gt;&lt;a href=&#34;https://zh.wikipedia.org/wiki/%E8%AA%9E%E7%B4%A0&#34;&gt;词素&lt;/a&gt;&lt;/strong&gt;(morphemes)作为模型的基本单元，使得模型能够根据简单的词素构建出形态复杂的词的词表示。神经语言模型则用于在学习复杂单词的词表示时，兼顾上下文信息。&lt;/p&gt;
+&lt;p&gt;此外，该论文的研究还自建并公开了一个新的数据集，专注于测试罕见以及复杂形态的单词。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;引言&#34;&gt;引言&lt;/h2&gt;
+&lt;p&gt;近些年，在巨大的文本数据上使用非监督方式预训练得到的词表示和词聚类是许多NLP系统获得成功的“秘制酱料”。尽管词表示和聚类有许多应用以及为提高这些表示的效果,诞生了许多出色的研究工作，但这些方法都将每个不同形态的单词都视为独立的实体，无法捕获单词的形态学变体间的关系。此外，常见的单词，例如&amp;quot;distinct&amp;quot;可以获得很好的聚类或嵌入表示，然而&amp;quot;distinctness&amp;quot;却因为形态复杂以及在文本中罕见，导致表示效果很差。&lt;/p&gt;
+&lt;p&gt;本文的模型将以词素作为RNN的基本单元，并根据该词素构建出与其具有形态学关系的复杂单词的表示。通过结合RNN结构和神经语言模型，该模型还可以充分利用上下文信息，学习词素、语义以及其组成特性。根据已知的词素，该模型可以构建出所有由这些词素组成的未知单词的表示。&lt;/p&gt;
+&lt;h2 id=&#34;形态学rnns&#34;&gt;形态学RNNs&lt;/h2&gt;
+&lt;h3 id=&#34;模型结构&#34;&gt;模型结构&lt;/h3&gt;
+&lt;p&gt;本节介绍形态学RNN(morphological Recursive Neural Network, &lt;em&gt;morpho&lt;/em&gt;RNN)的结构原理。&lt;/p&gt;
+&lt;p&gt;在&lt;em&gt;morpho&lt;/em&gt;RNN中，词素作为语言中的最小含意单元，将被建模为模型的实值参数向量，并且被用于构建形态更复杂的单词。不同的词素将被编码为列向量，并且排列在词素嵌入矩阵$\boldsymbol{W}_{\boldsymbol{e}} \in \mathbb{R}^{d \times|\mathbb{M}|}$中。其中$d$表示向量维度，$\mathbb{M}$表示所有词素组成的有序集合。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210315160713.png&#34; alt=&#34;&#34; title=&#34;形态复杂单词的构建过程&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上图展示了形态复杂的单词的词向量是如何由其对应的词素表示构建起来的。在树形结构中，一个新的父结点向量$p$由词干(stem)向量$x_{\mathrm{stem}}$和词缀(affix)向量$x_{\mathrm{affix}}$组成：&lt;/p&gt;
+&lt;div&gt;
+    $$
+    p=f\left(\boldsymbol{W}_{m}\left[\boldsymbol{x}_{s \mathrm{tem}} ; \boldsymbol{x}_{\mathrm{affix}}\right]+b_{m}\right)
+    $$
+&lt;/div&gt;
+&lt;p&gt;其中&lt;span&gt;$\boldsymbol{W}_{\boldsymbol{m}}\in\mathbb{R}^{d\times 2d}$&lt;/span&gt;是词素参数矩阵，$\boldsymbol{b}_{\boldsymbol{m}}\in \mathbb{R}^{d\times 1}$是偏置向量，$f$表示一个&lt;strong&gt;元素向&lt;/strong&gt;激活函数，例如$\mathrm{tanh}$等。整个&lt;em&gt;morpho&lt;/em&gt;RNN模型的参数为&lt;span&gt;$\boldsymbol{\theta}=(\boldsymbol{W}_{\boldsymbol{e}},\boldsymbol{W}_{\boldsymbol{m}},\boldsymbol{b}_{\boldsymbol{m}})$&lt;/span&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;上下文不敏感的形态学rnn&#34;&gt;上下文不敏感的形态学RNN&lt;/h3&gt;
+&lt;p&gt;首先研究&lt;em&gt;morpho&lt;/em&gt;RNN在不参考任何上下文信息的情况下，只根据形态学表示来构造词向量的能力，并将该样的模型称为&lt;strong&gt;上下文不敏感的形态学RNN&lt;/strong&gt;(context-insensitive morphoRNN, &lt;em&gt;cimRNN&lt;/em&gt;)。&lt;em&gt;cimRNN&lt;/em&gt;的输入为一个引用嵌入矩阵(reference embedding matrix)，该矩阵的向量均为由先前的神经语言模型训练得到的嵌入，因此被称为“引用”嵌入。&lt;/p&gt;
+&lt;p&gt;假设这些引用嵌入都是正确的，或者说是被良好估计的，而该模型的目的是&lt;strong&gt;找到与这些引用词最匹配的词素，并使用这些词素构建出新的形态复杂单词的表示&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;cimRNN&lt;/em&gt;的架构与&lt;em&gt;morphoRNN&lt;/em&gt;相同。模型为了学习，需要定义目标函数。对于每个单词$x_i$,新构建的词表示$\boldsymbol{p}_c(x_i)$与该单词的引用嵌入$\boldsymbol{p}_r(x_i)$之间的损失函数$s$由平方欧式距离定义：&lt;/p&gt;
+&lt;div&gt;
+    $$
+    s\left(x_{i}\right)=\left\|\boldsymbol{p}_{c}\left(x_{i}\right)-\boldsymbol{p}_{r}\left(x_{i}\right)\right\|_{2}^{2}
+    $$
+&lt;/div&gt;
+&lt;p&gt;最终的目标函数就是$N$个训练样本的损失之和，另外再加入一个正则项:&lt;/p&gt;
+&lt;div&gt;
+    $$
+    J(\boldsymbol{\theta})=\sum_{i=1}^{N} s\left(x_{i}\right)+\frac{\lambda}{2}\|\boldsymbol{\theta}\|_{2}^{2}$$
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在该论文中，将正则项系数$\lambda$设置为$10^{-2}$.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;em&gt;cimRNN&lt;/em&gt;模型虽然结构简单，但是可以仅从引用嵌入中学习到单词的词素语义。&lt;/p&gt;
+&lt;h3 id=&#34;上下文敏感的形态学rnn&#34;&gt;上下文敏感的形态学RNN&lt;/h3&gt;
+&lt;p&gt;&lt;em&gt;cimRNN&lt;/em&gt;也存在一些缺点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在罕见词的估计效果差的前提下，该模型没有能力改善罕见词的表示。&lt;/li&gt;
+&lt;li&gt;由神经语言模型训练根据上下文得到的嵌入可以很好地融合语义和句法的信息。&lt;em&gt;cimRNN&lt;/em&gt;却没有融入上下文信息，只学习到词的组成结构信息。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;对于一些罕见词，如果其估计得到的词表示效果差，那么在构建出这些罕见词时，很可能导致模型参数向错误的方向更新。其次，如果将&lt;em&gt;cimRNN&lt;/em&gt;模型学习到的词结构信息与神经语言模型学习到的语义和句法信息结合，那么模型的估计效果理应会更好。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210315171221.png&#34; alt=&#34;&#34; title=&#34;上下文敏感的形态学RNN模型结构&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上图展示了上下文敏感的形态学RNN(context-sensitive morphological RNN, &lt;em&gt;csmRNN&lt;/em&gt;)的结构。&lt;/p&gt;
+&lt;ol type=&#34;a&#34;&gt;
+   &lt;li&gt;该层代表着&lt;i&gt;morpho&lt;/i&gt;RNN结构，根据各个词素组成其对应的形态复杂单词的表示&lt;/li&gt;
+   &lt;li&gt;该层表示&lt;i&gt;基于单词&lt;/i&gt; 的神经语言模型，用于优化单词组成的N-grams的得分&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;对于复杂结构的单词，例如&amp;quot;unfortunately&amp;quot;,由形态学向量组成:$un_{\mathrm{pre}}+fortunate_{\mathrm{stm}}+ly_{\mathrm{suf}}$,其中$\mathrm{pre}$即&lt;strong&gt;prefix&lt;/strong&gt;，表示前缀; $\mathrm{suf}$即&lt;strong&gt;suffix&lt;/strong&gt;，表示后缀。这些复杂单词的前缀、后缀、主干都可以从&lt;a href=&#34;https://derooce.github.io/posts/nlp-paper-reading-1/#%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84&#34;&gt;词素嵌入矩阵&lt;/a&gt;$\boldsymbol{W}_{\boldsymbol{e}}$中找到。一旦所有复杂单词的词向量被构建后，b层的神经语言模型将给每个由单词$x_1,...,x_n$组成的N-grams赋予一个得分：&lt;/p&gt;
+&lt;div&gt;
+    $$s\left(n_{i}\right)=\boldsymbol{v}^{\top} f\left(\boldsymbol{W}\left[\boldsymbol{x}_{1} ; \ldots ; \boldsymbol{x}_{n}\right]+\boldsymbol{b}\right)$$
+&lt;/div&gt;
+&lt;p&gt;其中，$\boldsymbol{x}_j$表示单词$x_j$的向量表示。神经语言模型将简单地采取单隐层的前馈神经网络，并且隐藏层维度记为$h$。$\boldsymbol{W} \in \mathbb{R}^{h \times n d}, \boldsymbol{b} \in \mathbb{R}^{h \times 1}$和$\boldsymbol{v}\in\mathbb{R}^{h\times 1}$为神经语言模型的参数。$f$表示元素向激活函数。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在该论文中，N-grams中的$N$设置为10，隐藏层维度$h=100$.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;另外，在目标函数中采用排序类型(ranking-type)的损失：&lt;/p&gt;
+&lt;div&gt;
+    $$J(\boldsymbol{\theta})=\sum_{i=1}^{N} \max \left\{0,1-s\left(n_{i}\right)+s\left(\bar{n}_{i}\right)\right\}$$
+&lt;/div&gt;
+&lt;p&gt;排序类型的损失影响模型对更合理的N-grams组合赋予更高的得分。其中,$N$表示在训练数据中所有可能的N-grams组合数量，$n_i$表示这些N-grams中的其一个序号，$\bar{n}_i$表示将$n_i$对应的N-Grams的最后一个单词随机选择一个单词替代后的N-grams的序号。最终&lt;em&gt;csmRNN&lt;/em&gt;的模型参数为$\boldsymbol{\theta}=(\boldsymbol{W}_{\boldsymbol{e}}, \boldsymbol{W}_{\boldsymbol{m}}, \boldsymbol{b}_{\boldsymbol{m}}, \boldsymbol{W}, \boldsymbol{b}, \boldsymbol{v})$ .&lt;/p&gt;
+&lt;h3 id=&#34;模型学习&#34;&gt;模型学习&lt;/h3&gt;
+&lt;p&gt;模型学习将分为前向过程和反向传播过程。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;前向过程：使用&lt;em&gt;cimRNN&lt;/em&gt;、&lt;em&gt;csmRNN&lt;/em&gt;递归地构建词素树以及语言模型结构，并对训练样本赋予得分&lt;/li&gt;
+&lt;li&gt;反向传播过程：计算目标函数关于模型参数的梯度&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;每个样本的损失关于参数$\boldsymbol{\theta}$的梯度为$\frac{\partial s(x)}{\partial \boldsymbol{\theta}}$,其中$x$要么是&lt;em&gt;cimRNN&lt;/em&gt;中使用到的引用单词，要么是&lt;em&gt;csmRNN&lt;/em&gt;中使用到的N-grams.&lt;/p&gt;
+&lt;p&gt;在&lt;em&gt;cimRNN&lt;/em&gt;中，目标函数的梯度可以推导为:&lt;/p&gt;
+&lt;div&gt;
+    $$\frac{\partial J(\boldsymbol{\theta})}{\partial \boldsymbol{\theta}}=\sum_{i=1}^{N} \frac{\partial s\left(x_{i}\right)}{\partial \boldsymbol{\theta}}+\lambda \boldsymbol{\theta}$$
+&lt;/div&gt;
+&lt;p&gt;而在&lt;em&gt;csmRNN&lt;/em&gt;中，由于目标函数并不可微，则可以使用&lt;strong&gt;次梯度&lt;/strong&gt;(subgradient)方法来估计目标函数的梯度:&lt;/p&gt;
+&lt;div&gt;
+    $$\frac{\partial J(\boldsymbol{\theta})}{\partial \boldsymbol{\theta}}=\sum_{i: 1-s\left(n_{i}\right)+s\left(\bar{n}_{i}\right)&gt;0}-\frac{\partial s\left(n_{i}\right)}{\partial \boldsymbol{\theta}}+\frac{\partial s\left(\bar{n}_{i}\right)}{\partial \boldsymbol{\theta}}$$
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;单词的词素分割使用到&lt;a href=&#34;https://github.com/aalto-speech/morfessor&#34;&gt;Morfessor&lt;/a&gt;工具，单词将分为$\mathrm{pre}，\mathrm{stm},\mathrm{suf}$三个成分，分别对应单词的前缀、主干和后缀。&lt;/p&gt;
+&lt;/blockquote&gt;
+</content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/papers/" term="Papers" label="Papers" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/nlp-papers/" term="NLP papers" label="NLP papers" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/nlp/" term="NLP" label="NLP" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/papers/" term="Papers" label="Papers" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
         <entry>
             <title type="text">NLP Notes series: Language Modeling</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/language-modeling-notes/" />
@@ -2397,14 +2536,14 @@ Description of Same-Page Links
             <title type="text">Hello Hugo</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/fancy-settings-for-hugo/" />
             <id>https://derooce.github.io/posts/fancy-settings-for-hugo/</id>
-            <updated>2021-03-14T15:38:12&#43;08:00</updated>
+            <updated>2021-03-15T18:16:24&#43;08:00</updated>
             <published>2021-03-12T11:05:36&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
                     <uri>https://derooce.github.io/</uri>
                     <email>vanace.jc@gmail.com</email>
                     </author>
-            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">Hello Hugo default.md中设定slug为网页网址的一部分。 MEME特殊强调符号： ..emphasis.. ..强调.. ..强调.. MEME ◎ $$\mathrm{Hello ~~~World}$$ $$ \begin{align} \nabla \times \vec{\mathbf{B}} -, \frac1c, \frac{\partial\vec{\mathbf{E}}}{\partial t} &amp;amp; = \frac{4\pi}{c}\vec{\mathbf{j}} \newline \nabla \cdot \vec{\mathbf{E}} &amp;amp; = 4 \pi \rho \newline \nabla \times \vec{\mathbf{E}}, +, \frac1c, \frac{\partial\vec{\mathbf{B}}}{\partial t} &amp;amp; = \vec{\mathbf{0}} \newline \nabla \cdot \vec{\mathbf{B}} &amp;amp; = 0\end{align} $$ 段内公式：$\sum_{i=1}^ki$ 1 2 3 4 5 &amp;lt;div&amp;gt; $$Math Block$$ &amp;lt;/div&amp;gt; &amp;lt;span&amp;gt;$inline math$&amp;lt;/span&amp;gt; \_ 你好 你好世界 1 print(&amp;#34;Hello Hugo&amp;#34;) 这是一个注释 。 特殊符号 &amp;amp;lt:……</summary>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">Hello Hugo default.md中设定slug为网页网址的一部分。 MEME特殊强调符号： ..emphasis.. ..强调.. ..强调.. MEME ◎ $$\mathrm{Hello ~~~World}$$ $$ \begin{align} \nabla \times \vec{\mathbf{B}} -, \frac1c, \frac{\partial\vec{\mathbf{E}}}{\partial t} &amp;amp; = \frac{4\pi}{c}\vec{\mathbf{j}} \newline \nabla \cdot \vec{\mathbf{E}} &amp;amp; = 4 \pi \rho \newline \nabla \times \vec{\mathbf{E}}, +, \frac1c, \frac{\partial\vec{\mathbf{B}}}{\partial t} &amp;amp; = \vec{\mathbf{0}} \newline \nabla \cdot \vec{\mathbf{B}} &amp;amp; = 0\end{align} $$ 段内公式：$\sum_{i=1}^ki$ 1 2 3 4 5 &amp;lt;div&amp;gt; $$Math Block$$ &amp;lt;/div&amp;gt; &amp;lt;span&amp;gt;$inline math$&amp;lt;/span&amp;gt; \_ 强调符 效果 _abc_ abc *abc* abc __abc__ abc **abc** abc ___abc___ abc ***abc*** abc ~~abc~~ abc 你好……</summary>
             
                 <content type="html">&lt;h2 id=&#34;hello-hugo&#34;&gt;Hello Hugo&lt;/h2&gt;
 &lt;blockquote&gt;
@@ -2438,7 +2577,45 @@ $$&lt;/p&gt;
 \_ 
 &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;你好&#34;&gt;你好&lt;/h2&gt;
+&lt;/div&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;强调符&lt;/th&gt;
+&lt;th&gt;效果&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;_abc_&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;em&gt;abc&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;*abc*&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;em&gt;abc&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;__abc__&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;abc&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;**abc**&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;abc&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;___abc___&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;em&gt;&lt;strong&gt;abc&lt;/strong&gt;&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;***abc***&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;em&gt;&lt;strong&gt;abc&lt;/strong&gt;&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;~~abc~~&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;del&gt;abc&lt;/del&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;你好&#34;&gt;你好&lt;/h2&gt;
 &lt;p&gt;你好世界&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -2588,6 +2765,52 @@ contexts here
 &lt;li&gt;&lt;code&gt;paths\themes\your-theme\layouts\partials\head.html&lt;/code&gt; 添加代码&lt;/li&gt;
 &lt;li&gt;文章中使用 &lt;code&gt;&amp;lt;i class=&amp;quot;fab fa-iconname&amp;quot;&amp;gt;&amp;lt;/i&amp;gt;&lt;/code&gt; 或者 &lt;code&gt;&amp;lt;i class=&amp;quot;fas fa-iconname&amp;quot;&amp;gt;&amp;lt;/i&amp;gt;&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
+&lt;h3 id=&#34;数学公式&#34;&gt;数学公式&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-tex&#34; data-lang=&#34;tex&#34;&gt;&amp;lt;div&amp;gt;
+&lt;span class=&#34;k&#34;&gt;\begin&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;equation&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;\label&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;eq:indiv&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;  &lt;span class=&#34;c&#34;&gt;% formula with label, and inclosed by div
+&lt;/span&gt;&lt;span class=&#34;c&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;k&#34;&gt;\left\{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;\begin&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;aligned&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;
+      u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;1&amp;#39; &lt;span class=&#34;nb&#34;&gt;&amp;amp;&lt;/span&gt;= f&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;1(u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;1, u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;2) &lt;span class=&#34;k&#34;&gt;\\&lt;/span&gt;
+      u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;2&amp;#39; &lt;span class=&#34;nb&#34;&gt;&amp;amp;&lt;/span&gt;= f&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;2(u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;1, u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;2)
+    &lt;span class=&#34;k&#34;&gt;\end&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;aligned&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;
+  &lt;span class=&#34;k&#34;&gt;\right&lt;/span&gt;.
+&lt;span class=&#34;k&#34;&gt;\end&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;equation&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;
+&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;div&gt;
+\begin{equation}\label{eq:indiv}  % formula with label, and inclosed by div
+  \left\{
+    \begin{aligned}
+      u_1&#39; &amp;= f_1(u_1, u_2) \\
+      u_2&#39; &amp;= f_2(u_1, u_2)
+    \end{aligned}
+  \right.
+\end{equation}
+&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-tex&#34; data-lang=&#34;tex&#34;&gt;&lt;span class=&#34;k&#34;&gt;\eqref&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;eq:indiv&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;引用公式: \eqref{eq:indiv}&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;文章小料&#34;&gt;文章小料&lt;/h2&gt;
 &lt;ol&gt;

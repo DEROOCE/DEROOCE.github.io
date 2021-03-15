@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+    <meta charset="UTF-8" />
+
+    <meta name="generator" content="Hugo 0.81.0" /><meta name="theme-color" content="#fff" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+    
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    <title>NLP 论文阅读系列: 第1期 | DEROOCE</title>
+
+    <link rel="stylesheet" href="/css/meme.min.13c6727226e5f558ed7dcaa413f814fb6ad217b7628a494b40c70808e07ae884.css"/>
+
+    
+    
+        <script src="/js/meme.min.4194bf2034241e3757fbbbf5fe4db43d0ff17c81f4496e6bc931504f0978cbd2.js"></script>
+
+    
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Martel:wght@200;300;400;600&amp;family=Lora:ital,wght@1,500&amp;family=Shippori&#43;Mincho:wght@400;500;600&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" media="print" onload="this.media='all'" />
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Martel:wght@200;300;400;600&amp;family=Lora:ital,wght@1,500&amp;family=Shippori&#43;Mincho:wght@400;500;600&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" /></noscript>
+
+    <meta name="author" content="DEROOCE" /><meta name="description" content="摘要 向量空间的词表示(Vector-space word representations)在许多NLP任务中都取得了巨大的成功。然而，在大多数现有工作中，单词都被视为独立的实体(entities)。在建模过程中，没有显式地体现出形态相关(morphologically related)的单词之间的关系。结果导致……" />
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#2a6df4" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="DEROOCE" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="DEROOCE" />
+    <meta name="msapplication-starturl" content="../../" />
+    <meta name="msapplication-TileColor" content="#fff" />
+    <meta name="msapplication-TileImage" content="../../icons/mstile-150x150.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <script src="https://kit.fontawesome.com/e2d29a5fca.js" crossorigin="anonymous"></script>
+    
+    
+
+
+
+    
+    <link rel="canonical" href="https://derooce.github.io/posts/nlp-paper-reading-1/" />
+    
+
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "datePublished": "2021-03-15T14:40:09+08:00",
+        "dateModified": "2021-03-15T18:45:31+08:00",
+        "url": "https://derooce.github.io/posts/nlp-paper-reading-1/",
+        "headline": "NLP 论文阅读系列: 第1期",
+        "description": "摘要 向量空间的词表示(Vector-space word representations)在许多NLP任务中都取得了巨大的成功。然而，在大多数现有工作中，单词都被视为独立的实体(entities)。在建模过程中，没有显式地体现出形态相关(morphologically related)的单词之间的关系。结果导致……",
+        "inLanguage" : "zh-CN",
+        "articleSection": "posts",
+        "wordCount":  3625 ,
+        "image": ["https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210315145158.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210315160713.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210315171221.png"],
+        "author": {
+            "@type": "Person",
+            "description": "Do or die",
+            "email": "vanace.jc@gmail.com",
+            "image": "https://derooce.github.io/icons/apple-touch-icon.png",
+            "url": "https://derooce.github.io/",
+            "name": "DEROOCE"
+        },
+        "license": "[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)",
+        "publisher": {
+            "@type": "Organization",
+            "name": "DEROOCE",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://derooce.github.io/icons/apple-touch-icon.png"
+            },
+            "url": "https://derooce.github.io/"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebSite",
+            "@id": "https://derooce.github.io/"
+        }
+    }
+</script>
+
+    
+
+<meta name="twitter:card" content="summary_large_image" />
+
+
+<meta name="twitter:site" content="@vanace_jc" />
+<meta name="twitter:creator" content="@vanace_jc" />
+
+    
+
+
+
+<meta property="og:title" content="NLP 论文阅读系列: 第1期" />
+<meta property="og:description" content="摘要 向量空间的词表示(Vector-space word representations)在许多NLP任务中都取得了巨大的成功。然而，在大多数现有工作中，单词都被视为独立的实体(entities)。在建模过程中，没有显式地体现出形态相关(morphologically related)的单词之间的关系。结果导致……" />
+<meta property="og:url" content="https://derooce.github.io/posts/nlp-paper-reading-1/" />
+<meta property="og:site_name" content="DEROOCE" />
+<meta property="og:locale" content="zh" /><meta property="og:image" content="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210315145158.png" />
+<meta property="og:type" content="article" />
+    <meta property="article:published_time" content="2021-03-15T14:40:09&#43;08:00" />
+    <meta property="article:modified_time" content="2021-03-15T18:45:31&#43;08:00" />
+    
+    <meta property="article:section" content="posts" />
+
+
+        <link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
+
+        
+
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KFL8D48FDC"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-KFL8D48FDC');
+    </script>
+
+
+
+
+    
+
+
+</head>
+
+    <body>
+        <div class="container">
+            
+    <header class="header">
+        
+            <div class="header-wrapper">
+                <div class="header-inner single">
+                    
+    <div class="site-brand">
+        
+            <a href="/" class="brand">DEROOCE</a>
+        
+    </div>
+
+                    <nav class="nav">
+    <ul class="menu" id="menu">
+        
+            
+        
+        
+        
+        
+            
+                <li class="menu-item"><a href="/posts/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon archive"><path d="M32 448c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32V160H32v288zm160-212c0-6.6 5.4-12 12-12h104c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12H204c-6.6 0-12-5.4-12-12v-8zM480 32H32C14.3 32 0 46.3 0 64v48c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16V64c0-17.7-14.3-32-32-32z"/></svg><span class="menu-item-name">文章</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/categories/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon th"><path d="M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"/></svg><span class="menu-item-name">分类</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/tags/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="icon tags"><path d="M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"/></svg><span class="menu-item-name">标签</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/about/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon user-circle"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/></svg><span class="menu-item-name">关于</span></a>
+                </li>
+            
+        
+            
+                
+                    
+                    
+                        <li class="menu-item">
+                            <a id="theme-switcher" href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-light"><path d="M193.2 104.5l48.8-97.5a18 18 0 0128 0l48.8 97.5 103.4 -34.5a18 18 0 0119.8 19.8l-34.5 103.4l97.5 48.8a18 18 0 010 28l-97.5 48.8 34.5 103.4a18 18 0 01-19.8 19.8l-103.4-34.5-48.8 97.5a18 18 0 01-28 0l-48.8-97.5l-103.4 34.5a18 18 0 01-19.8-19.8l34.5-103.4-97.5-48.8a18 18 0 010-28l97.5-48.8-34.5-103.4a18 18 0 0119.8-19.8zM256 128a128 128 0 10.01 0M256 160a96 96 0 10.01 0"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-dark"><path d="M27 412a256 256 0 10154-407a11.5 11.5 0 00-5 20a201.5 201.5 0 01-134 374a11.5 11.5 0 00-15 13"/></svg></a>
+                        </li>
+                    
+                
+            
+        
+    </ul>
+</nav>
+
+                    
+                </div>
+            </div>
+            
+    <input type="checkbox" id="nav-toggle" aria-hidden="true" />
+    <label for="nav-toggle" class="nav-toggle"></label>
+    <label for="nav-toggle" class="nav-curtain"></label>
+
+
+        
+
+        
+    
+
+    </header>
+
+
+
+
+
+
+            
+            
+    <main class="main single" id="main">
+    <div class="main-inner">
+
+        
+
+        <article class="content post h-entry" data-align="justify" data-type="posts" data-toc-num="true">
+
+            <h1 class="post-title p-name">NLP 论文阅读系列: 第1期</h1>
+
+            <div class="post-subtitle p-name">《Better Word Representations with Recursive Neural Networks for Morphology》</div>
+            
+
+            
+                
+            
+
+            
+                
+
+<div class="post-meta">
+    
+        
+        <time datetime="2021-03-15T14:40:09&#43;08:00" class="post-meta-item published dt-published"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>&nbsp;2021.3.15</time>
+    
+    
+    
+    
+        
+        
+        
+            
+                <span class="post-meta-item category"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M464 128H272l-54.63-54.63c-6-6-14.14-9.37-22.63-9.37H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48zm0 272H48V112h140.12l54.63 54.63c6 6 14.14 9.37 22.63 9.37H464v224z"/></svg>&nbsp;<a href="/categories/papers/" class="category-link p-category">Papers</a>/<a href="/categories/nlp-papers/" class="category-link p-category">NLP papers</a></span>
+            
+        
+    
+    
+        
+        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;3625</span>
+    
+    
+    
+    
+</div>
+
+            
+
+            <nav class="contents">
+  <h2 id="contents" class="contents-title">目录</h2><ol class="toc">
+    <li><a id="contents:摘要" href="#摘要">摘要</a></li>
+    <li><a id="contents:引言" href="#引言">引言</a></li>
+    <li><a id="contents:形态学rnns" href="#形态学rnns">形态学RNNs</a>
+      <ol>
+        <li><a id="contents:模型结构" href="#模型结构">模型结构</a></li>
+        <li><a id="contents:上下文不敏感的形态学rnn" href="#上下文不敏感的形态学rnn">上下文不敏感的形态学RNN</a></li>
+        <li><a id="contents:上下文敏感的形态学rnn" href="#上下文敏感的形态学rnn">上下文敏感的形态学RNN</a></li>
+        <li><a id="contents:模型学习" href="#模型学习">模型学习</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav><div class="post-body e-content">
+              <p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210315145158.png" alt=""></p>
+<h2 id="摘要"><a href="#摘要" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:摘要" class="headings">摘要</a></h2>
+<p>向量空间的词表示(Vector-space word representations)在许多NLP任务中都取得了巨大的成功。然而，在大多数现有工作中，单词都被视为<strong>独立</strong>的实体(entities)。在建模过程中，没有显式地体现出<strong>形态相关</strong>(morphologically related)的单词之间的关系。结果导致一些少见和复杂单词的估计效果很差，以及所有未知单词(unknown words)仅使用一个或几个向量来粗略地表示。</p>
+<p>例如，在维基百科文档中，<strong>distinct</strong>共计出现了35323次，<strong>distinctness</strong>共计只出现了141次。由于distinct出现频率较高，嵌入算法可以很好地估计出它的词向量。而distinctness因为出现频率低，最终的估计结果也很糟糕。如果按照形态学(morphology)角度，distinctness其实是源自于distinct,只是增加了<strong>ness</strong>后缀而导致形态不同，而这两个单词的含义应该比较接近。这种直觉在之前的模型中没有得到体现。</p>
+<p>这篇论文通过提出一种新颖的模型来解决这一缺点。通过结合RNNs和神经语言模型(Neural Language Models, NLMs)，学习具有<strong>形态学意识</strong>的词表示。其中，<strong><a href="https://zh.wikipedia.org/wiki/%E8%AA%9E%E7%B4%A0" target="_blank" rel="noopener">词素</a></strong>(morphemes)作为模型的基本单元，使得模型能够根据简单的词素构建出形态复杂的词的词表示。神经语言模型则用于在学习复杂单词的词表示时，兼顾上下文信息。</p>
+<p>此外，该论文的研究还自建并公开了一个新的数据集，专注于测试罕见以及复杂形态的单词。</p>
+<hr>
+<h2 id="引言"><a href="#引言" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:引言" class="headings">引言</a></h2>
+<p>近些年，在巨大的文本数据上使用非监督方式预训练得到的词表示和词聚类是许多NLP系统获得成功的“秘制酱料”。尽管词表示和聚类有许多应用以及为提高这些表示的效果,诞生了许多出色的研究工作，但这些方法都将每个不同形态的单词都视为独立的实体，无法捕获单词的形态学变体间的关系。此外，常见的单词，例如&quot;distinct&quot;可以获得很好的聚类或嵌入表示，然而&quot;distinctness&quot;却因为形态复杂以及在文本中罕见，导致表示效果很差。</p>
+<p>本文的模型将以词素作为RNN的基本单元，并根据该词素构建出与其具有形态学关系的复杂单词的表示。通过结合RNN结构和神经语言模型，该模型还可以充分利用上下文信息，学习词素、语义以及其组成特性。根据已知的词素，该模型可以构建出所有由这些词素组成的未知单词的表示。</p>
+<h2 id="形态学rnns"><a href="#形态学rnns" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:形态学rnns" class="headings">形态学RNNs</a></h2>
+<h3 id="模型结构"><a href="#模型结构" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:模型结构" class="headings">模型结构</a></h3>
+<p>本节介绍形态学RNN(morphological Recursive Neural Network, <em>morpho</em>RNN)的结构原理。</p>
+<p>在<em>morpho</em>RNN中，词素作为语言中的最小含意单元，将被建模为模型的实值参数向量，并且被用于构建形态更复杂的单词。不同的词素将被编码为列向量，并且排列在词素嵌入矩阵$\boldsymbol{W}_{\boldsymbol{e}} \in \mathbb{R}^{d \times|\mathbb{M}|}$中。其中$d$表示向量维度，$\mathbb{M}$表示所有词素组成的有序集合。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210315160713.png" alt=""><span class="caption">◎ 形态复杂单词的构建过程</span></p>
+<p>上图展示了形态复杂的单词的词向量是如何由其对应的词素表示构建起来的。在树形结构中，一个新的父结点向量$p$由词干(stem)向量$x_{\mathrm{stem}}$和词缀(affix)向量$x_{\mathrm{affix}}$组成：</p>
+<div>
+    $$
+    p=f\left(\boldsymbol{W}_{m}\left[\boldsymbol{x}_{s \mathrm{tem}} ; \boldsymbol{x}_{\mathrm{affix}}\right]+b_{m}\right)
+    $$
+</div>
+<p>其中<span>$\boldsymbol{W}_{\boldsymbol{m}}\in\mathbb{R}^{d\times 2d}$</span>是词素参数矩阵，$\boldsymbol{b}_{\boldsymbol{m}}\in \mathbb{R}^{d\times 1}$是偏置向量，$f$表示一个<strong>元素向</strong>激活函数，例如$\mathrm{tanh}$等。整个<em>morpho</em>RNN模型的参数为<span>$\boldsymbol{\theta}=(\boldsymbol{W}_{\boldsymbol{e}},\boldsymbol{W}_{\boldsymbol{m}},\boldsymbol{b}_{\boldsymbol{m}})$</span>。</p>
+<h3 id="上下文不敏感的形态学rnn"><a href="#上下文不敏感的形态学rnn" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:上下文不敏感的形态学rnn" class="headings">上下文不敏感的形态学RNN</a></h3>
+<p>首先研究<em>morpho</em>RNN在不参考任何上下文信息的情况下，只根据形态学表示来构造词向量的能力，并将该样的模型称为<strong>上下文不敏感的形态学RNN</strong>(context-insensitive morphoRNN, <em>cimRNN</em>)。<em>cimRNN</em>的输入为一个引用嵌入矩阵(reference embedding matrix)，该矩阵的向量均为由先前的神经语言模型训练得到的嵌入，因此被称为“引用”嵌入。</p>
+<p>假设这些引用嵌入都是正确的，或者说是被良好估计的，而该模型的目的是<strong>找到与这些引用词最匹配的词素，并使用这些词素构建出新的形态复杂单词的表示</strong>。</p>
+<p><em>cimRNN</em>的架构与<em>morphoRNN</em>相同。模型为了学习，需要定义目标函数。对于每个单词$x_i$,新构建的词表示$\boldsymbol{p}_c(x_i)$与该单词的引用嵌入$\boldsymbol{p}_r(x_i)$之间的损失函数$s$由平方欧式距离定义：</p>
+<div>
+    $$
+    s\left(x_{i}\right)=\left\|\boldsymbol{p}_{c}\left(x_{i}\right)-\boldsymbol{p}_{r}\left(x_{i}\right)\right\|_{2}^{2}
+    $$
+</div>
+<p>最终的目标函数就是$N$个训练样本的损失之和，另外再加入一个正则项:</p>
+<div>
+    $$
+    J(\boldsymbol{\theta})=\sum_{i=1}^{N} s\left(x_{i}\right)+\frac{\lambda}{2}\|\boldsymbol{\theta}\|_{2}^{2}$$
+</div>
+<blockquote>
+<p>在该论文中，将正则项系数$\lambda$设置为$10^{-2}$.</p>
+</blockquote>
+<p><em>cimRNN</em>模型虽然结构简单，但是可以仅从引用嵌入中学习到单词的词素语义。</p>
+<h3 id="上下文敏感的形态学rnn"><a href="#上下文敏感的形态学rnn" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:上下文敏感的形态学rnn" class="headings">上下文敏感的形态学RNN</a></h3>
+<p><em>cimRNN</em>也存在一些缺点：</p>
+<ol>
+<li>在罕见词的估计效果差的前提下，该模型没有能力改善罕见词的表示。</li>
+<li>由神经语言模型训练根据上下文得到的嵌入可以很好地融合语义和句法的信息。<em>cimRNN</em>却没有融入上下文信息，只学习到词的组成结构信息。</li>
+</ol>
+<p>对于一些罕见词，如果其估计得到的词表示效果差，那么在构建出这些罕见词时，很可能导致模型参数向错误的方向更新。其次，如果将<em>cimRNN</em>模型学习到的词结构信息与神经语言模型学习到的语义和句法信息结合，那么模型的估计效果理应会更好。</p>
+<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210315171221.png" alt=""><span class="caption">◎ 上下文敏感的形态学RNN模型结构</span></p>
+<p>上图展示了上下文敏感的形态学RNN(context-sensitive morphological RNN, <em>csmRNN</em>)的结构。</p>
+<ol type="a">
+   <li>该层代表着<i>morpho</i>RNN结构，根据各个词素组成其对应的形态复杂单词的表示</li>
+   <li>该层表示<i>基于单词</i> 的神经语言模型，用于优化单词组成的N-grams的得分</li>
+</ol>
+<p>对于复杂结构的单词，例如&quot;unfortunately&quot;,由形态学向量组成:$un_{\mathrm{pre}}+fortunate_{\mathrm{stm}}+ly_{\mathrm{suf}}$,其中$\mathrm{pre}$即<strong>prefix</strong>，表示前缀; $\mathrm{suf}$即<strong>suffix</strong>，表示后缀。这些复杂单词的前缀、后缀、主干都可以从<a href="#%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84">词素嵌入矩阵</a>$\boldsymbol{W}_{\boldsymbol{e}}$中找到。一旦所有复杂单词的词向量被构建后，b层的神经语言模型将给每个由单词$x_1,...,x_n$组成的N-grams赋予一个得分：</p>
+<div>
+    $$s\left(n_{i}\right)=\boldsymbol{v}^{\top} f\left(\boldsymbol{W}\left[\boldsymbol{x}_{1} ; \ldots ; \boldsymbol{x}_{n}\right]+\boldsymbol{b}\right)$$
+</div>
+<p>其中，$\boldsymbol{x}_j$表示单词$x_j$的向量表示。神经语言模型将简单地采取单隐层的前馈神经网络，并且隐藏层维度记为$h$。$\boldsymbol{W} \in \mathbb{R}^{h \times n d}, \boldsymbol{b} \in \mathbb{R}^{h \times 1}$和$\boldsymbol{v}\in\mathbb{R}^{h\times 1}$为神经语言模型的参数。$f$表示元素向激活函数。</p>
+<blockquote>
+<p>在该论文中，N-grams中的$N$设置为10，隐藏层维度$h=100$.</p>
+</blockquote>
+<p>另外，在目标函数中采用排序类型(ranking-type)的损失：</p>
+<div>
+    $$J(\boldsymbol{\theta})=\sum_{i=1}^{N} \max \left\{0,1-s\left(n_{i}\right)+s\left(\bar{n}_{i}\right)\right\}$$
+</div>
+<p>排序类型的损失影响模型对更合理的N-grams组合赋予更高的得分。其中,$N$表示在训练数据中所有可能的N-grams组合数量，$n_i$表示这些N-grams中的其一个序号，$\bar{n}_i$表示将$n_i$对应的N-Grams的最后一个单词随机选择一个单词替代后的N-grams的序号。最终<em>csmRNN</em>的模型参数为$\boldsymbol{\theta}=(\boldsymbol{W}_{\boldsymbol{e}}, \boldsymbol{W}_{\boldsymbol{m}}, \boldsymbol{b}_{\boldsymbol{m}}, \boldsymbol{W}, \boldsymbol{b}, \boldsymbol{v})$ .</p>
+<h3 id="模型学习"><a href="#模型学习" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:模型学习" class="headings">模型学习</a></h3>
+<p>模型学习将分为前向过程和反向传播过程。</p>
+<ul>
+<li>前向过程：使用<em>cimRNN</em>、<em>csmRNN</em>递归地构建词素树以及语言模型结构，并对训练样本赋予得分</li>
+<li>反向传播过程：计算目标函数关于模型参数的梯度</li>
+</ul>
+<p>每个样本的损失关于参数$\boldsymbol{\theta}$的梯度为$\frac{\partial s(x)}{\partial \boldsymbol{\theta}}$,其中$x$要么是<em>cimRNN</em>中使用到的引用单词，要么是<em>csmRNN</em>中使用到的N-grams.</p>
+<p>在<em>cimRNN</em>中，目标函数的梯度可以推导为:</p>
+<div>
+    $$\frac{\partial J(\boldsymbol{\theta})}{\partial \boldsymbol{\theta}}=\sum_{i=1}^{N} \frac{\partial s\left(x_{i}\right)}{\partial \boldsymbol{\theta}}+\lambda \boldsymbol{\theta}$$
+</div>
+<p>而在<em>csmRNN</em>中，由于目标函数并不可微，则可以使用<strong>次梯度</strong>(subgradient)方法来估计目标函数的梯度:</p>
+<div>
+    $$\frac{\partial J(\boldsymbol{\theta})}{\partial \boldsymbol{\theta}}=\sum_{i: 1-s\left(n_{i}\right)+s\left(\bar{n}_{i}\right)>0}-\frac{\partial s\left(n_{i}\right)}{\partial \boldsymbol{\theta}}+\frac{\partial s\left(\bar{n}_{i}\right)}{\partial \boldsymbol{\theta}}$$
+</div>
+<blockquote>
+<p>单词的词素分割使用到<a href="https://github.com/aalto-speech/morfessor" target="_blank" rel="noopener">Morfessor</a>工具，单词将分为$\mathrm{pre}，\mathrm{stm},\mathrm{suf}$三个成分，分别对应单词的前缀、主干和后缀。</p>
+</blockquote>
+
+            </div>
+
+            
+
+
+        </article>
+
+        
+
+        
+    <div class="updated-badge-container">
+        <span title="Updated @ 2021-03-15 18:45:31 CST" style="cursor:help">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2021-03-15</text><text x="915" y="140" textLength="650" transform="scale(.1)">2021-03-15</text></g></svg>
+        </span></div>
+
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+    
+        <div class="post-tags">
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/nlp/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>NLP</a>
+                
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/papers/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>Papers</a>
+                
+            
+        </div>
+    
+
+
+
+        
+
+
+        
+
+
+        
+    
+        
+        
+    
+    
+    
+    
+        <ul class="post-nav">
+            
+            
+                <li class="post-nav-next">
+                    <a href="/posts/language-modeling-notes/" rel="next">NLP Notes series: Language Modeling &gt;</a>
+                </li>
+            
+        </ul>
+    
+
+
+
+        
+    
+
+        <div class="load-comments">
+            <div id="load-comments">加载评论</div>
+        </div>
+
+        
+            <div id="disqus_thread"></div>
+        
+
+        
+
+        
+
+    
+
+
+
+    </div>
+</main>
+
+
+            
+    <div id="back-to-top" class="back-to-top">
+        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon arrow-up"><path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"/></svg></a>
+    </div>
+
+
+            
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="site-info">&nbsp;DEROOCE&nbsp;&nbsp;©&nbsp;2021–2021</div><div class="site-copyright"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></div><div class="custom-footer">愚蠢的人总是对事情很确定，而聪明的人总是充满疑惑</div>
+
+            
+
+
+            
+        </div>
+    </footer>
+
+
+        </div>
+        <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('\/sw.js');
+            });
+        }
+    </script>
+
+
+        
+
+
+    <script>
+    if (typeof MathJax === 'undefined') {
+        window.MathJax = {
+            loader: {
+                load: ['[tex]/mhchem']
+            },
+            
+            tex: {
+                inlineMath: {'[+]': [['$', '$']]},
+                tags: 'ams',
+                packages: {'[+]': ['mhchem']}
+            }
+        };
+        (function() {
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+            script.defer = true;
+            document.head.appendChild(script);
+        })();
+    } else {
+        MathJax.texReset();
+        MathJax.typeset();
+    }
+</script>
+
+
+
+
+
+
+    
+
+        
+            <script>
+    function loadComments() {
+        if (typeof DISQUS === 'undefined') {
+            var disqus_config = function() {
+                this.page.url = 'https:\/\/derooce.github.io\/posts\/nlp-paper-reading-1\/';
+                this.page.identifier = '\/posts\/nlp-paper-reading-1\/';
+                this.page.title = 'NLP 论文阅读系列: 第1期';
+            };
+            (function() {
+                var d = document, s = d.createElement('script'); s.async = true;
+                s.src = 'https://derooce.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        } else {
+            DISQUS.reset({
+                reload: true,
+                config: function() {
+                    this.page.url = 'https:\/\/derooce.github.io\/posts\/nlp-paper-reading-1\/';
+                    this.page.identifier = '\/posts\/nlp-paper-reading-1\/';
+                    this.page.title = 'NLP 论文阅读系列: 第1期';
+                }
+            });
+        }
+    }
+</script>
+
+        
+
+        
+
+        
+
+    
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@latest/dist/medium-zoom.min.js"></script>
+
+<script>
+    mediumZoom(document.querySelectorAll('div.post-body img'), {
+        background: 'hsla(var(--color-bg-h), var(--color-bg-s), var(--color-bg-l), 0.95)'
+    })
+</script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/instant.page@5.1.0/instantpage.min.js" type="module" defer></script>
+
+
+
+
+
+
+
+    </body>
+</html>
