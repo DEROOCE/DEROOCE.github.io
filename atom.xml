@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">Writing and Sharing something insightful!</subtitle>
-    <updated>2021-03-16T09:41:20&#43;08:00</updated>
+    <updated>2021-03-16T12:06:44&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -1589,7 +1589,7 @@ $$&lt;/p&gt;
             <title type="text">NLP Notes series: Word Embeddings</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/word-embeddings-notes/" />
             <id>https://derooce.github.io/posts/word-embeddings-notes/</id>
-            <updated>2021-03-14T15:09:22&#43;08:00</updated>
+            <updated>2021-03-16T10:46:15&#43;08:00</updated>
             <published>2021-03-14T12:38:10&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -1757,6 +1757,9 @@ training.&lt;/p &gt;&lt;/div&gt;
 &lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314134630.png&#34; alt=&#34;&#34; title=&#34;词的上下文定义&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;共现计数&lt;/strong&gt;是一种非常简单的计数方法。以每个词周围$L$长度的窗口作为其对应的上下文。上下文矩阵元素的定义为词$w$在上下文$c$中出现的&lt;strong&gt;次数&lt;/strong&gt;$N(w,c)$。这是获得嵌入表示的最基础，并且非常古老的方法。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314134920.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;下面给出一个共现计数矩阵计算的实例：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://res.cloudinary.com/derooce/image/upload/c_scale,q_96,r_6,w_606/v1615860019/Snipaste_2021-03-16_09-59-02_x1ukge.png&#34; alt=&#34;co-occurrence matrix&#34; title=&#34;图片来源: Stanford cs224n slides&#34;&gt;&lt;/p&gt;
+&lt;p&gt;在上图中，假设窗口长度$L=1$,即每次只观察中心词左右两侧各1个单词长度的窗口，并统计该中心词在多个文本中，与其他单词共同出现在同一窗口的次数，并以该次数作为共现矩阵的对应元素值。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;正点互信息-positive-pointwise-mutual-information-ppmi&#34;&gt;正点互信息: Positive Pointwise Mutual Information (PPMI)&lt;/h3&gt;
 &lt;p&gt;在该方法中，上下文的定义方式与共数计数中的定义相同,但衡量词语上下文之间关联性的方式更加聪明：正PMI (PPMI)。PPMI曾一度被广泛认为是&lt;strong&gt;分布式-相似度&lt;/strong&gt;(distributional-similarity)模型的最先进的度量方法。&lt;/p&gt;
@@ -2093,9 +2096,21 @@ $$
 &lt;p&gt;&lt;u&gt;内在任务评价&lt;/u&gt;: 基于内在的属性&lt;/p&gt;
 &lt;p&gt;这种评价方法着眼于嵌入的内在属性，例如这些词嵌入捕获词的含义的能力好坏。
 &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143707.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在特定或中间子任务上进行评估&lt;/li&gt;
+&lt;li&gt;计算速度快&lt;/li&gt;
+&lt;li&gt;可以帮助理解系统&lt;/li&gt;
+&lt;li&gt;除非建立与实际任务的相关性，否则无法明确是否真的有用&lt;/li&gt;
+&lt;/ul&gt;
 &lt;p&gt;&lt;u&gt;外在任务评价&lt;/u&gt;: 在真实任务中测试&lt;/p&gt;
 &lt;p&gt;这种评估方法可以检验哪种嵌入更适合真正关心的任务，例如文本分类等。在这种评估方法中，我们需要在真实任务中，训练多次模型/算法：&lt;strong&gt;一个模型获得一个对应的词嵌入&lt;/strong&gt;，接着，检查这些模型的性能来决定哪个词嵌入更好。
 &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143736.png&#34; style=&#34;zoom:40%;&#34; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在真实任务中评估&lt;/li&gt;
+&lt;li&gt;可能需要很长时间计算准确率&lt;/li&gt;
+&lt;li&gt;无法明确问题出现在子系统还是子系统之间的相互作用&lt;/li&gt;
+&lt;li&gt;如果将一个子系统替换为另一个子系统可以提高准确率-&amp;gt;这样做就是行得通的！&lt;/li&gt;
+&lt;/ul&gt;
 &lt;p&gt;&lt;u&gt;如何选择&lt;/u&gt;&lt;/p&gt;
 &lt;p&gt;在此之前，我们应该知道在所有的情形中，并不存在什么完美方法以及正确的解答。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143846.png&#34; style=&#34;zoom:30%;&#34; /&gt;&lt;/p&gt;
@@ -2287,7 +2302,8 @@ $$&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://lena-voita.github.io/nlp_course/word_embeddings.html&#34;&gt;Lena Voita: word_embeddings&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://ruder.io/word-embeddings-1/index.html&#34;&gt;Sebastian Ruder Blog&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.offconvex.org/2015/12/12/word-embeddings-1/&#34;&gt;offconvex: word embedding&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.offconvex.org/2015/12/12/word-embeddings-1&#34;&gt;offconvex: word embedding&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://web.stanford.edu/class/cs224n/index.html#schedule&#34;&gt;Stanford cs224n&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;section class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
 &lt;hr&gt;
