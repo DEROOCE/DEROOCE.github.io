@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">Writing and Sharing something insightful!</subtitle>
-    <updated>2021-03-16T18:15:25&#43;08:00</updated>
+    <updated>2021-03-20T14:21:37&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -15,7 +15,7 @@
                 <email>vanace.jc@gmail.com</email>
             </author>
     <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights>
-    <generator uri="https://gohugo.io/" version="0.81.0">Hugo</generator>
+    <generator uri="https://gohugo.io/" version="0.78.1">Hugo</generator>
         <entry>
             <title type="text">NLP 论文阅读系列: 第1期</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/nlp-paper-reading-1/" />
@@ -672,7 +672,7 @@ Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &amp;=
             <title type="text">NLP Notes series: Text Classification</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/text-classification-notes/" />
             <id>https://derooce.github.io/posts/text-classification-notes/</id>
-            <updated>2021-03-14T16:53:41&#43;08:00</updated>
+            <updated>2021-03-20T14:21:17&#43;08:00</updated>
             <published>2021-03-14T12:38:29&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -1240,6 +1240,9 @@ $$&lt;/p&gt;
 &lt;p&gt;下图展示使用CNN做文本分类的基础模型框架：
 &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161759.png&#34; alt=&#34;&#34; title=&#34;文本分类CNN的基本框架&#34;&gt;&lt;/p&gt;
 &lt;p&gt;在卷积操作后，我们采用的&lt;strong&gt;max-over-time&lt;/strong&gt;的池化操作。这是一个非常关键的步骤:&lt;strong&gt;它将文本压缩为单个向量&lt;/strong&gt;。模型本身可以有所不同，但是使用池化操作时，它必须使用&lt;strong&gt;全局池化&lt;/strong&gt;来将整个输入文本压缩为单个向量。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Apply a max-over-time pooling to &lt;strong&gt;get a vector of fixed size&lt;/strong&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;ul&gt;
 &lt;li&gt;几个使用不同大小核的卷积&lt;/li&gt;
 &lt;/ul&gt;
