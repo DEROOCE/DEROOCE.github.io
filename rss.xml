@@ -23,7 +23,7 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
         
-        <lastBuildDate>Sat, 20 Mar 2021 14:21:37 &#43;0800</lastBuildDate>
+        <lastBuildDate>Sat, 20 Mar 2021 14:49:37 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://derooce.github.io/rss.xml" />
         
@@ -1262,6 +1262,13 @@ $$&lt;/p&gt;
 &lt;p&gt;当您的文本很长时，这种多层卷积可能会很有用。例如，如果当模型是字符级(character-level)的（而不是单词级word-level的）。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161948.png&#34; alt=&#34;&#34; title=&#34;多层卷积+池化&#34;&gt;&lt;/p&gt;
 &lt;hr&gt;
+&lt;h5 id=&#34;初始化的嵌入如何选择&#34;&gt;初始化的嵌入如何选择&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Rand&lt;/code&gt;: 随机初始化嵌入矩阵&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Static&lt;/code&gt;: 采用word2vec预训练的嵌入，并且在训练网络过程中不对其更新&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Non-Static&lt;/code&gt;: 采用word2vec预训练的嵌入，并且在训练网络参数的同时，更新这些嵌入&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
 &lt;h2 id=&#34;多标签分类&#34;&gt;多标签分类&lt;/h2&gt;
 &lt;h3 id=&#34;简介-1&#34;&gt;简介&lt;/h3&gt;
 &lt;p&gt;多标签分类(Multi-label classification)与之前讨论的单标签分类任务不同，多标签分类中每个输入都可以有多个正确的标签。例如，一条推特可以有多个标签(hashtags),一个用户可以有多种主题的兴趣等。&lt;/p&gt;
@@ -1546,6 +1553,7 @@ $$&lt;/p&gt;
 &lt;h2 id=&#34;reference&#34;&gt;Reference&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://lena-voita.github.io/nlp_course/text_classification.html&#34;&gt;Yandex: NLP Course&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=nzSPZyjGlWI&#34;&gt;Deep Learning for NLP&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;section class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
 &lt;hr&gt;
