@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on DEROOCE</title>
+    <link>https://derooce.github.io/categories/</link>
+    <description>Recent content in Categories on DEROOCE</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <managingEditor>vanace.jc@gmail.com (DEROOCE)</managingEditor>
+    <webMaster>vanace.jc@gmail.com (DEROOCE)</webMaster>
+    <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
+    <lastBuildDate>Fri, 11 Jun 2021 09:29:52 +0800</lastBuildDate>
+    
+	<atom:link href="https://derooce.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Books</title>
+      <link>https://derooce.github.io/categories/books/</link>
+      <pubDate>Fri, 11 Jun 2021 09:29:52 +0800</pubDate>
+      <author>vanace.jc@gmail.com (DEROOCE)</author>
+      <guid>https://derooce.github.io/categories/books/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tech</title>
+      <link>https://derooce.github.io/categories/tech/</link>
+      <pubDate>Fri, 11 Jun 2021 09:29:52 +0800</pubDate>
+      <author>vanace.jc@gmail.com (DEROOCE)</author>
+      <guid>https://derooce.github.io/categories/tech/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Miscellaneous</title>
+      <link>https://derooce.github.io/categories/miscellaneous/</link>
+      <pubDate>Mon, 24 May 2021 15:38:54 +0800</pubDate>
+      <author>vanace.jc@gmail.com (DEROOCE)</author>
+      <guid>https://derooce.github.io/categories/miscellaneous/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Workflow</title>
+      <link>https://derooce.github.io/categories/workflow/</link>
+      <pubDate>Mon, 24 May 2021 15:38:54 +0800</pubDate>
+      <author>vanace.jc@gmail.com (DEROOCE)</author>
+      <guid>https://derooce.github.io/categories/workflow/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>NLP</title>
+      <link>https://derooce.github.io/categories/nlp/</link>
+      <pubDate>Tue, 16 Mar 2021 22:45:28 +0800</pubDate>
+      <author>vanace.jc@gmail.com (DEROOCE)</author>
+      <guid>https://derooce.github.io/categories/nlp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Parsing</title>
+      <link>https://derooce.github.io/categories/parsing/</link>
+      <pubDate>Tue, 16 Mar 2021 22:45:28 +0800</pubDate>
+      <author>vanace.jc@gmail.com (DEROOCE)</author>
+      <guid>https://derooce.github.io/categories/parsing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>NLP papers</title>
+      <link>https://derooce.github.io/categories/nlp-papers/</link>
+      <pubDate>Mon, 15 Mar 2021 14:40:09 +0800</pubDate>
+      <author>vanace.jc@gmail.com (DEROOCE)</author>
+      <guid>https://derooce.github.io/categories/nlp-papers/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Papers</title>
+      <link>https://derooce.github.io/categories/papers/</link>
+      <pubDate>Mon, 15 Mar 2021 14:40:09 +0800</pubDate>
+      <author>vanace.jc@gmail.com (DEROOCE)</author>
+      <guid>https://derooce.github.io/categories/papers/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Language Modeling</title>
+      <link>https://derooce.github.io/categories/language-modeling/</link>
+      <pubDate>Sun, 14 Mar 2021 12:38:45 +0800</pubDate>
+      <author>vanace.jc@gmail.com (DEROOCE)</author>
+      <guid>https://derooce.github.io/categories/language-modeling/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Text Classification</title>
+      <link>https://derooce.github.io/categories/text-classification/</link>
+      <pubDate>Sun, 14 Mar 2021 12:38:29 +0800</pubDate>
+      <author>vanace.jc@gmail.com (DEROOCE)</author>
+      <guid>https://derooce.github.io/categories/text-classification/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Word Embeddings</title>
+      <link>https://derooce.github.io/categories/word-embeddings/</link>
+      <pubDate>Sun, 14 Mar 2021 12:38:10 +0800</pubDate>
+      <author>vanace.jc@gmail.com (DEROOCE)</author>
+      <guid>https://derooce.github.io/categories/word-embeddings/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Resources</title>
+      <link>https://derooce.github.io/categories/resources/</link>
+      <pubDate>Sat, 13 Mar 2021 14:20:11 +0800</pubDate>
+      <author>vanace.jc@gmail.com (DEROOCE)</author>
+      <guid>https://derooce.github.io/categories/resources/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Blog Tech</title>
+      <link>https://derooce.github.io/categories/blog-tech/</link>
+      <pubDate>Sat, 13 Mar 2021 14:14:04 +0800</pubDate>
+      <author>vanace.jc@gmail.com (DEROOCE)</author>
+      <guid>https://derooce.github.io/categories/blog-tech/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

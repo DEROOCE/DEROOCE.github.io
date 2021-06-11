@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">Writing and Sharing something insightful!</subtitle>
-    <updated>2021-03-20T14:49:37&#43;08:00</updated>
+    <updated>2021-06-11T10:04:25&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -15,7 +15,255 @@
                 <email>vanace.jc@gmail.com</email>
             </author>
     <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights>
-    <generator uri="https://gohugo.io/" version="0.78.1">Hugo</generator>
+    <generator uri="https://gohugo.io/" version="0.68.3">Hugo</generator>
+        <entry>
+            <title type="text">Awesome Programming Books</title>
+            <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/awesome-tech-books-i-had-read/" />
+            <id>https://derooce.github.io/posts/awesome-tech-books-i-had-read/</id>
+            <updated>2021-06-11T09:56:24&#43;08:00</updated>
+            <published>2021-06-11T09:29:52&#43;08:00</published>
+            <author>
+                    <name>DEROOCE</name>
+                    <uri>https://derooce.github.io/</uri>
+                    <email>vanace.jc@gmail.com</email>
+                    </author>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">Awesome Programming books This repo colllects some awesome 👍 books (i thought 🤔) for several topics like [Machine Learning](https://derooce.github.io/posts/awesome-tech-books-i-had-read/#Machine Learning), [Deep Learning](https://derooce.github.io/posts/awesome-tech-books-i-had-read/#Deep Learning). Machine Learning Book Title Recommended Comments 《Probabilistic Machine Learning: An Introduction》 by Kevin Patrick Murphy. (2021) ⭐⭐⭐⭐⭐ 神书MLAPP(2021)的作者在2021年又公开一本PML系列新书,涉及内容非常广泛并且内容与时俱进，以至于一本书写不下(2022年将出版PML系列的第三本书……</summary>
+            
+                <content type="html">&lt;h1 id=&#34;awesome-programming-books&#34;&gt;Awesome Programming books&lt;/h1&gt;
+&lt;p&gt;This repo colllects some awesome 👍 books (i thought 🤔) for several topics like [Machine Learning](&lt;a href=&#34;https://derooce.github.io/posts/awesome-tech-books-i-had-read/#Machine&#34;&gt;https://derooce.github.io/posts/awesome-tech-books-i-had-read/#Machine&lt;/a&gt; Learning), [Deep Learning](&lt;a href=&#34;https://derooce.github.io/posts/awesome-tech-books-i-had-read/#Deep&#34;&gt;https://derooce.github.io/posts/awesome-tech-books-i-had-read/#Deep&lt;/a&gt; Learning).&lt;/p&gt;
+&lt;h1 id=&#34;machine-learning&#34;&gt;Machine Learning&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Book Title&lt;/th&gt;
+&lt;th&gt;Recommended&lt;/th&gt;
+&lt;th&gt;Comments&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;《&lt;strong&gt;&lt;a href=&#34;https://probml.github.io/pml-book/book1.html&#34;&gt;Probabilistic Machine Learning: An Introduction&lt;/a&gt;&lt;/strong&gt;》 by &lt;a href=&#34;https://www.cs.ubc.ca/~murphyk/&#34;&gt;Kevin Patrick Murphy&lt;/a&gt;. (2021)&lt;/td&gt;
+&lt;td&gt;⭐⭐⭐⭐⭐&lt;/td&gt;
+&lt;td&gt;神书MLAPP(2021)的作者在2021年又公开一本PML系列新书,涉及内容非常广泛并且内容与时俱进，以至于一本书写不下(2022年将出版PML系列的第三本书，敬请期待)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;deep-learning&#34;&gt;Deep Learning&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Book Title&lt;/th&gt;
+&lt;th&gt;Recommended&lt;/th&gt;
+&lt;th&gt;Comments&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;《&lt;strong&gt;&lt;a href=&#34;https://pytorch.org/assets/deep-learning/Deep-Learning-with-PyTorch.pdf&#34;&gt;Deep Learning With Pytorch&lt;/a&gt;&lt;/strong&gt;》 by Eli Stevens, Luca Antiga, Thomas Viehmann. (2020)&lt;/td&gt;
+&lt;td&gt;⭐⭐⭐⭐⭐&lt;/td&gt;
+&lt;td&gt;官方出品，必属精品&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;《&lt;strong&gt;&lt;a href=&#34;https://d2l.ai/&#34;&gt;Dive into Deep Learning&lt;/a&gt;&lt;/strong&gt;》by Aston Zhang, Zachary C. Lipton, Mu Li, and Alexander J. Smola&lt;/td&gt;
+&lt;td&gt;⭐⭐⭐⭐⭐&lt;/td&gt;
+&lt;td&gt;被全球近200所大学作为课本或参考书，内容涵盖DL的多个领域，不仅有详细的数学公式，还有PyTorch,MxNet等多种框架的代码实现&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;computer-vision&#34;&gt;Computer Vision&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Book Title&lt;/th&gt;
+&lt;th&gt;Recommended&lt;/th&gt;
+&lt;th&gt;Comments&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;《&lt;strong&gt;深度学习之PyTorch物体检测实战&lt;/strong&gt;》 by 董洪义&lt;/td&gt;
+&lt;td&gt;⭐⭐⭐⭐⭐&lt;/td&gt;
+&lt;td&gt;由浅入深，即使是初学者，也能迅速掌握动手实现基于深度学习的物体检测方法&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/books/" term="Books" label="Books" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/tech/" term="Tech" label="Tech" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/tech-books/" term="Tech Books" label="Tech Books" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/programming/" term="Programming" label="Programming" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
+        <entry>
+            <title type="text">工 作 心 得</title>
+            <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/%E5%B7%A5%E4%BD%9C%E5%BF%83%E5%BE%97/" />
+            <id>https://derooce.github.io/posts/%E5%B7%A5%E4%BD%9C%E5%BF%83%E5%BE%97/</id>
+            <updated>2021-06-11T09:54:23&#43;08:00</updated>
+            <published>2021-05-24T15:38:54&#43;08:00</published>
+            <author>
+                    <name>DEROOCE</name>
+                    <uri>https://derooce.github.io/</uri>
+                    <email>vanace.jc@gmail.com</email>
+                    </author>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">工作心流 初来乍到，不懂就问 🤙 每个公司都有自己的一套开发流程，通常很难使用自己原来一套工作流来高效完成任务，即使在同一公司，由于业务不断更新，自身的工作流也应该持续迭代。此外，由于对业务、具体任务要求等不明，自己一个人吭哧吭哧干了一堆活，结果因为流程不对或者方法错误而导致花了大量精力却做得是无用功。因……</summary>
+            
+                <content type="html">&lt;h1 id=&#34;工作心流&#34;&gt;工作心流&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;初来乍到，不懂就问 🤙&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;每个公司都有自己的一套开发流程，通常很难使用自己原来一套工作流来高效完成任务，即使在同一公司，由于业务不断更新，自身的工作流也应该持续迭代。此外，由于对业务、具体任务要求等不明，自己一个人吭哧吭哧干了一堆活，结果因为流程不对或者方法错误而导致花了大量精力却做得是无用功。因此，多与团队内老成员、团队领导交流，明确工作内具体规范，甚至还可能得到一些迅速提高工作效率的tricks, 相信这样做后会达到事半功倍的效果。&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;公司是靠员工的结果生存的，而不是员工的苦劳。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;作为公司员工，应该对任务的结果负责，而不是仅仅对任务负责，因为公司需要的是任务的结果！&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;工作中要形成自己的思想，而不是一昧地只知道做一个执行者&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;[待更......]&lt;/p&gt;
+</content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/miscellaneous/" term="Miscellaneous" label="Miscellaneous" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/workflow/" term="Workflow" label="Workflow" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/workflow/" term="Workflow" label="Workflow" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
+        <entry>
+            <title type="text">Dependency Parsing</title>
+            <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/nlp-dependency-parsing/" />
+            <id>https://derooce.github.io/posts/nlp-dependency-parsing/</id>
+            <updated>2021-03-16T22:59:35&#43;08:00</updated>
+            <published>2021-03-16T22:45:28&#43;08:00</published>
+            <author>
+                    <name>DEROOCE</name>
+                    <uri>https://derooce.github.io/</uri>
+                    <email>vanace.jc@gmail.com</email>
+                    </author>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">依存语法分析 自然语言的结构 短语结构 句子有逐步嵌套的单元构成，我们可以将相邻单元/单词组合为更大的单元/单词，称之为短语或词组，然后继续将组合后的短语或词组组合为更大的单元1。 依存结构 依存句法可以解释句子不同单元的联系，相同句子可能具有不能的依存结构，不同依存结构可能具有较大的语义差异。 因此，依据依存……</summary>
+            
+                <content type="html">&lt;h1 id=&#34;依存语法分析&#34;&gt;依存语法分析&lt;/h1&gt;
+&lt;h2 id=&#34;自然语言的结构&#34;&gt;自然语言的结构&lt;/h2&gt;
+&lt;h3 id=&#34;短语结构&#34;&gt;短语结构&lt;/h3&gt;
+&lt;p&gt;句子有逐步嵌套的单元构成，我们可以将相邻单元/单词组合为更大的单元/单词，称之为短语或词组，然后继续将组合后的短语或词组组合为更大的单元&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/nlp-dependency-parsing/#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;依存结构&#34;&gt;依存结构&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;依存句法可以解释句子不同单元的联系，相同句子可能具有不能的依存结构，不同依存结构可能具有较大的语义差异。&lt;/strong&gt; 因此，依据依存句法可以更好的理解句子，提升机器翻译等任务的准确性。&lt;/p&gt;
+&lt;h2 id=&#34;依存结构的表示方法&#34;&gt;依存结构的表示方法&lt;/h2&gt;
+&lt;h3 id=&#34;线性结构表示&#34;&gt;线性结构表示&lt;/h3&gt;
+&lt;h3 id=&#34;树形结构表示&#34;&gt;树形结构表示&lt;/h3&gt;
+&lt;section class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id=&#34;fn:1&#34; role=&#34;doc-endnote&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.csdn.net/sinat_34072381/article/details/105841933&#34;&gt;自然语言处理：依存句法解析（Dependency Parsing）&lt;/a&gt; &lt;a href=&#34;https://derooce.github.io/posts/nlp-dependency-parsing/#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/section&gt;
+</content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/nlp/" term="NLP" label="NLP" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/parsing/" term="Parsing" label="Parsing" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/nlp/" term="NLP" label="NLP" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
         <entry>
             <title type="text">NLP 论文阅读系列: 第1期</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/nlp-paper-reading-1/" />
@@ -672,7 +920,7 @@ Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &amp;=
             <title type="text">NLP Notes series: Text Classification</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/text-classification-notes/" />
             <id>https://derooce.github.io/posts/text-classification-notes/</id>
-            <updated>2021-03-20T14:49:28&#43;08:00</updated>
+            <updated>2021-03-20T22:59:50&#43;08:00</updated>
             <published>2021-03-14T12:38:29&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -731,76 +979,76 @@ Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &amp;=
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th style=&#34;text-align:left&#34;&gt;&lt;strong&gt;数据集&lt;/strong&gt;&lt;/th&gt;
-&lt;th style=&#34;text-align:left&#34;&gt;&lt;strong&gt;类型&lt;/strong&gt;&lt;/th&gt;
-&lt;th style=&#34;text-align:center&#34;&gt;&lt;strong&gt;标签数量&lt;/strong&gt;&lt;/th&gt;
-&lt;th style=&#34;text-align:center&#34;&gt;&lt;strong&gt;（训练集/测试集)大小&lt;/strong&gt;&lt;/th&gt;
-&lt;th style=&#34;text-align:center&#34;&gt;每个token的平均长度&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;strong&gt;数据集&lt;/strong&gt;&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;strong&gt;类型&lt;/strong&gt;&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;&lt;strong&gt;标签数量&lt;/strong&gt;&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;&lt;strong&gt;（训练集/测试集)大小&lt;/strong&gt;&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;每个token的平均长度&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://nlp.stanford.edu/sentiment/index.html&#34;&gt;SST&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;情感&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;5 or 2&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;8.5k / 1.1k&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;19&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://nlp.stanford.edu/sentiment/index.html&#34;&gt;SST&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;情感&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;5 or 2&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;8.5k / 1.1k&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;19&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://ai.stanford.edu/~amaas/data/sentiment/&#34;&gt;IMDB 影评&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;情感&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;2&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;25k / 25k&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;271&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://ai.stanford.edu/~amaas/data/sentiment/&#34;&gt;IMDB 影评&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;情感&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;25k / 25k&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;271&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/yelp-dataset/yelp-dataset&#34;&gt;Yelp 评价&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;情感&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;5 or 2&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;650k / 50k&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;179&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/yelp-dataset/yelp-dataset&#34;&gt;Yelp 评价&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;情感&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;5 or 2&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;650k / 50k&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;179&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/bittlingmayer/amazonreviews&#34;&gt;Amazon 评价&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;情感&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;5 or 2&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;3m / 650k&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;79&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/bittlingmayer/amazonreviews&#34;&gt;Amazon 评价&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;情感&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;5 or 2&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;3m / 650k&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;79&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://cogcomp.seas.upenn.edu/Data/QA/QC/&#34;&gt;TREC&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;问题&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;6&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;5.5k / 0.5k&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;10&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://cogcomp.seas.upenn.edu/Data/QA/QC/&#34;&gt;TREC&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;问题&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;6&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;5.5k / 0.5k&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;10&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/soumikrakshit/yahoo-answers-dataset&#34;&gt;Yahoo! Answers&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;问题&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;10&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;1.4m / 60k&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;131&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/soumikrakshit/yahoo-answers-dataset&#34;&gt;Yahoo! Answers&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;问题&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;10&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1.4m / 60k&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;131&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;http://groups.di.unipi.it/~gulli/AG_corpus_of_news_articles.html&#34;&gt;AG&#39;s 新闻&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;主题&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;4&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;120k / 7.6k&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;44&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;http://groups.di.unipi.it/~gulli/AG_corpus_of_news_articles.html&#34;&gt;AG&#39;s 新闻&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;主题&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;120k / 7.6k&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;44&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;http://www.sogou.com/labs/resource/cs.php&#34;&gt;Sogou 新闻&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;主题&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;6&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;54k / 6k&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;737&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;http://www.sogou.com/labs/resource/cs.php&#34;&gt;Sogou 新闻&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;主题&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;6&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;54k / 6k&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;737&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://wiki.dbpedia.org/services-resources/dbpedia-data-set-2014&#34;&gt;DBPedia&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;主题&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;14&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;560k / 70k&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;67&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://wiki.dbpedia.org/services-resources/dbpedia-data-set-2014&#34;&gt;DBPedia&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;主题&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;14&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;560k / 70k&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;67&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -813,7 +1061,7 @@ Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &amp;=
 &lt;li&gt;一个有5个标签：1(非常消极),2(消极),3(中性),4(积极),5(非常积极)&lt;/li&gt;
 &lt;li&gt;SST存在一个二分类的变种数据集——SST-2，其中标签只有积极和消极两种&lt;/li&gt;
 &lt;li&gt;SST一共包含215,154个短语，这些短语将组成各个影评&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Makes even the claustrophobic on-board quarters seem fun.&lt;/em&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314152841.png&#34; style=&#34;zoom:23%;&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;_Makes even the claustrophobic on-board quarters seem fun._&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314152841.png&#34; style=&#34;zoom:23%;&#34; /&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -2384,26 +2632,26 @@ $$&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th style=&#34;text-align:left&#34;&gt;名称&lt;/th&gt;
-&lt;th style=&#34;text-align:center&#34;&gt;描述&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;名称&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;描述&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://www.openpeeps.com/&#34;&gt;open peeps&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;免费,可商业化的手绘向量图库&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://www.openpeeps.com/&#34;&gt;open peeps&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;免费,可商业化的手绘向量图库&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://favicon.io/favicon-generator/&#34;&gt;favicon.io&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;网站icon制作&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://favicon.io/favicon-generator/&#34;&gt;favicon.io&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;网站icon制作&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://fontawesome.com/icons&#34;&gt;Font Awesome&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;免费图标库，可插入网页&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://fontawesome.com/icons&#34;&gt;Font Awesome&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;免费图标库，可插入网页&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://realfavicongenerator.net/&#34;&gt;RealFaviconGenerator&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;网站icon制作&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://realfavicongenerator.net/&#34;&gt;RealFaviconGenerator&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;网站icon制作&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -2411,14 +2659,14 @@ $$&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th style=&#34;text-align:left&#34;&gt;名称&lt;/th&gt;
-&lt;th style=&#34;text-align:center&#34;&gt;描述&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;名称&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;描述&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://fonts.google.com/&#34;&gt;Google font&lt;/a&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:center&#34;&gt;谷歌字体&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://fonts.google.com/&#34;&gt;Google font&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;谷歌字体&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
