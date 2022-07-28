@@ -10,7 +10,7 @@
         <title>DEROOCE</title>
         <link>https://derooce.github.io/</link>
         <description>Writing and Sharing something insightful!</description>
-        <generator>Hugo 0.68.3 https://gohugo.io/</generator>
+        <generator>Hugo 0.101.0 https://gohugo.io/</generator>
         
             <language>zh-CN</language>
         
@@ -23,7 +23,7 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
         
-        <lastBuildDate>Fri, 11 Jun 2021 10:18:06 &#43;0800</lastBuildDate>
+        <lastBuildDate>Thu, 28 Jul 2022 22:17:16 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://derooce.github.io/rss.xml" />
         
@@ -448,7 +448,7 @@ P(y_1, y_2, \dots, y_n)&amp;=P(y_1)\cdot P(y_2|y_1)\cdot P(y_3|y_1, y_2)\cdot\do
                                                     $$
 &lt;/div&gt;
 &lt;p&gt;而唯一不确定的是&lt;strong&gt;如何计算这些条件概率&lt;/strong&gt;。因此，我们所要做的就是定义计算这些条件概率的方法。&lt;/p&gt;
-&lt;p&gt;与之前Word Embeddings中&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#%E5%9F%BA%E4%BA%8E%E8%AE%A1%E6%95%B0%E7%9A%84%E6%96%B9%E6%B3%95&#34;&gt;基于计数的方法&lt;/a&gt;非常相似，N-gram语言模型也采用计算文本语料中的全局统计信息建模，即通过&lt;strong&gt;计数&lt;/strong&gt;的方法。也就是说，N-gram语言模型估计概率$P(y_t|y_{\mbox{&amp;lt;}t}) = P(y_t|y_1, \dots, y_{t-1})$的方法**几乎**等价于之前我们基于古典概率论中频率估计概率的方法(&lt;a href=&#34;https://derooce.github.io/posts/language-modeling-notes/#%E6%96%87%E6%9C%AC%E6%A6%82%E7%8E%87&#34;&gt;文本概率&lt;/a&gt;)。&lt;/p&gt;
+&lt;p&gt;与之前Word Embeddings中&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#%E5%9F%BA%E4%BA%8E%E8%AE%A1%E6%95%B0%E7%9A%84%E6%96%B9%E6%B3%95&#34;&gt;基于计数的方法&lt;/a&gt;非常相似，N-gram语言模型也采用计算文本语料中的全局统计信息建模，即通过&lt;strong&gt;计数&lt;/strong&gt;的方法。也就是说，N-gram语言模型估计概率$P(y_t|y_{\mbox{&amp;lt;}t}) = P(y_t|y_1, \dots, y_{t-1})$的方法&lt;strong&gt;几乎&lt;/strong&gt;等价于之前我们基于古典概率论中频率估计概率的方法(&lt;a href=&#34;https://derooce.github.io/posts/language-modeling-notes/#%E6%96%87%E6%9C%AC%E6%A6%82%E7%8E%87&#34;&gt;文本概率&lt;/a&gt;)。&lt;/p&gt;
 &lt;p&gt;这里突出了“几乎”二词是因为N-gram模型还包含了两个非常重要的成分：&lt;strong&gt;马尔科夫性质&lt;/strong&gt;和&lt;strong&gt;平滑方法&lt;/strong&gt;。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;马尔科夫性质独立假设&#34;&gt;马尔科夫性质（独立假设）&lt;/h3&gt;
@@ -481,18 +481,18 @@ $$
 &lt;ul&gt;
 &lt;li&gt;当分母出现频数为0时，即&amp;quot;N(cat on a)=0&amp;quot;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171053.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171053.png&#34; style=&#34;zoom: 33%;&#34; /&gt;
 &lt;p&gt;方案一：后退法(aka Stupid Backoff)。Backoff的思想是对于那些未出现的序列，我们只使用其子序列的频数估计。举例来说，对于&amp;quot;cat on a&amp;quot;这是一个trigram模型，如果&amp;quot;cat on a&amp;quot;没有出现，则将其退化为使用bigram模型，即计算&amp;quot;on a&amp;quot;的频数；若还是没有出现，则再退化使用unigram模型。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171122.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171122.png&#34; style=&#34;zoom:33%;&#34; /&gt;
 &lt;p&gt;这种方法看起来傻乎乎的，但实际上却效果还可以。&lt;/p&gt;
 &lt;p&gt;另一种更聪明的方法是：线性插值(Linear interpolation)。线性插值将使用unigram、bigram、trigram等的结合。为了做到这点，需要使用一些正的权重标量$\lambda_0, \lambda_1, \dots, \lambda_{n-1}$，并且满足$\sum\limits_{i}\lambda_i=1$。如此，更新的概率将为：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171140.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171140.png&#34; style=&#34;zoom: 33%;&#34; /&gt;
 &lt;p&gt;权重系数$\lambda_i$可以使用交叉验证来选择。&lt;/p&gt;
 &lt;hr&gt;
 &lt;ul&gt;
 &lt;li&gt;当分子为0时，即&amp;quot;N(cat on a mat)=0&amp;quot;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171212.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171212.png&#34; style=&#34;zoom:33%;&#34; /&gt;
 &lt;p&gt;这种情形下，常用的方法是&lt;strong&gt;拉普拉斯平滑&lt;/strong&gt;（aka 加1平滑， add-one smoothing）。避免这种情况最简单的方法是假设每个n-grams都至少出现1次，即每个n-grams的计数都加上1，或者加上一个很小的值 $\delta$:
 &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171229.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
 &lt;hr&gt;
@@ -625,9 +625,9 @@ P(y_1, y_2, \dots, y_n)&amp;=P(y_1)\cdot P(y_2|y_1)\cdot P(y_3|y_1, y_2)\cdot\do
 &lt;/ol&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;&lt;video width=&#34;60%&#34; height=&#34;auto&#34; loop=&#34;&#34; autoplay=&#34;&#34; muted=&#34;&#34; &gt;
-&lt;source src=&#34;https://lena-voita.github.io/resources/lectures/lang_models/neural/nn_lm_prob_idea.mp4&#34;&gt;
-&lt;/video&gt;&lt;/p&gt;
+&lt;video width=&#34;60%&#34; height=&#34;auto&#34; loop=&#34;&#34; autoplay=&#34;&#34; muted=&#34;&#34; &gt;
+         &lt;source src=&#34;https://lena-voita.github.io/resources/lectures/lang_models/neural/nn_lm_prob_idea.mp4&#34;&gt;
+     &lt;/video&gt;
 &lt;p&gt;从上图的流程可以发现，其实神经语言模型就是一个神经分类器，而预测下一个词的概率分布其实就是一个分类问题的一部分。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;高层次的pipeline&#34;&gt;高层次的Pipeline&lt;/h3&gt;
@@ -679,12 +679,12 @@ $$&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;单层 RNN&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172057.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172057.png&#34; style=&#34;zoom:33%;&#34; /&gt;
 &lt;p&gt;最简单的循环架构就是单层的循环神经网络。在每个时间步，当前的状态将包含之前tokens的信息，并且将其用于预测下一个token。在训练时，将训练样本传给网络。在推断时，模型将生成一个token。以上步骤直到网络生成&lt;code&gt;_eos_&lt;/code&gt;为止。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;多层 RNN&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172109.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172109.png&#34; style=&#34;zoom:50%;&#34; /&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;模型卷积&#34;&gt;模型：卷积&lt;/h3&gt;
 &lt;p&gt;对比文本分类中的&lt;a href=&#34;https://derooce.github.io/posts/text-classification-notes/#%E5%B0%86%E5%8D%B7%E7%A7%AF%E7%94%A8%E4%BA%8E%E6%96%87%E6%9C%AC%E7%9A%84%E5%8E%9F%E7%90%86&#34;&gt;将卷积用于文本的原理&lt;/a&gt;,在语言模型中的CNN将有些不同。&lt;/p&gt;
@@ -713,7 +713,7 @@ $$&lt;/p&gt;
 &lt;hr&gt;
 &lt;p&gt;&lt;strong&gt;感受野&lt;/strong&gt;(Receptive field): 有了许多层，感受野范围可以很广&lt;/p&gt;
 &lt;p&gt;当不使用&lt;a href=&#34;https://derooce.github.io/posts/text-classification-notes/#%E6%B1%A0%E5%8C%96%E6%93%8D%E4%BD%9C&#34;&gt;全局池化操作&lt;/a&gt;的CNN模型时，我们的模型可能无法避免地使用一个固定大小的上下文窗口，而这正是N-gram模型的缺点，以及我们想极力避免的问题。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172319.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172319.png&#34; style=&#34;zoom:50%;&#34; /&gt;
 &lt;p&gt;然而，如果N-gram模型的上下文大小通常为1-4,那么CNN模型的上下文大小却可以非常大。在上图中，我们只是用了3层的卷积层，以及过滤器大小为3，但网络却可以接受7个tokens组成的上下文窗口的信息。如果我们继续堆叠更多层，那么我们将可以获得一个非常大的上下文长度。&lt;/p&gt;
 &lt;hr&gt;
 &lt;p&gt;&lt;strong&gt;残差连接&lt;/strong&gt;： 使得训练深层网络更容易&lt;/p&gt;
@@ -721,7 +721,7 @@ $$&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172337.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;残差连接非常简单：相对于一般的深层网络，添加了一个输入层到输出层的连接。而高速连接的动机相同，但使用了一个门控来控制输入、输出的和，而不是简单地使用累加和。这与LSTM使用不同的门控控制学习的信息相似。&lt;/p&gt;
 &lt;p&gt;下图是带有残差连接的CNN模型图例。加入残差连接后，即使网络层数很深，也可以很容易地训练。此外，深层的网络也给模型带来一个非常可观的感受野。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172347.png&#34; style=&#34;zoom:35%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172347.png&#34; style=&#34;zoom:35%;&#34; /&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;序列生成策略&#34;&gt;序列生成策略&lt;/h2&gt;
 &lt;h3 id=&#34;原理-2&#34;&gt;原理&lt;/h3&gt;
@@ -910,76 +910,76 @@ Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &amp;=
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th align=&#34;left&#34;&gt;&lt;strong&gt;数据集&lt;/strong&gt;&lt;/th&gt;
-&lt;th align=&#34;left&#34;&gt;&lt;strong&gt;类型&lt;/strong&gt;&lt;/th&gt;
-&lt;th align=&#34;center&#34;&gt;&lt;strong&gt;标签数量&lt;/strong&gt;&lt;/th&gt;
-&lt;th align=&#34;center&#34;&gt;&lt;strong&gt;（训练集/测试集)大小&lt;/strong&gt;&lt;/th&gt;
-&lt;th align=&#34;center&#34;&gt;每个token的平均长度&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;&lt;strong&gt;数据集&lt;/strong&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;&lt;strong&gt;类型&lt;/strong&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;strong&gt;标签数量&lt;/strong&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;&lt;strong&gt;（训练集/测试集)大小&lt;/strong&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;每个token的平均长度&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://nlp.stanford.edu/sentiment/index.html&#34;&gt;SST&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;情感&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;5 or 2&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;8.5k / 1.1k&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;19&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://nlp.stanford.edu/sentiment/index.html&#34;&gt;SST&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;情感&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;5 or 2&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;8.5k / 1.1k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;19&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://ai.stanford.edu/~amaas/data/sentiment/&#34;&gt;IMDB 影评&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;情感&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;2&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;25k / 25k&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;271&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://ai.stanford.edu/~amaas/data/sentiment/&#34;&gt;IMDB 影评&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;情感&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;2&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;25k / 25k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;271&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/yelp-dataset/yelp-dataset&#34;&gt;Yelp 评价&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;情感&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;5 or 2&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;650k / 50k&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;179&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/yelp-dataset/yelp-dataset&#34;&gt;Yelp 评价&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;情感&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;5 or 2&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;650k / 50k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;179&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/bittlingmayer/amazonreviews&#34;&gt;Amazon 评价&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;情感&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;5 or 2&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;3m / 650k&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;79&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/bittlingmayer/amazonreviews&#34;&gt;Amazon 评价&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;情感&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;5 or 2&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;3m / 650k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;79&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://cogcomp.seas.upenn.edu/Data/QA/QC/&#34;&gt;TREC&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;问题&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;6&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;5.5k / 0.5k&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;10&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://cogcomp.seas.upenn.edu/Data/QA/QC/&#34;&gt;TREC&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;问题&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;6&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;5.5k / 0.5k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;10&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/soumikrakshit/yahoo-answers-dataset&#34;&gt;Yahoo! Answers&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;问题&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;10&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;1.4m / 60k&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;131&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://www.kaggle.com/soumikrakshit/yahoo-answers-dataset&#34;&gt;Yahoo! Answers&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;问题&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;10&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;1.4m / 60k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;131&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;http://groups.di.unipi.it/~gulli/AG_corpus_of_news_articles.html&#34;&gt;AG&#39;s 新闻&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;主题&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;4&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;120k / 7.6k&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;44&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;http://groups.di.unipi.it/~gulli/AG_corpus_of_news_articles.html&#34;&gt;AG&#39;s 新闻&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;主题&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;4&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;120k / 7.6k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;44&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;http://www.sogou.com/labs/resource/cs.php&#34;&gt;Sogou 新闻&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;主题&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;6&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;54k / 6k&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;737&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;http://www.sogou.com/labs/resource/cs.php&#34;&gt;Sogou 新闻&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;主题&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;6&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;54k / 6k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;737&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://wiki.dbpedia.org/services-resources/dbpedia-data-set-2014&#34;&gt;DBPedia&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;主题&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;14&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;560k / 70k&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;67&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://wiki.dbpedia.org/services-resources/dbpedia-data-set-2014&#34;&gt;DBPedia&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;主题&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;14&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;560k / 70k&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;67&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -992,7 +992,7 @@ Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &amp;=
 &lt;li&gt;一个有5个标签：1(非常消极),2(消极),3(中性),4(积极),5(非常积极)&lt;/li&gt;
 &lt;li&gt;SST存在一个二分类的变种数据集——SST-2，其中标签只有积极和消极两种&lt;/li&gt;
 &lt;li&gt;SST一共包含215,154个短语，这些短语将组成各个影评&lt;/li&gt;
-&lt;li&gt;_Makes even the claustrophobic on-board quarters seem fun._&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314152841.png&#34; style=&#34;zoom:23%;&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Makes even the claustrophobic on-board quarters seem fun.&lt;/em&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314152841.png&#34; style=&#34;zoom:23%;&#34; /&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -1010,7 +1010,7 @@ Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &amp;=
 &lt;li&gt;分类器&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;给定文本的特征表示，一个分类器需要给标签赋予概率值。最常见的方法是通过&lt;strong&gt;逻辑回归&lt;/strong&gt;获得概率值。当然也存在其他变形，例如朴素贝叶斯分类器或者SVM。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153022.png&#34; style=&#34;zoom:40%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153022.png&#34; style=&#34;zoom:40%;&#34; /&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;生成模型和判别模型&#34;&gt;生成模型和判别模型&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153041.png&#34; alt=&#34;&#34; title=&#34;生成模型与判别模型区别&#34;&gt;&lt;/p&gt;
@@ -1077,7 +1077,7 @@ P(x_i|y=k)=\frac{N(x_i, y=k)}{\sum\limits_{t=1}^{|V|}N(x_t, y=k)},
 $$
 其中如果$N(x_i, y=k)=0$，即在训练中，在$k$类文档中并没有出现$x_i$，那么整个$P(x|y=k)$的值都将会归零，这显然不是我们想要的。
 &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314153331.png&#34; alt=&#34;&#34; title=&#34;部分词未在文档中出现时&#34;&gt;
-例如， 在训练集的积极样本中，**一些罕见的词,如pterodactyl或abracadabra没有出现，但这并不代表这些词不可能包含在一个积极情感的文档中**。&lt;/p&gt;
+例如， 在训练集的积极样本中，&lt;strong&gt;一些罕见的词,如pterodactyl或abracadabra没有出现，但这并不代表这些词不可能包含在一个积极情感的文档中&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;为了避免这个情况，我们可以使用到一个简单的技巧：对所有词的计数结果都加上一个很小的平滑值$\delta$：
 $$
 P(x_i|y=k)=\frac{\color{red}{\delta} +\color{black} N(x_i, y=k)
@@ -1123,7 +1123,7 @@ $$
 &lt;li&gt;通用框架&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;在朴素贝叶斯中，我们的特征是单词，以及特征表示为词袋(Bag-of-Words, BOW)表示——单词的独热编码的累加和。事实上，为了估计$P(x,y)$,我们只需要计算每个单词在文档中出现的频数即可。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154125.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154125.png&#34; style=&#34;zoom:33%;&#34; /&gt;
 &lt;ul&gt;
 &lt;li&gt;特征设计&lt;/li&gt;
 &lt;/ul&gt;
@@ -1162,7 +1162,7 @@ $$&lt;/li&gt;
 $$
 w^{\ast}=\arg \max\limits_{w}\sum\limits_{i=1}^N\log P(y=y^i|x^i).
 $$
-换句话说，我们选择参数使得数据${x^i,y^i}_{i=1}^N$出现的概率最大。因此，这个训练目标也称为参数的**极大似然估计**(maximum likelihood estimate, MLE)。&lt;/p&gt;
+换句话说，我们选择参数使得数据${x^i,y^i}_{i=1}^N$出现的概率最大。因此，这个训练目标也称为参数的&lt;strong&gt;极大似然估计&lt;/strong&gt;(maximum likelihood estimate, MLE)。&lt;/p&gt;
 &lt;p&gt;为了寻找使得数据的对数似然函数值最大的参数，我们使用梯度下降算法进行优化：通过多次对数据迭代更新，逐步改进权重向量$w$。最终，给定样本$x^i$，获得正确标签$y^i$的概率值最大。&lt;/p&gt;
 &lt;p&gt;&lt;b&gt;&lt;u&gt;等价于最小化交叉熵&lt;/u&gt;&lt;/b&gt;: 最大化数据的对数似然，其实等价于&lt;strong&gt;最小化目标标签的概率分布&lt;/strong&gt; $p^{\ast} = (0, \dots, 0, 1, 0, \dots)$(1表示目标标签，0表示其他标签) &lt;strong&gt;与模型预测的标签分布&lt;/strong&gt; $p=(p_1, \dots, p_K), p_i=p(i|x)$&lt;strong&gt;之间的交叉熵函数&lt;/strong&gt;：&lt;/p&gt;
 &lt;div&gt;
@@ -1176,7 +1176,7 @@ $$
     Loss(p^{\ast}, p) = -\log(p_{k})=-\log(p(k| x)).
     $$
 &lt;/div&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154535.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154535.png&#34; style=&#34;zoom: 33%;&#34; /&gt;
 
 &lt;div class=&#34;notice notice-note&#34; &gt;
     &lt;div class=&#34;notice-title&#34;&gt;&lt;svg xmlns=&#34;http://www.w3.org/2000/svg&#34; class=&#34;icon notice-icon&#34; viewBox=&#34;0 0 512 512&#34;&gt;&lt;path d=&#34;M504 256a248 248 0 11-496 0 248 248 0 01496 0zm-248 50a46 46 0 100 92 46 46 0 000-92zm-44-165l8 136c0 6 5 11 12 11h48c7 0 12-5 12-11l8-136c0-7-5-13-12-13h-64c-7 0-12 6-12 13z&#34;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;p&gt;这种等价性对于理解逻辑回归很重要：当使用神经网络的方法时，通常会采用最小化交叉熵损失的方法优化。&lt;strong&gt;不要忘记其实这也与最大化数据的对数似然是等价的&lt;/strong&gt;。&lt;/p &gt;&lt;/div&gt;
@@ -1184,7 +1184,7 @@ $$
 &lt;hr&gt;
 &lt;h3 id=&#34;朴素贝叶斯-vs-逻辑回归&#34;&gt;朴素贝叶斯 vs 逻辑回归&lt;/h3&gt;
 &lt;p&gt;最后，对比两个方法的优缺点。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155544.png&#34; style=&#34;zoom:32%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155544.png&#34; style=&#34;zoom:32%;&#34; /&gt;
 &lt;ul&gt;
 &lt;li&gt;简洁性：
 &lt;ul&gt;
@@ -1218,7 +1218,7 @@ $$
 &lt;hr&gt;
 &lt;h3 id=&#34;使用svm做文本分类&#34;&gt;使用SVM做文本分类&lt;/h3&gt;
 &lt;p&gt;使用SVM做文本分类时，也需要手动定义特征。最基本也是最流行定义特征的方式是BOW和Bag-of-ngrams(n-grams是n个词组成的元组)。有了这些简单的特征，使用线性核函数的SVMs就比朴素贝叶斯的分类性能要更佳。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155621.png&#34; style=&#34;zoom:35%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155621.png&#34; style=&#34;zoom:35%;&#34; /&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;基于神经网络的文本分类&#34;&gt;基于神经网络的文本分类&lt;/h2&gt;
 &lt;h3 id=&#34;原理-2&#34;&gt;原理&lt;/h3&gt;
@@ -1226,7 +1226,7 @@ $$
 &lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155656.png&#34; alt=&#34;&#34; title=&#34;传统分类方法与神经网络方法对比&#34;&gt;&lt;/p&gt;
 &lt;p&gt;当处理神经网络时，我们可以使用一种简单的方式考虑分类部分（即如何从文本的向量表示中获得类别的概率）。&lt;/p&gt;
 &lt;p&gt;文本的向量表示假设有$d$维，但最后我们只需要一个$K$维的向量来表示各个类别的概率。为了从一个$d$维向量中获得一个$K$维的向量，我们可以使用一个线性层。一旦我们有了$K$维向量，剩下只需要将该向量交给softmax函数，将该$K$维向量转换为各个类别的概率。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155730.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155730.png&#34; style=&#34;zoom:50%;&#34; /&gt;
 &lt;p&gt;&lt;strong&gt;分类部分：这是一个逻辑回归&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;如果仔细观察神经网络分类器，我们处理输入文本的向量表示的方式与&lt;a href=&#34;https://derooce.github.io/posts/text-classification-notes/#%E6%9C%80%E5%A4%A7%E7%86%B5%E5%88%86%E7%B1%BB%E5%99%A8-aka-%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92&#34;&gt;逻辑回归&lt;/a&gt;中的处理方式一致。我们根据每个类别的特征权重，对特征加权。而两者的唯一区别在于：&lt;strong&gt;特征的来源&lt;/strong&gt;；要么是手动定义的，要么通过网络获得。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314155910.png&#34; alt=&#34;&#34; title=&#34;逻辑回归的分类步骤与神经网络的分类步骤对比&#34;&gt;&lt;/p&gt;
@@ -1255,7 +1255,7 @@ $$&lt;/p&gt;
 &lt;p&gt;我们需要一个可以对不同长度的输入产生一个固定长度的向量。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;在这个部分，我们将研究使用神经网络获取输入文本的向量表示的不同方法。注意到当输入文本可以有不同的长度，而文本的输出向量表示的大小是固定的，否则，网络将无法“工作”。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160338.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160338.png&#34; style=&#34;zoom:50%;&#34; /&gt;
 &lt;p&gt;我们从仅使用词嵌入的最简单方法开始（不在其顶层添加模型），然后我们再研究循环和卷积神经网络。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h4 id=&#34;基础嵌入袋boe和加权boe&#34;&gt;基础：嵌入袋(BOE)和加权BOE&lt;/h4&gt;
@@ -1275,7 +1275,7 @@ $$&lt;/p&gt;
 &lt;li&gt;RNN 单元&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;在每个时间步上，一个RNN将接受一个新的输入向量（例如，token的嵌入）以及之前时间步RNN的隐藏状态（可望该隐藏状态可将之前所有的信息都编码进去）。通过使用这两个输入，RNN单元计算得到新的隐藏状态，并以此获得对应时间步的输出。这个新的隐藏状态包含着当前输入以及过去时间步输入的信息。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160534.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160534.png&#34; style=&#34;zoom:33%;&#34; /&gt;
 &lt;ul&gt;
 &lt;li&gt;RNN读取tokens组成的序列&lt;/li&gt;
 &lt;/ul&gt;
@@ -1289,11 +1289,11 @@ $$&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Vanilla RNN&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;最简单的RNN架构-Vanilla RNN,将之前时间步的隐藏状态$h_{t-1}$和当前时间步的输入数据$x_t$进行**线性变换**(矩阵乘积)，然后再使用一个非线性激活函数转换(通常选择$\mathrm{tanh}$函数):&lt;/p&gt;
+&lt;p&gt;最简单的RNN架构-Vanilla RNN,将之前时间步的隐藏状态$h_{t-1}$和当前时间步的输入数据$x_t$进行&lt;strong&gt;线性变换&lt;/strong&gt;(矩阵乘积)，然后再使用一个非线性激活函数转换(通常选择$\mathrm{tanh}$函数):&lt;/p&gt;
 &lt;p&gt;$$
 h_t = \tanh(h_{t-1}W_h + x_tW_t).
 $$&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160559.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160559.png&#34; style=&#34;zoom:33%;&#34; /&gt;
 &lt;p&gt;然而Vanilla RNN容易遭受梯度消失和梯度爆炸的问题。为了减缓这个问题，一些更复杂的循环网络单元被提出(如LSTM、GRU等)。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h5 id=&#34;用于文本分类的循环神经网络&#34;&gt;用于文本分类的循环神经网络&lt;/h5&gt;
@@ -1305,12 +1305,12 @@ $$&lt;/p&gt;
 &lt;li&gt;简单的RNN：读取文本，并进入最终状态&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;大多数简单的循环网络模型都是&lt;strong&gt;单层&lt;/strong&gt;的RNN网络。在这种网络结构中，我们必须采用具有输入文本的大部分信息的隐藏状态。因此，我们必须使用最后一个时间步上的隐藏状态（因为最后一个时间步的隐藏状态将遍历了所有的输入tokens）。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160625.png&#34; style=&#34;zoom:40%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160625.png&#34; style=&#34;zoom:40%;&#34; /&gt;
 &lt;ul&gt;
 &lt;li&gt;多层结构：将一层RNN的隐藏状态传递给下一层RNN&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;为了获得更好的文本表示，我们可以叠加多层网络。例如下图中，高层的RNN输入来自之前层RNN输出的表示。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160643.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160643.png&#34; style=&#34;zoom:50%;&#34; /&gt;
 &lt;p&gt;多层结构的主要假设是：有了多层网络，低层次的网络可以捕捉到文本的局部现象（例如，短语等），而高层次的网络可以学习到更高层次的信息（如文本主题）。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;双向结构：使用前向和反向RNNs的最终状态&lt;/li&gt;
@@ -1322,7 +1322,7 @@ $$&lt;/p&gt;
 &lt;li&gt;&lt;font style=&#34;color:#88bd33&#34;&gt;反向&lt;/font&gt;(backward): 从右到左读取输入&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;然后，我们可以使用两个循环网络结构的最终隐藏状态：一个网络会更好地记住文本的末尾部分，而另一个会更好地记住文本的开始部分。这些状态可以连接在一起，或者累加，或者做些别的操作。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160713.png&#34; style=&#34;zoom:40%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314160713.png&#34; style=&#34;zoom:40%;&#34; /&gt;
 &lt;blockquote&gt;
 &lt;p&gt;有了这些RNNs结构，我们就可以像搭积木一样，自由组合多种RNNs结构。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -1387,13 +1387,13 @@ $$
 F_i^{(f)} = (f, u_i).
 $$&lt;/p&gt;
 &lt;p&gt;数值$F_i^{(f)}$（提取到的特征）是将过滤器$f$施加给窗口$(x_i, \dots x_{i+k-1})$的结果。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161226.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161226.png&#34; style=&#34;zoom:33%;&#34; /&gt;
 &lt;ul&gt;
 &lt;li&gt;$m$个过滤器——$m$个特征提取器&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;img src=&#34;https://lena-voita.github.io/resources/lectures/models/cnn/several_filters_read.gif&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;一个过滤器提取一种特征，那么我们使用多个过滤器即可提取多种特征。每个过滤器读取输入文本，并提到不同的特征。&lt;strong&gt;过滤器的数量是我们想要获得的输出特征的数量&lt;/strong&gt;。有了$m$个过滤器，之前讨论的卷积矩阵大小将变为$(k\cdot d)\times m$。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161255.png&#34; style=&#34;zoom:37%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314161255.png&#34; style=&#34;zoom:37%;&#34; /&gt;
 &lt;p&gt;&lt;strong&gt;这是并行完成的&lt;/strong&gt;(parallel)！在上述图示中展示了CNN如何“读取”文本，而实际上这些计算是并行进行的。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h5 id=&#34;池化操作&#34;&gt;池化操作&lt;/h5&gt;
@@ -1489,7 +1489,7 @@ $$&lt;/p&gt;
 &lt;p&gt;在最后的线性层之后，我们有$K$个类别对应的$K$个值，而我们需要将这些值转换为对应类别的概率。&lt;/p&gt;
 &lt;p&gt;在单标签问题中，我们使用softmax函数来做到这件事情，其将$K$个值转换为一个概率分布，即所有类别的概率和为1，而&lt;strong&gt;这意味着所有类别共享&lt;font style=&#34;color:red&#34;&gt;相同的概率密度&lt;/font&gt;&lt;/strong&gt;。如果一个类别的概率很高，那么其他类别就不会有高的概率值。&lt;/p&gt;
 &lt;p&gt;而对于多标签问题，我们需要将这$K$个值转换为&lt;strong&gt;类别间相互独立&lt;/strong&gt;的相应类别概率。具体来说，我们将对这$K$个值分别使用sigmoid函数 $\sigma(x)=\frac{1}{1+e^{-x}}$.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162242.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314162242.png&#34; style=&#34;zoom:50%;&#34; /&gt;
 &lt;p&gt;在直觉上，我们可以将&lt;strong&gt;多标签问题等价为$K$个独立的二分类问题&lt;/strong&gt;。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;损失函数每个类别使用二值交叉熵&#34;&gt;损失函数：每个类别使用二值交叉熵&lt;/h3&gt;
@@ -1581,7 +1581,7 @@ $$&lt;/p&gt;
 &lt;li&gt;使用预训练的词嵌入(如Word2Vec,Glove等)，并固定（将其作为静态向量使用）&lt;/li&gt;
 &lt;li&gt;使用预训练的词嵌入进行初始化，然后通过网络对其进行训练（“微调”）。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163632.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163632.png&#34; style=&#34;zoom:33%;&#34; /&gt;
 &lt;p&gt;用于分类的训练数据是带有标记的，并且是与特定任务相应的，但是带有标记的数据通常很难获得。因此，这个语料库可能不会很大（至少），或者不会多样化，或者两者兼而有之。相反，词嵌入的训练数据是无需标记的，并且纯文本就足够了。因此，这些数据集可能庞大而多样，可以供网络学习很多东西。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314163749.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;现在，让我们根据对词嵌入的处理方式来考虑模型将学习的内容。&lt;/p&gt;
@@ -1671,7 +1671,7 @@ $$&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;了解网络捕获内容的最简单方法是查看哪些模式激活了其神经元。对于卷积，我们选择一个过滤器并找到最能激活该过滤器的n-grams(即过滤器获得的向量中值最大维度对应的n-grams)。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164655.png&#34; style=&#34;zoom:50%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164655.png&#34; style=&#34;zoom:50%;&#34; /&gt;
 &lt;p&gt;下图展示每个过滤器中激活得分最高的n-grams:
 &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314164748.png&#34; style=&#34;zoom:30%;&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;可以发现在&lt;strong&gt;过滤器4&lt;/strong&gt;中，激活得分排名靠前的n-grams都有着非常相似的含义。&lt;/p&gt;
@@ -1714,7 +1714,7 @@ $$&lt;/p&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;想法&lt;/strong&gt;：不要使用不重要的单词。&lt;/p&gt;
 &lt;p&gt;如果我们知道哪些单词绝对不会影响分类的概率，那么我们可以将其从特征中移除。例如，我们可以移除停用词(stop-words): 确定词(determiners)，介词(prepositions)等。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314165159.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314165159.png&#34; style=&#34;zoom:33%;&#34; /&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;神经网络方法&#34;&gt;神经网络方法&lt;/h3&gt;
 &lt;p&gt;❓ &lt;strong&gt;对于微调后的嵌入，为什么以及什么时候会有用？&lt;/strong&gt;&lt;/p&gt;
@@ -1731,14 +1731,14 @@ $$&lt;/p&gt;
 &lt;li&gt;&lt;a href=&#34;https://lena-voita.github.io/nlp_course/text_classification.html&#34;&gt;Yandex: NLP Course&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=nzSPZyjGlWI&#34;&gt;Deep Learning for NLP&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
-&lt;section class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;div class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
 &lt;hr&gt;
 &lt;ol&gt;
-&lt;li id=&#34;fn:1&#34; role=&#34;doc-endnote&#34;&gt;
-&lt;p&gt;&lt;a href=&#34;https://towardsdatascience.com/understanding-binary-cross-entropy-log-loss-a-visual-explanation-a3ac6025181a&#34;&gt;Understanding binary cross-entropy/log loss: a visual explanation&lt;/a&gt; &lt;a href=&#34;https://derooce.github.io/posts/text-classification-notes/#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;li id=&#34;fn:1&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;https://towardsdatascience.com/understanding-binary-cross-entropy-log-loss-a-visual-explanation-a3ac6025181a&#34;&gt;Understanding binary cross-entropy/log loss: a visual explanation&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/text-classification-notes/#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/section&gt;
+&lt;/div&gt;
 </description>
                 
                 
@@ -1788,17 +1788,17 @@ $$&lt;/p&gt;
                     <description>&lt;h1 id=&#34;word-embeddings&#34;&gt;Word Embeddings&lt;/h1&gt;
 &lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
 &lt;p&gt;对于一段文本&amp;quot;&lt;strong&gt;I saw a cat&lt;/strong&gt;&amp;quot;,人类可以轻易理解其含义。然而，对于计算机模型却无法做到，它们需要特征向量(vectors of features),这样的向量，或者称“word embeddings&amp;quot;(词嵌入)可以作为文本的一种表示，并且模型也能够“理解”与处理这种表示。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131010.png&#34; style=&#34;zoom:80%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131010.png&#34; style=&#34;zoom:80%;&#34; /&gt;
 &lt;p&gt;然而，如何或者这种词嵌入表示呢？答案是：使用&lt;strong&gt;查找表&lt;/strong&gt;(Look-up table),或者称&lt;strong&gt;词表&lt;/strong&gt;(Vocabulary)。&lt;/p&gt;
 &lt;p&gt;在实践中，你有一个词表，其中包含着所有的许可词(allowed words),并且这个词表是提前选取好的。对于每一个词，查找表中都包含着其对应的嵌入表示，并且可以根据词在词表中的索引轻易地找到对应的嵌入表示,即根据词表中的索引，在查找表中寻找对应的嵌入表示。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://lena-voita.github.io/resources/lectures/word_emb/lookup_table.gif&#34; alt=&#34;&#34; title=&#34;词嵌入表示的查找&#34;&gt;&lt;/p&gt;
 &lt;p&gt;此外，考虑到存在未知的词,即那些不在词表中的词，通常一个词表中包含着一个特殊的词--&lt;strong&gt;UNK&lt;/strong&gt;（unknown)。此外，未知词也可以直接忽略或是赋予一个0值向量。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131337.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131337.png&#34; style=&#34;zoom:33%;&#34; /&gt;
 &lt;p&gt;本文的主要目的就是：&lt;strong&gt;如何获得这些词嵌入向量(Word Embeddings)？&lt;/strong&gt;&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;离散符号的表示one-hot-vectors&#34;&gt;离散符号的表示：One-hot vectors&lt;/h2&gt;
 &lt;p&gt;表示这些词的最简单方式就是使用&lt;strong&gt;独热编码&lt;/strong&gt;(one-hot vectors): 词表的第$i$个词对应的表示向量中，除第$i$维的值为1外，其他维度的值都为0。在机器学习中，这也是表示分类特征的最简单方式。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131424.png&#34; style=&#34;zoom: 50%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314131424.png&#34; style=&#34;zoom: 50%;&#34; /&gt;
 &lt;p&gt;然而，这样的表示存在许多问题：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;当词表很大时，这些独热向量的维度也会非常大，即$d=|\mathcal{V}|$&lt;/li&gt;
@@ -1934,7 +1934,7 @@ training.&lt;/p &gt;&lt;/div&gt;
 &lt;li&gt;什么是“词的上下文(contexts)”，以及什么是“词在上下文中的含义”&lt;/li&gt;
 &lt;li&gt;关联(association)的概念，即计算上下文矩阵元素的公式&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314133641.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314133641.png&#34; style=&#34;zoom:33%;&#34; /&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;共现计数-co-occurrence-counts&#34;&gt;共现计数 Co-Occurrence Counts&lt;/h3&gt;
 &lt;p&gt;Offconvex博客中提出的观点&lt;sup id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#fn:2&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;：&lt;/p&gt;
@@ -1943,14 +1943,14 @@ training.&lt;/p &gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314134630.png&#34; alt=&#34;&#34; title=&#34;词的上下文定义&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;共现计数&lt;/strong&gt;是一种非常简单的计数方法。以每个词周围$L$长度的窗口作为其对应的上下文。上下文矩阵元素的定义为词$w$在上下文$c$中出现的&lt;strong&gt;次数&lt;/strong&gt;$N(w,c)$。这是获得嵌入表示的最基础，并且非常古老的方法。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314134920.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314134920.png&#34; style=&#34;zoom: 33%;&#34; /&gt;
 &lt;p&gt;下面给出一个共现计数矩阵计算的实例：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://res.cloudinary.com/derooce/image/upload/c_scale,q_96,r_6,w_606/v1615860019/Snipaste_2021-03-16_09-59-02_x1ukge.png&#34; alt=&#34;co-occurrence matrix&#34; title=&#34;图片来源: Stanford cs224n slides&#34;&gt;&lt;/p&gt;
 &lt;p&gt;在上图中，假设窗口长度$L=1$,即每次只观察中心词左右两侧各1个单词长度的窗口，并统计该中心词在多个文本中，与其他单词共同出现在同一窗口的次数，并以该次数作为共现矩阵的对应元素值。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;正点互信息-positive-pointwise-mutual-information-ppmi&#34;&gt;正点互信息: Positive Pointwise Mutual Information (PPMI)&lt;/h3&gt;
 &lt;p&gt;在该方法中，上下文的定义方式与共数计数中的定义相同,但衡量词语上下文之间关联性的方式更加聪明：正PMI (PPMI)。PPMI曾一度被广泛认为是&lt;strong&gt;分布式-相似度&lt;/strong&gt;(distributional-similarity)模型的最先进的度量方法。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135251.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135251.png&#34; style=&#34;zoom: 33%;&#34; /&gt;
 &lt;p&gt;令$p(w,w&#39;)$是词$w$在以$w&#39;$为中心的5个单词组成的窗口内出现的经验概率，$p(w)$是词$w$在文本中出现的概率，$p(w&#39;)$是词$w&#39;$在文本中出现的概率。则对应的点互信息(PMI)计算为:
 $$
 PMI(w, w&#39;) = \log (\frac{p(w, w&#39;)}{p(w) p(w&#39;)})  \qquad \mbox{(Pointwise mutual information (PMI))}
@@ -1961,7 +1961,7 @@ $$&lt;/p&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;潜在语义分析-latent-semantic-analysis-lsa-understanding-documents&#34;&gt;潜在语义分析 Latent Semantic Analysis (LSA): Understanding Documents&lt;/h3&gt;
 &lt;p&gt;潜在语义分析(LSA)分析&lt;strong&gt;文件集合&lt;/strong&gt;。在之前的方法中，上下文的作用仅是为了获得词向量，用完之后就会被抛弃。然而。在LSA中，上下文仍然被作为关心的信息，或者在该方法中称为&lt;strong&gt;文档向量&lt;/strong&gt;(document vectors)。LSA是最简单的主题模型(topic models)之一:文档向量之间的余弦相似度用于衡量文档之间的相似性。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135719.png&#34; style=&#34;zoom: 33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135719.png&#34; style=&#34;zoom: 33%;&#34; /&gt;
 &lt;p&gt;“LSA”有时指代对&lt;strong&gt;一个文档矩阵(term-document matrix)应用SVD&lt;/strong&gt;的更广泛的方法。文档矩阵的元素可以使用不同方式计算，例如简单的&lt;strong&gt;共现计数&lt;/strong&gt;、&lt;strong&gt;tf-idf&lt;/strong&gt;或者其他权重方法。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;基于预测的方法word2vec&#34;&gt;基于预测的方法：Word2Vec&lt;/h2&gt;
@@ -2041,7 +2041,7 @@ $$
 &lt;li&gt;$\color{#88bd33}{v_w}$: 当$w$是中心词时&lt;/li&gt;
 &lt;li&gt;$\color{#888}{u_w}$： 当$w$是上下文词时&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140428.png&#34; style=&#34;zoom:33%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140428.png&#34; style=&#34;zoom:33%;&#34; /&gt;
 &lt;blockquote&gt;
 &lt;p&gt;一旦向量经过训练后，通常我们将会丢弃所有的上下文词向量，而保留词向量。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -2116,7 +2116,7 @@ $$
 \theta^{new} = \theta^{old} - \alpha \nabla_{\theta} J(\theta).
 $$&lt;/p&gt;
 &lt;p&gt;需要注意的是$\theta$表示的是模型的所有参数。对于一个大小为$|V|$的词表，每个嵌入向量维度为$d$,而这些向量都将包含在$\theta$内，如下图所示：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted image 20210310211302.png&#34; style=&#34;zoom: 50%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/Pasted image 20210310211302.png&#34; style=&#34;zoom: 50%;&#34; /&gt;
 &lt;p&gt;&lt;u&gt;一次更新一个词&lt;/u&gt;：每次只更新一个(中心词-上下文词)配对。损失函数为：&lt;/p&gt;
 &lt;div&gt;
     $$
@@ -2233,12 +2233,16 @@ $$P\left(w_{i}\right)=\frac{f\left(w_{i}\right)^{3 / 4}}{\sum_{j=0}^{n}\left(f\l
 &lt;li&gt;&lt;u&gt;Skip-Gram&lt;/u&gt;: 与Word2Vec的主体思想一致，即给定中心词来预测其上下文词。使用负采样更新的Skip-Gram模型(Skip-Gram with Negative Sampling,SGNS)是最常用的方法之一
 &lt;ul&gt;
 &lt;li&gt;SGNS: 隐式地近似(偏移 shifted)PMI矩阵的因式分解&lt;/li&gt;
-&lt;li&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314142917.png&#34; style=&#34;zoom: 50%;&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314142917.png&#34; style=&#34;zoom: 50%;&#34; /&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;u&gt;CBOW&lt;/u&gt;(Continuous Bag-of-Words): 与Word2Vec思想恰好相反，&lt;strong&gt;根据&lt;/strong&gt;上下文词向量的累加和来预测中心词，而这种简单的词向量累加结果称为&lt;strong&gt;Bag of words&lt;/strong&gt;,CBOW模型也是因此得名
 &lt;ul&gt;
-&lt;li&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314142902.png&#34; style=&#34;zoom: 50%;&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314142902.png&#34; style=&#34;zoom: 50%;&#34; /&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -2300,7 +2304,7 @@ $$
 &lt;/ul&gt;
 &lt;p&gt;&lt;u&gt;如何选择&lt;/u&gt;&lt;/p&gt;
 &lt;p&gt;在此之前，我们应该知道在所有的情形中，并不存在什么完美方法以及正确的解答。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143846.png&#34; style=&#34;zoom:30%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314143846.png&#34; style=&#34;zoom:30%;&#34; /&gt;
 &lt;p&gt;对于评估方法，我们通常关注地是我们想要解决任务的质量(quality)。因此，我们更可能倾向于使用外在任务评估。然而在真实任务中，模型通常需要很多时间和资源来训练，而训练多个模型更是成本太高。&lt;/p&gt;
 &lt;p&gt;总而言之，这需要看你自己的能力（你的资源）来决定 :)&lt;/p&gt;
 &lt;hr&gt;
@@ -2309,11 +2313,11 @@ $$
 &lt;h3 id=&#34;语义空间&#34;&gt;语义空间&lt;/h3&gt;
 &lt;p&gt;语义空间专注于创造捕获自然语言含义的表示。我们可以说（好的）词嵌入形成了语义空间，并将多维空间中的一组词向量称为“语义空间”。&lt;/p&gt;
 &lt;p&gt;下图将展示使用twitter数据获得的Glove向量组成的语义空间。向量使用t-SNE映射到2维空间中，并只展示前3k个最常见的单词。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144026.png&#34; style=&#34;zoom:75%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144026.png&#34; style=&#34;zoom:75%;&#34; /&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;最近邻&#34;&gt;最近邻&lt;/h3&gt;
 &lt;p&gt;在语义空间中，距离较近的点（向量）通常具有相近的含义。有时，即使是一些极少出现的词也能很好地理解。例如下图所示，leptodactylidae和litoria非常接近于frog。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144109.png&#34; style=&#34;zoom: 26%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144109.png&#34; style=&#34;zoom: 26%;&#34; /&gt;
 &lt;p&gt;&lt;span class=&#34;caption&#34;&gt;◎ &lt;a href=&#34;https://nlp.stanford.edu/projects/glove/&#34;&gt;GloVe项目上的例子&lt;/a&gt;&lt;/span&gt;&lt;/p&gt;
 &lt;p&gt;&lt;u&gt;词相似度基准&lt;/u&gt;&lt;/p&gt;
 &lt;p&gt;通过余弦相似度或欧式距离来获得最近邻，查看最近邻是估计词表示质量的常用方法之一。有几个单词相似性基准（测试集），它们由根据人类的判断具有相似性分数的单词对组成。词嵌入的质量使用两个相似性得分（来自模型和来自人类）之间的相关性来估计。
@@ -2321,7 +2325,7 @@ $$
 &lt;hr&gt;
 &lt;h3 id=&#34;线性结构&#34;&gt;线性结构&lt;/h3&gt;
 &lt;p&gt;尽管词相似度的结果令人鼓舞，但并不令人惊讶：毕竟，词嵌入本意就是通过专门的训练来反映单词的相似度。然而，令人惊讶地是词之间的许多语义和句法关系在词向量空间中（几乎）是线性的。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144449.png&#34; style=&#34;zoom:30%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144449.png&#34; style=&#34;zoom:30%;&#34; /&gt;
 &lt;p&gt;上图就显示了这种线性关系。king和queen之间的距离几乎与man和woman之间的距离相同，可以说$\mathrm{man-woman}\approx \mathrm{king-queen}$；又或是kings与king相似，则同样也有queens和queen。&lt;/p&gt;
 &lt;p&gt;下图的例子显示了国家-首都的关系，以及一些句法上的关系。
 &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314144518.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
@@ -2362,7 +2366,7 @@ $$
 &lt;blockquote&gt;
 &lt;p&gt;This idea was used in the &lt;a href=&#34;https://link.springer.com/content/pdf/10.3758/BF03204766.pdf&#34;&gt;HAL model (1996)&lt;/a&gt;, which once was very famous.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145216.png&#34; style=&#34;zoom:25%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145216.png&#34; style=&#34;zoom:25%;&#34; /&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;问题2&#34;&gt;问题2&lt;/h3&gt;
 &lt;p&gt;❓ &lt;strong&gt;在语言中，词的出现顺序很重要，具体来说，左右的上下文词具有不同的含义。我们应该如果区分左右上下文词呢？&lt;/strong&gt;&lt;/p&gt;
@@ -2376,7 +2380,7 @@ $$
 &lt;blockquote&gt;
 &lt;p&gt;This idea was also used in the &lt;a href=&#34;https://link.springer.com/content/pdf/10.3758/BF03204766.pdf&#34;&gt;HAL model (1996)&lt;/a&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145339.png&#34; style=&#34;zoom:25%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145339.png&#34; style=&#34;zoom:25%;&#34; /&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;问题3&#34;&gt;问题3&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314145425.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
@@ -2492,20 +2496,20 @@ $$&lt;/p&gt;
 &lt;li&gt;&lt;a href=&#34;http://www.offconvex.org/2015/12/12/word-embeddings-1&#34;&gt;offconvex: word embedding&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://web.stanford.edu/class/cs224n/index.html#schedule&#34;&gt;Stanford cs224n&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
-&lt;section class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;div class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
 &lt;hr&gt;
 &lt;ol&gt;
-&lt;li id=&#34;fn:1&#34; role=&#34;doc-endnote&#34;&gt;
-&lt;p&gt;&lt;a href=&#34;https://ruder.io/word-embeddings-1/index.html&#34;&gt;Sebastian Ruder: On word Embeddings - Part 1&lt;/a&gt; &lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;li id=&#34;fn:1&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;https://ruder.io/word-embeddings-1/index.html&#34;&gt;Sebastian Ruder: On word Embeddings - Part 1&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
-&lt;li id=&#34;fn:2&#34; role=&#34;doc-endnote&#34;&gt;
-&lt;p&gt;&lt;a href=&#34;http://www.offconvex.org/2016/02/14/word-embeddings-2/&#34;&gt;Offconvex: Word Embedding&lt;/a&gt; &lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#fnref:2&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;li id=&#34;fn:2&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.offconvex.org/2016/02/14/word-embeddings-2/&#34;&gt;Offconvex: Word Embedding&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#fnref:2&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
-&lt;li id=&#34;fn:3&#34; role=&#34;doc-endnote&#34;&gt;
-&lt;p&gt;&lt;a href=&#34;https://ruder.io/secret-word2vec/index.html#results&#34;&gt;Sebastian Ruder: On word Embeddings - Part 3&lt;/a&gt; &lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#fnref:3&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;li id=&#34;fn:3&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;https://ruder.io/secret-word2vec/index.html#results&#34;&gt;Sebastian Ruder: On word Embeddings - Part 3&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#fnref:3&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/section&gt;
+&lt;/div&gt;
 </description>
                 
                 
@@ -2557,26 +2561,26 @@ $$&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th align=&#34;left&#34;&gt;名称&lt;/th&gt;
-&lt;th align=&#34;center&#34;&gt;描述&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;名称&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;描述&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://www.openpeeps.com/&#34;&gt;open peeps&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;免费,可商业化的手绘向量图库&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://www.openpeeps.com/&#34;&gt;open peeps&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;免费,可商业化的手绘向量图库&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://favicon.io/favicon-generator/&#34;&gt;favicon.io&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;网站icon制作&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://favicon.io/favicon-generator/&#34;&gt;favicon.io&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;网站icon制作&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://fontawesome.com/icons&#34;&gt;Font Awesome&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;免费图标库，可插入网页&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://fontawesome.com/icons&#34;&gt;Font Awesome&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;免费图标库，可插入网页&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://realfavicongenerator.net/&#34;&gt;RealFaviconGenerator&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;网站icon制作&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://realfavicongenerator.net/&#34;&gt;RealFaviconGenerator&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;网站icon制作&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -2584,14 +2588,14 @@ $$&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th align=&#34;left&#34;&gt;名称&lt;/th&gt;
-&lt;th align=&#34;center&#34;&gt;描述&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;名称&lt;/th&gt;
+&lt;th style=&#34;text-align:center&#34;&gt;描述&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
 &lt;tr&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;https://fonts.google.com/&#34;&gt;Google font&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;谷歌字体&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://fonts.google.com/&#34;&gt;Google font&lt;/a&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:center&#34;&gt;谷歌字体&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -2647,45 +2651,45 @@ $$&lt;/p&gt;
 &lt;/ul&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;img&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;image.jpg&amp;#34;&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;style&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;float:right; margin: 5px;&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;/&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;img&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;image.jpg&amp;#34;&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;style&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;float:right; margin: 5px;&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;实现段落两端对齐&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-css&#34; data-lang=&#34;css&#34;&gt;&lt;span class=&#34;nt&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-  &lt;span class=&#34;k&#34;&gt;text-align&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;justify&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;c&#34;&gt;/* 文本两端对齐 */&lt;/span&gt;
-  &lt;span class=&#34;k&#34;&gt;text-justify&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;inter-ideograph&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;c&#34;&gt;/* 调整表意文字间距以保持两端对齐 */&lt;/span&gt;
-&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-css&#34; data-lang=&#34;css&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;text-align&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;justify&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;c&#34;&gt;/* 文本两端对齐 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;text-justify&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;inter-ideograph&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;c&#34;&gt;/* 调整表意文字间距以保持两端对齐 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;博客链接到本页面章节&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;c&#34;&gt;&amp;lt;!-- links to element on this page with id=&amp;#34;attr-href&amp;#34; --&amp;gt;&lt;/span&gt;
-&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;href&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;#属性&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-Description of Same-Page Links
-&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c&#34;&gt;&amp;lt;!-- links to element on this page with id=&amp;#34;attr-href&amp;#34; --&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;href&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;#属性&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Description of Same-Page Links
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;</description>
                 
@@ -2757,19 +2761,19 @@ $$&lt;/p&gt;
 &lt;p&gt;段内公式：&lt;span&gt;$\sum_{i=1}^ki$&lt;/span&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-    $$Math Block$$
-&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;span&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;$inline math$&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;span&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-\_ 
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    $$Math Block$$
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;span&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;$inline math$&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;span&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;\_ 
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;table&gt;
 &lt;thead&gt;
@@ -2813,11 +2817,11 @@ $$&lt;/p&gt;
 &lt;p&gt;你好世界&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;k&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Hello Hugo&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Hello Hugo&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;blockquote&gt;
 &lt;p&gt;这是一个注释 。&lt;/p&gt;
@@ -2835,23 +2839,21 @@ $$&lt;/p&gt;
 &lt;p&gt;卡片风格的引用&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;class&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;mytag&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;style&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;margin:25px&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-   &lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;&amp;#34;少年贪玩，青年迷恋爱情，壮年汲汲于成名成家，暮年自安于自欺欺人。人寿几何，顽铁能炼成的精金，能有多少？但不同程度的锻炼，必有不同程度的成绩；不同程度的纵欲放肆，必积下不同程度的顽劣。&amp;#34;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;br&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;/&amp;gt;&lt;/span&gt;上苍不会让所有幸福集中到某个人身上，得到爱情未必拥有金钱；拥有金钱未必得到快乐；得到快乐未必拥有健康；拥有健康未必一切都会如愿以偿。保持知足常乐的心态才是淬炼心智、净化心灵的最佳途径。一切快乐的享受都属于精神，这种快乐把忍受变为享受，是精神对于物质的胜利，这便是人生哲学。&amp;#34;&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;style&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;text-align:right;margin:15px&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;footer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;——&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;cite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;杨绛&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;cite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;footer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;	
-&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;class&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;mytag&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;style&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;margin:25px&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;&amp;#34;少年贪玩，青年迷恋爱情，壮年汲汲于成名成家，暮年自安于自欺欺人。人寿几何，顽铁能炼成的精金，能有多少？但不同程度的锻炼，必有不同程度的成绩；不同程度的纵欲放肆，必积下不同程度的顽劣。&amp;#34;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;br&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;/&amp;gt;&lt;/span&gt;上苍不会让所有幸福集中到某个人身上，得到爱情未必拥有金钱；拥有金钱未必得到快乐；得到快乐未必拥有健康；拥有健康未必一切都会如愿以偿。保持知足常乐的心态才是淬炼心智、净化心灵的最佳途径。一切快乐的享受都属于精神，这种快乐把忍受变为享受，是精神对于物质的胜利，这便是人生哲学。&amp;#34;&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;style&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;text-align:right;margin:15px&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;footer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;——&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;cite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;杨绛&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;cite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;footer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;	
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;div class=&#34;mytag&#34;&gt;
 &lt;p style=&#34;margin:25px&#34;&gt;
@@ -2862,17 +2864,15 @@ $$&lt;/p&gt;
 &lt;h3 id=&#34;文字渐变色&#34;&gt;文字渐变色&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;font&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;class &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;colorfulfont&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-伟大的小丑帕格里亚齐来了&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;br&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;/&amp;gt;&lt;/span&gt;去看他的表演吧&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;br&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;/&amp;gt;&lt;/span&gt;他能让你振作起来
-&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;font&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;font&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;class &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;colorfulfont&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;伟大的小丑帕格里亚齐来了&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;br&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;/&amp;gt;&lt;/span&gt;去看他的表演吧&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;br&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;/&amp;gt;&lt;/span&gt;他能让你振作起来
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;font&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;font class = &#34;colorfulfont&#34;&gt;
 伟大的小丑帕格里亚齐来了&lt;br/&gt;去看他的表演吧&lt;br/&gt;他能让你振作起来
@@ -2962,7 +2962,7 @@ contexts here
 &lt;h3 id=&#34;数学公式&#34;&gt;数学公式&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
@@ -2974,17 +2974,17 @@ contexts here
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-tex&#34; data-lang=&#34;tex&#34;&gt;&amp;lt;div&amp;gt;
-&lt;span class=&#34;k&#34;&gt;\begin&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;equation&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;\label&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;eq:indiv&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;  &lt;span class=&#34;c&#34;&gt;% formula with label, and inclosed by div
-&lt;/span&gt;&lt;span class=&#34;c&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;k&#34;&gt;\left\{&lt;/span&gt;
-    &lt;span class=&#34;k&#34;&gt;\begin&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;aligned&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;
-      u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;1&amp;#39; &lt;span class=&#34;nb&#34;&gt;&amp;amp;&lt;/span&gt;= f&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;1(u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;1, u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;2) &lt;span class=&#34;k&#34;&gt;\\&lt;/span&gt;
-      u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;2&amp;#39; &lt;span class=&#34;nb&#34;&gt;&amp;amp;&lt;/span&gt;= f&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;2(u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;1, u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;2)
-    &lt;span class=&#34;k&#34;&gt;\end&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;aligned&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;
-  &lt;span class=&#34;k&#34;&gt;\right&lt;/span&gt;.
-&lt;span class=&#34;k&#34;&gt;\end&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;equation&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;
-&amp;lt;/div&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-tex&#34; data-lang=&#34;tex&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;lt;div&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;\begin&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;equation&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;\label&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;eq:indiv&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;  &lt;span class=&#34;c&#34;&gt;% formula with label, and inclosed by div
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;k&#34;&gt;\left\{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;\begin&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;aligned&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;1&amp;#39; &lt;span class=&#34;nb&#34;&gt;&amp;amp;&lt;/span&gt;= f&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;1(u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;1, u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;2) &lt;span class=&#34;k&#34;&gt;\\&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;2&amp;#39; &lt;span class=&#34;nb&#34;&gt;&amp;amp;&lt;/span&gt;= f&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;2(u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;1, u&lt;span class=&#34;nb&#34;&gt;_&lt;/span&gt;2)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;\end&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;aligned&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;\right&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;\end&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;equation&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;lt;/div&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;div&gt;
 \begin{equation}\label{eq:indiv}  % formula with label, and inclosed by div
@@ -2998,11 +2998,11 @@ contexts here
 &lt;/div&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-tex&#34; data-lang=&#34;tex&#34;&gt;&lt;span class=&#34;k&#34;&gt;\eqref&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;eq:indiv&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-tex&#34; data-lang=&#34;tex&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;\eqref&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;{&lt;/span&gt;eq:indiv&lt;span class=&#34;nb&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;引用公式: \eqref{eq:indiv}&lt;/p&gt;
 &lt;hr&gt;
@@ -3013,17 +3013,17 @@ contexts here
 &lt;/ol&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;class&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;fab fa-iconname&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;` 或者 `&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;class&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;fas fa-iconname&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;class&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;fab fa-iconname&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;` 或者 `&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;class&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;fas fa-iconname&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;hr&gt;
 &lt;h2 id=&#34;hugo-workflow&#34;&gt;hugo workflow&lt;/h2&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
@@ -3031,31 +3031,31 @@ contexts here
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# under hugo base directory&lt;/span&gt;
-hugo 
-&lt;span class=&#34;c1&#34;&gt;# jump to the public directory&lt;/span&gt;
-git add .
-git commit -m &lt;span class=&#34;s2&#34;&gt;&amp;#34;xx&amp;#34;&lt;/span&gt;
-git push origin main
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# under hugo base directory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;hugo 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# jump to the public directory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git add .
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git commit -m &lt;span class=&#34;s2&#34;&gt;&amp;#34;xx&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git push origin main
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;section class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
+&lt;/div&gt;&lt;div class=&#34;footnotes&#34; role=&#34;doc-endnotes&#34;&gt;
 &lt;hr&gt;
 &lt;ol&gt;
-&lt;li id=&#34;fn:1&#34; role=&#34;doc-endnote&#34;&gt;
-&lt;p&gt;&lt;a href=&#34;https://ztygcs.github.io/posts/meme%E4%B8%BB%E9%A2%98%E4%BC%98%E5%8C%96%E4%BA%8C/&#34;&gt;卡片风格代码来源&lt;/a&gt; &lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;li id=&#34;fn:1&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;https://ztygcs.github.io/posts/meme%E4%B8%BB%E9%A2%98%E4%BC%98%E5%8C%96%E4%BA%8C/&#34;&gt;卡片风格代码来源&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:1&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
-&lt;li id=&#34;fn:2&#34; role=&#34;doc-endnote&#34;&gt;
-&lt;p&gt;&lt;a href=&#34;https://guanqr.com/tech/website/a-way-to-realize-carousel-in-meme/&#34;&gt;轮播图代码来源&lt;/a&gt; &lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:2&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;li id=&#34;fn:2&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;https://guanqr.com/tech/website/a-way-to-realize-carousel-in-meme/&#34;&gt;轮播图代码来源&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:2&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
-&lt;li id=&#34;fn:3&#34; role=&#34;doc-endnote&#34;&gt;
-&lt;p&gt;&lt;a href=&#34;https://ztygcs.github.io/posts/meme%E4%B8%BB%E9%A2%98%E4%BC%98%E5%8C%96%E4%BA%8C/#top&#34;&gt;诗歌引用代码&lt;/a&gt; &lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:3&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;li id=&#34;fn:3&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;https://ztygcs.github.io/posts/meme%E4%B8%BB%E9%A2%98%E4%BC%98%E5%8C%96%E4%BA%8C/#top&#34;&gt;诗歌引用代码&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:3&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
-&lt;li id=&#34;fn:4&#34; role=&#34;doc-endnote&#34;&gt;
-&lt;p&gt;&lt;a href=&#34;https://shishuochen.gitee.io/2020/uffick8u1/&#34;&gt;Hugo博客添加font awesome&lt;/a&gt; &lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:4&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;li id=&#34;fn:4&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;https://shishuochen.gitee.io/2020/uffick8u1/&#34;&gt;Hugo博客添加font awesome&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:4&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/section&gt;
+&lt;/div&gt;
 </description>
                 
                 

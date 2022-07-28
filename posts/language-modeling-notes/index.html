@@ -3,7 +3,7 @@
     <head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
     <meta charset="UTF-8" />
 
-    <meta name="generator" content="Hugo 0.68.3" /><meta name="theme-color" content="#fff" />
+    <meta name="generator" content="Hugo 0.101.0" /><meta name="theme-color" content="#fff" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
@@ -18,7 +18,7 @@
 
     
     
-        <script src="/js/meme.min.acc7ad3e4b307f7dea8ccd1b58dc5c19566f00f8fceeb65f1b298e49ca227caa.js"></script>
+        <script src="/js/meme.min.46018b5bd0b93721b3b082eaa05c2915a60c316d72be1c0740c116faa1b37f9f.js"></script>
 
     
 
@@ -57,13 +57,13 @@
         "@context": "https://schema.org",
         "@type": "BlogPosting",
         "datePublished": "2021-03-14T12:38:45+08:00",
-        "dateModified": "2021-03-14T18:19:08+08:00",
+        "dateModified": "2021-03-14T18:19:10+08:00",
         "url": "https://derooce.github.io/posts/language-modeling-notes/",
         "headline": "NLP Notes series: Language Modeling",
         "description": "Language Modeling “对xx建模”到底意味着什么？ 想象我们有一个物理世界的模型。我们会期待其可以做些什么呢？如果这个模型很好，那么也许它可以根据给定“上下文”(context)的描述来预测下一步会发生什么。而当前的context也就对应着当前事物的状态(state)。 一个好的模型应该能模拟真实世界中的行为,它将“了……",
         "inLanguage" : "zh-CN",
         "articleSection": "posts",
-        "wordCount":  8033 ,
+        "wordCount":  7960 ,
         "image": ["https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170507.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170523.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170541.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170558.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170628.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170644.png","https://lena-voita.github.io/resources/lectures/lang_models/general/i_saw_a_cat_prob.gif","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170751.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171029.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171041.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171053.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171122.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171140.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171212.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171229.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171445.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171502.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171517.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171535.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171635.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171718.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171730.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171744.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171839.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171846.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171913.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171920.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171954.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172057.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172109.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172208.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172319.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172337.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172347.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172422.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172434.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172446.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172507.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172519.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172614.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172623.png","https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172715.png"],
         "author": {
             "@type": "Person",
@@ -109,7 +109,7 @@
 <meta property="og:locale" content="zh" /><meta property="og:image" content="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170507.png" />
 <meta property="og:type" content="article" />
     <meta property="article:published_time" content="2021-03-14T12:38:45&#43;08:00" />
-    <meta property="article:modified_time" content="2021-03-14T18:19:08&#43;08:00" />
+    <meta property="article:modified_time" content="2021-03-14T18:19:10&#43;08:00" />
     
     <meta property="article:section" content="posts" />
 
@@ -252,7 +252,7 @@
     
     
         
-        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;8033</span>
+        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;7960</span>
     
     
     
@@ -409,7 +409,7 @@ P(y_1, y_2, \dots, y_n)&=P(y_1)\cdot P(y_2|y_1)\cdot P(y_3|y_1, y_2)\cdot\dots\c
                                                     $$
 </div>
 <p>而唯一不确定的是<strong>如何计算这些条件概率</strong>。因此，我们所要做的就是定义计算这些条件概率的方法。</p>
-<p>与之前Word Embeddings中<a href="https://derooce.github.io/posts/word-embeddings-notes/#%E5%9F%BA%E4%BA%8E%E8%AE%A1%E6%95%B0%E7%9A%84%E6%96%B9%E6%B3%95" target="_blank" rel="noopener">基于计数的方法</a>非常相似，N-gram语言模型也采用计算文本语料中的全局统计信息建模，即通过<strong>计数</strong>的方法。也就是说，N-gram语言模型估计概率$P(y_t|y_{\mbox{&lt;}t}) = P(y_t|y_1, \dots, y_{t-1})$的方法**几乎**等价于之前我们基于古典概率论中频率估计概率的方法(<a href="https://derooce.github.io/posts/language-modeling-notes/#%E6%96%87%E6%9C%AC%E6%A6%82%E7%8E%87" target="_blank" rel="noopener">文本概率</a>)。</p>
+<p>与之前Word Embeddings中<a href="https://derooce.github.io/posts/word-embeddings-notes/#%E5%9F%BA%E4%BA%8E%E8%AE%A1%E6%95%B0%E7%9A%84%E6%96%B9%E6%B3%95" target="_blank" rel="noopener">基于计数的方法</a>非常相似，N-gram语言模型也采用计算文本语料中的全局统计信息建模，即通过<strong>计数</strong>的方法。也就是说，N-gram语言模型估计概率$P(y_t|y_{\mbox{&lt;}t}) = P(y_t|y_1, \dots, y_{t-1})$的方法<strong>几乎</strong>等价于之前我们基于古典概率论中频率估计概率的方法(<a href="https://derooce.github.io/posts/language-modeling-notes/#%E6%96%87%E6%9C%AC%E6%A6%82%E7%8E%87" target="_blank" rel="noopener">文本概率</a>)。</p>
 <p>这里突出了“几乎”二词是因为N-gram模型还包含了两个非常重要的成分：<strong>马尔科夫性质</strong>和<strong>平滑方法</strong>。</p>
 <hr>
 <h3 id="马尔科夫性质独立假设"><a href="#马尔科夫性质独立假设" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:马尔科夫性质独立假设" class="headings">马尔科夫性质（独立假设）</a></h3>
@@ -442,18 +442,18 @@ $$
 <ul>
 <li>当分母出现频数为0时，即&quot;N(cat on a)=0&quot;</li>
 </ul>
-<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171053.png" style="zoom: 33%;" /></p>
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171053.png" style="zoom: 33%;" />
 <p>方案一：后退法(aka Stupid Backoff)。Backoff的思想是对于那些未出现的序列，我们只使用其子序列的频数估计。举例来说，对于&quot;cat on a&quot;这是一个trigram模型，如果&quot;cat on a&quot;没有出现，则将其退化为使用bigram模型，即计算&quot;on a&quot;的频数；若还是没有出现，则再退化使用unigram模型。</p>
-<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171122.png" style="zoom:33%;" /></p>
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171122.png" style="zoom:33%;" />
 <p>这种方法看起来傻乎乎的，但实际上却效果还可以。</p>
 <p>另一种更聪明的方法是：线性插值(Linear interpolation)。线性插值将使用unigram、bigram、trigram等的结合。为了做到这点，需要使用一些正的权重标量$\lambda_0, \lambda_1, \dots, \lambda_{n-1}$，并且满足$\sum\limits_{i}\lambda_i=1$。如此，更新的概率将为：</p>
-<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171140.png" style="zoom: 33%;" /></p>
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171140.png" style="zoom: 33%;" />
 <p>权重系数$\lambda_i$可以使用交叉验证来选择。</p>
 <hr>
 <ul>
 <li>当分子为0时，即&quot;N(cat on a mat)=0&quot;</li>
 </ul>
-<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171212.png" style="zoom:33%;" /></p>
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171212.png" style="zoom:33%;" />
 <p>这种情形下，常用的方法是<strong>拉普拉斯平滑</strong>（aka 加1平滑， add-one smoothing）。避免这种情况最简单的方法是假设每个n-grams都至少出现1次，即每个n-grams的计数都加上1，或者加上一个很小的值 $\delta$:
 <img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314171229.png" style="zoom: 33%;" /></p>
 <hr>
@@ -586,9 +586,9 @@ P(y_1, y_2, \dots, y_n)&=P(y_1)\cdot P(y_2|y_1)\cdot P(y_3|y_1, y_2)\cdot\dots\c
 </ol>
 </li>
 </ol>
-<p><video width="60%" height="auto" loop="" autoplay="" muted="" >
-<source src="https://lena-voita.github.io/resources/lectures/lang_models/neural/nn_lm_prob_idea.mp4">
-</video></p>
+<video width="60%" height="auto" loop="" autoplay="" muted="" >
+         <source src="https://lena-voita.github.io/resources/lectures/lang_models/neural/nn_lm_prob_idea.mp4">
+     </video>
 <p>从上图的流程可以发现，其实神经语言模型就是一个神经分类器，而预测下一个词的概率分布其实就是一个分类问题的一部分。</p>
 <hr>
 <h3 id="高层次的pipeline"><a href="#高层次的pipeline" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:高层次的pipeline" class="headings">高层次的Pipeline</a></h3>
@@ -640,12 +640,12 @@ $$</p>
 <ul>
 <li>单层 RNN</li>
 </ul>
-<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172057.png" style="zoom:33%;" /></p>
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172057.png" style="zoom:33%;" />
 <p>最简单的循环架构就是单层的循环神经网络。在每个时间步，当前的状态将包含之前tokens的信息，并且将其用于预测下一个token。在训练时，将训练样本传给网络。在推断时，模型将生成一个token。以上步骤直到网络生成<code>_eos_</code>为止。</p>
 <ul>
 <li>多层 RNN</li>
 </ul>
-<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172109.png" style="zoom:50%;" /></p>
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172109.png" style="zoom:50%;" />
 <hr>
 <h3 id="模型卷积"><a href="#模型卷积" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:模型卷积" class="headings">模型：卷积</a></h3>
 <p>对比文本分类中的<a href="https://derooce.github.io/posts/text-classification-notes/#%E5%B0%86%E5%8D%B7%E7%A7%AF%E7%94%A8%E4%BA%8E%E6%96%87%E6%9C%AC%E7%9A%84%E5%8E%9F%E7%90%86" target="_blank" rel="noopener">将卷积用于文本的原理</a>,在语言模型中的CNN将有些不同。</p>
@@ -674,7 +674,7 @@ $$</p>
 <hr>
 <p><strong>感受野</strong>(Receptive field): 有了许多层，感受野范围可以很广</p>
 <p>当不使用<a href="https://derooce.github.io/posts/text-classification-notes/#%E6%B1%A0%E5%8C%96%E6%93%8D%E4%BD%9C" target="_blank" rel="noopener">全局池化操作</a>的CNN模型时，我们的模型可能无法避免地使用一个固定大小的上下文窗口，而这正是N-gram模型的缺点，以及我们想极力避免的问题。</p>
-<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172319.png" style="zoom:50%;" /></p>
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172319.png" style="zoom:50%;" />
 <p>然而，如果N-gram模型的上下文大小通常为1-4,那么CNN模型的上下文大小却可以非常大。在上图中，我们只是用了3层的卷积层，以及过滤器大小为3，但网络却可以接受7个tokens组成的上下文窗口的信息。如果我们继续堆叠更多层，那么我们将可以获得一个非常大的上下文长度。</p>
 <hr>
 <p><strong>残差连接</strong>： 使得训练深层网络更容易</p>
@@ -682,7 +682,7 @@ $$</p>
 <p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172337.png" alt=""></p>
 <p>残差连接非常简单：相对于一般的深层网络，添加了一个输入层到输出层的连接。而高速连接的动机相同，但使用了一个门控来控制输入、输出的和，而不是简单地使用累加和。这与LSTM使用不同的门控控制学习的信息相似。</p>
 <p>下图是带有残差连接的CNN模型图例。加入残差连接后，即使网络层数很深，也可以很容易地训练。此外，深层的网络也给模型带来一个非常可观的感受野。</p>
-<p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172347.png" style="zoom:35%;" /></p>
+<img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314172347.png" style="zoom:35%;" />
 <hr>
 <h2 id="序列生成策略"><a href="#序列生成策略" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:序列生成策略" class="headings">序列生成策略</a></h2>
 <h3 id="原理-2"><a href="#原理-2" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:原理-2" class="headings">原理</a></h3>
@@ -787,7 +787,7 @@ Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &=
 
         
     <div class="updated-badge-container">
-        <span title="Updated @ 2021-03-14 18:19:08 CST" style="cursor:help">
+        <span title="Updated @ 2021-03-14 18:19:10 CST" style="cursor:help">
 
 <svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2021-03-14</text><text x="915" y="140" textLength="650" transform="scale(.1)">2021-03-14</text></g></svg>
         </span></div>
@@ -882,7 +882,7 @@ Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &=
             
     <footer id="footer" class="footer">
         <div class="footer-inner">
-            <div class="site-info">&nbsp;DEROOCE&nbsp;&nbsp;©&nbsp;2021–2021</div><div class="site-copyright"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></div><div class="custom-footer">愚蠢的人总是对事情很确定，而聪明的人总是充满疑惑</div>
+            <div class="site-info">&nbsp;DEROOCE&nbsp;&nbsp;©&nbsp;2021–2022</div><div class="site-copyright"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></div><div class="custom-footer">愚蠢的人总是对事情很确定，而聪明的人总是充满疑惑</div>
 
             
 
