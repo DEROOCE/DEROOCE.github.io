@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">Writing and Sharing something insightful!</subtitle>
-    <updated>2022-07-28T22:17:16&#43;08:00</updated>
+    <updated>2022-07-28T23:13:49&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -341,7 +341,7 @@
             <title type="text">NLP Notes series: Language Modeling</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/language-modeling-notes/" />
             <id>https://derooce.github.io/posts/language-modeling-notes/</id>
-            <updated>2021-03-14T18:19:10&#43;08:00</updated>
+            <updated>2022-07-28T22:38:25&#43;08:00</updated>
             <published>2021-03-14T12:38:45&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -669,7 +669,7 @@ $$&lt;/p&gt;
 &lt;video width=&#34;70%&#34; height=&#34;auto&#34; loop=&#34;&#34; autoplay=&#34;&#34; muted=&#34;&#34; style=&#34;margin-left: 150px;&#34;&gt;
              &lt;source src=&#34;https://lena-voita.github.io/resources/lectures/lang_models/neural/rnn_lm_training_with_target.mp4&#34;&gt;
          &lt;/video&gt;
-​		 
+​
 &lt;p&gt;&lt;strong&gt;交叉熵与KL散度：&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;当目标分布为独热向量$p^{\ast}=\mbox{one-hot}(y_t)$时，交叉熵损失为$Loss(p^{\ast}, p^{})= -\sum\limits_{i=1}^{|V|}p_i^{\ast} \log(p_i)$,等价于Kullback-Leibler divergence $D_{KL}(p^{\ast}|| p^{})$。&lt;/p&gt;
 &lt;p&gt;因此，标准的NN-LM优化问题可以被看作是最小化模型预测分布$p$和经验目标分布$p^{\ast}$之间的距离。&lt;/p&gt;
@@ -790,7 +790,7 @@ $$&lt;/p&gt;
     \begin{aligned}
 Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &amp;=
             2^{-\frac{1}{M}\sum\limits_{t=1}^M\log_2 p(y_t|y_{1:t-1})}\\
-			&amp;=
+            &amp;=
             2^{-\frac{1}{M}\cdot M \cdot \log_2\frac{1}{|V|}}=2^{\log_2 |V|} =|V|.
 \end{aligned}
     $$
@@ -2648,7 +2648,7 @@ $$&lt;/p&gt;
             <title type="text">Blog Css Style</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/blog-css-style/" />
             <id>https://derooce.github.io/posts/blog-css-style/</id>
-            <updated>2021-03-14T21:16:46&#43;08:00</updated>
+            <updated>2022-07-28T22:34:33&#43;08:00</updated>
             <published>2021-03-13T14:14:04&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -2749,7 +2749,7 @@ $$&lt;/p&gt;
             <title type="text">Hello Hugo</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/fancy-settings-for-hugo/" />
             <id>https://derooce.github.io/posts/fancy-settings-for-hugo/</id>
-            <updated>2021-06-11T10:17:44&#43;08:00</updated>
+            <updated>2022-07-28T22:44:26&#43;08:00</updated>
             <published>2021-03-12T11:05:36&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -2866,7 +2866,7 @@ $$&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;style&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;margin:25px&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;&amp;#34;少年贪玩，青年迷恋爱情，壮年汲汲于成名成家，暮年自安于自欺欺人。人寿几何，顽铁能炼成的精金，能有多少？但不同程度的锻炼，必有不同程度的成绩；不同程度的纵欲放肆，必积下不同程度的顽劣。&amp;#34;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;br&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;/&amp;gt;&lt;/span&gt;上苍不会让所有幸福集中到某个人身上，得到爱情未必拥有金钱；拥有金钱未必得到快乐；得到快乐未必拥有健康；拥有健康未必一切都会如愿以偿。保持知足常乐的心态才是淬炼心智、净化心灵的最佳途径。一切快乐的享受都属于精神，这种快乐把忍受变为享受，是精神对于物质的胜利，这便是人生哲学。&amp;#34;&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;style&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;text-align:right;margin:15px&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;footer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;——&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;cite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;杨绛&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;cite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;footer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;	
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;style&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;text-align:right;margin:15px&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;footer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;——&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;cite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;杨绛&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;cite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;footer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;    
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;div&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
@@ -2874,7 +2874,7 @@ $$&lt;/p&gt;
 &lt;p style=&#34;margin:25px&#34;&gt;
    &lt;b&gt;&#34;少年贪玩，青年迷恋爱情，壮年汲汲于成名成家，暮年自安于自欺欺人。人寿几何，顽铁能炼成的精金，能有多少？但不同程度的锻炼，必有不同程度的成绩；不同程度的纵欲放肆，必积下不同程度的顽劣。&#34;&lt;br /&gt;上苍不会让所有幸福集中到某个人身上，得到爱情未必拥有金钱；拥有金钱未必得到快乐；得到快乐未必拥有健康；拥有健康未必一切都会如愿以偿。保持知足常乐的心态才是淬炼心智、净化心灵的最佳途径。一切快乐的享受都属于精神，这种快乐把忍受变为享受，是精神对于物质的胜利，这便是人生哲学。&#34;&lt;/b&gt;
 &lt;/p&gt;
-&lt;div style=&#34;text-align:right;margin:15px&#34; &gt;&lt;footer&gt;——&lt;cite&gt;杨绛&lt;/cite&gt;&lt;/footer&gt;&lt;/div&gt;	
+&lt;div style=&#34;text-align:right;margin:15px&#34; &gt;&lt;footer&gt;——&lt;cite&gt;杨绛&lt;/cite&gt;&lt;/footer&gt;&lt;/div&gt;    
 &lt;/div&gt;
 &lt;h3 id=&#34;文字渐变色&#34;&gt;文字渐变色&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -2894,9 +2894,10 @@ $$&lt;/p&gt;
 &lt;/font&gt;
 &lt;h3 id=&#34;notice模块&#34;&gt;Notice模块&lt;/h3&gt;
 &lt;p&gt;use the &lt;a href=&#34;https://github.com/martignoni/hugo-notice&#34;&gt;shortcode&lt;/a&gt;, this way:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;{{&amp;lt;notice notice-warning&amp;gt;}}
-This is warning
-{{&amp;lt;/notice&amp;gt;}}&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;
+&lt;div class=&#34;notice notice-warning&#34; &gt;
+    &lt;div class=&#34;notice-title&#34;&gt;&lt;svg xmlns=&#34;http://www.w3.org/2000/svg&#34; class=&#34;icon notice-icon&#34; viewBox=&#34;0 0 576 512&#34;&gt;&lt;path d=&#34;M570 440c18 32-5 72-42 72H48c-37 0-60-40-42-72L246 24c19-32 65-32 84 0l240 416zm-282-86a46 46 0 100 92 46 46 0 000-92zm-44-165l8 136c0 6 5 11 12 11h48c7 0 12-5 12-11l8-136c0-7-5-13-12-13h-64c-7 0-12 6-12 13z&#34;/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;p&gt;This is warning&lt;/p &gt;&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;code&gt;warning&lt;/code&gt;,&lt;code&gt;tip&lt;/code&gt;,&lt;code&gt;info&lt;/code&gt;,&lt;code&gt;note&lt;/code&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -2918,7 +2919,48 @@ This is warning
 
 &lt;h3 id=&#34;添加轮播图&#34;&gt;添加轮播图&lt;/h3&gt;
 &lt;p&gt;轮播图&lt;sup id=&#34;fnref:2&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fn:2&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;{{&amp;lt;carousel &#34;URL1,URL2,URL3,URL4,URL5&#34;&amp;gt;}}&lt;/code&gt; &lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;
+    &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css&#34;&gt;
+    
+    &lt;div class=&#34;swiper-container&#34;&gt;
+        &lt;div class=&#34;swiper-wrapper&#34;&gt;
+            
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;URL1&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;URL2&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;URL3&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;URL4&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+            &lt;div class=&#34;swiper-slide&#34;&gt;
+                &lt;img src=&#34;URL5&#34; alt=&#34;&#34;&gt;
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+        &lt;div class=&#34;swiper-pagination&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js&#34;&gt;&lt;/script&gt;
+     
+     &lt;script&gt;
+        var swiper = new Swiper(&#39;.swiper-container&#39;, {
+            pagination: &#39;.swiper-pagination&#39;,
+            paginationClickable: true,
+        });
+        &lt;/script&gt;
+
+&lt;/code&gt; &lt;/pre&gt;
 
     &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css&#34;&gt;
     
@@ -2955,9 +2997,9 @@ This is warning
 &lt;p&gt;&lt;img src=&#34;https://derooce.github.io/1.jpg&#34; alt=&#34;&#34; title=&#34;示例&#34;&gt;&lt;/p&gt;
 &lt;h3 id=&#34;诗歌引用&#34;&gt;诗歌引用&lt;/h3&gt;
 &lt;p&gt;代码&lt;sup id=&#34;fnref:3&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fn:3&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;{{&amp;lt;quote-center&amp;gt;}}
-contexts here
-{{&amp;lt;/quote-center&amp;gt;}}&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;&lt;blockquote class=&#34;quote-center&#34;&gt;
+        &lt;p&gt;contexts here&lt;/p&gt;&lt;/blockquote&gt; 
+&lt;/code&gt;&lt;/pre&gt;
 &lt;blockquote class=&#34;quote-center&#34;&gt;
         &lt;p&gt;伟大的小丑帕格里亚齐来了&lt;br/&gt;去看他的表演吧&lt;br/&gt;他能让你振作起来&lt;/p&gt;&lt;/blockquote&gt; 
 
@@ -3036,6 +3078,7 @@ contexts here
 &lt;/div&gt;
 &lt;/div&gt;&lt;hr&gt;
 &lt;h2 id=&#34;hugo-workflow&#34;&gt;hugo workflow&lt;/h2&gt;
+&lt;p&gt;部署博客内容&lt;sup id=&#34;fnref:5&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fn:5&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;5&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -3068,6 +3111,9 @@ contexts here
 &lt;/li&gt;
 &lt;li id=&#34;fn:4&#34;&gt;
 &lt;p&gt;&lt;a href=&#34;https://shishuochen.gitee.io/2020/uffick8u1/&#34;&gt;Hugo博客添加font awesome&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:4&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id=&#34;fn:5&#34;&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.wuhao.ink/zh-cn/blog/&#34;&gt;Hugo博客部署搭建&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:5&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;

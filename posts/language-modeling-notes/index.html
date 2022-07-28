@@ -57,7 +57,7 @@
         "@context": "https://schema.org",
         "@type": "BlogPosting",
         "datePublished": "2021-03-14T12:38:45+08:00",
-        "dateModified": "2021-03-14T18:19:10+08:00",
+        "dateModified": "2022-07-28T22:38:25+08:00",
         "url": "https://derooce.github.io/posts/language-modeling-notes/",
         "headline": "NLP Notes series: Language Modeling",
         "description": "Language Modeling “对xx建模”到底意味着什么？ 想象我们有一个物理世界的模型。我们会期待其可以做些什么呢？如果这个模型很好，那么也许它可以根据给定“上下文”(context)的描述来预测下一步会发生什么。而当前的context也就对应着当前事物的状态(state)。 一个好的模型应该能模拟真实世界中的行为,它将“了……",
@@ -109,7 +109,7 @@
 <meta property="og:locale" content="zh" /><meta property="og:image" content="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314170507.png" />
 <meta property="og:type" content="article" />
     <meta property="article:published_time" content="2021-03-14T12:38:45&#43;08:00" />
-    <meta property="article:modified_time" content="2021-03-14T18:19:10&#43;08:00" />
+    <meta property="article:modified_time" content="2022-07-28T22:38:25&#43;08:00" />
     
     <meta property="article:section" content="posts" />
 
@@ -630,7 +630,7 @@ $$</p>
 <video width="70%" height="auto" loop="" autoplay="" muted="" style="margin-left: 150px;">
              <source src="https://lena-voita.github.io/resources/lectures/lang_models/neural/rnn_lm_training_with_target.mp4">
          </video>
-​		 
+​
 <p><strong>交叉熵与KL散度：</strong></p>
 <p>当目标分布为独热向量$p^{\ast}=\mbox{one-hot}(y_t)$时，交叉熵损失为$Loss(p^{\ast}, p^{})= -\sum\limits_{i=1}^{|V|}p_i^{\ast} \log(p_i)$,等价于Kullback-Leibler divergence $D_{KL}(p^{\ast}|| p^{})$。</p>
 <p>因此，标准的NN-LM优化问题可以被看作是最小化模型预测分布$p$和经验目标分布$p^{\ast}$之间的距离。</p>
@@ -751,7 +751,7 @@ $$</p>
     \begin{aligned}
 Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &=
             2^{-\frac{1}{M}\sum\limits_{t=1}^M\log_2 p(y_t|y_{1:t-1})}\\
-			&=
+            &=
             2^{-\frac{1}{M}\cdot M \cdot \log_2\frac{1}{|V|}}=2^{\log_2 |V|} =|V|.
 \end{aligned}
     $$
@@ -787,9 +787,9 @@ Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &=
 
         
     <div class="updated-badge-container">
-        <span title="Updated @ 2021-03-14 18:19:10 CST" style="cursor:help">
+        <span title="Updated @ 2022-07-28 22:38:25 CST" style="cursor:help">
 
-<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2021-03-14</text><text x="915" y="140" textLength="650" transform="scale(.1)">2021-03-14</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2022-07-28</text><text x="915" y="140" textLength="650" transform="scale(.1)">2022-07-28</text></g></svg>
         </span></div>
 
 
