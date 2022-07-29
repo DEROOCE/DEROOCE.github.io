@@ -14,11 +14,11 @@
 
     <title>Categories: Tech | DEROOCE</title>
 
-    <link rel="stylesheet" href="/css/meme.min.84ebeeaa1f19e06dcd08169a3a6addd78a4a6d5e54f3a77696b8687c1e6ea082.css"/>
+    <link rel="stylesheet" href="/css/meme.min.fe7f848215a11b493a1755d8037e48b091cdee6e432054767a15650ff9adf10e.css"/>
 
     
     
-        <script src="/js/meme.min.46018b5bd0b93721b3b082eaa05c2915a60c316d72be1c0740c116faa1b37f9f.js"></script>
+        <script src="/js/meme.min.1c645d16f9c548af673db0b0617ea2152bee7bcf3f2ba433e369e289bc941f76.js"></script>
 
     
 
@@ -199,7 +199,6 @@
 
             
             
-    
         <main class="main list" id="main">
             <div class="main-inner">
                 <div class="content list-group">
@@ -303,8 +302,8 @@
             }
         };
         (function() {
-            var script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-mml-chtml.js';
+            const script = document.createElement('script');
+            script.src = 'https:\/\/cdn.jsdelivr.net\/npm\/mathjax@3.1.2\/es5\/tex-mml-chtml.js';
             script.defer = true;
             document.head.appendChild(script);
         })();
@@ -326,7 +325,10 @@
     <script src="https://cdn.jsdelivr.net/npm/medium-zoom@latest/dist/medium-zoom.min.js"></script>
 
 <script>
-    mediumZoom(document.querySelectorAll('div.post-body img'), {
+    let imgNodes = document.querySelectorAll('div.post-body img');
+    imgNodes = Array.from(imgNodes).filter(node => node.parentNode.tagName !== "A");
+
+    mediumZoom(imgNodes, {
         background: 'hsla(var(--color-bg-h), var(--color-bg-s), var(--color-bg-l), 0.95)'
     })
 </script>
@@ -335,7 +337,6 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/instant.page@5.1.0/instantpage.min.js" type="module" defer></script>
-
 
 
 
