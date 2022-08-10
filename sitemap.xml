@@ -2,26 +2,44 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://derooce.github.io/categories/</loc>
+    <lastmod>2022-08-10T10:52:13+08:00</lastmod>
+  </url><url>
+    <loc>https://derooce.github.io/</loc>
+    <lastmod>2022-08-10T10:52:13+08:00</lastmod>
+  </url><url>
+    <loc>https://derooce.github.io/categories/language-models/</loc>
+    <lastmod>2022-08-10T10:52:13+08:00</lastmod>
+  </url><url>
+    <loc>https://derooce.github.io/tags/nlp/</loc>
+    <lastmod>2022-08-10T10:52:13+08:00</lastmod>
+  </url><url>
+    <loc>https://derooce.github.io/categories/nlp/</loc>
+    <lastmod>2022-08-10T10:52:13+08:00</lastmod>
+  </url><url>
+    <loc>https://derooce.github.io/tags/papers/</loc>
+    <lastmod>2022-08-10T10:52:13+08:00</lastmod>
+  </url><url>
+    <loc>https://derooce.github.io/posts/</loc>
+    <lastmod>2022-08-10T10:52:13+08:00</lastmod>
+  </url><url>
+    <loc>https://derooce.github.io/posts/nlp-paper-reading-2/</loc>
+    <lastmod>2022-08-10T10:52:13+08:00</lastmod>
+  </url><url>
+    <loc>https://derooce.github.io/tags/prompts/</loc>
+    <lastmod>2022-08-10T10:52:13+08:00</lastmod>
+  </url><url>
+    <loc>https://derooce.github.io/tags/</loc>
+    <lastmod>2022-08-10T10:52:13+08:00</lastmod>
+  </url><url>
     <loc>https://derooce.github.io/posts/awesome-tech-books-i-had-read/</loc>
     <lastmod>2021-06-11T10:09:52+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/categories/books/</loc>
     <lastmod>2021-06-11T10:09:52+08:00</lastmod>
   </url><url>
-    <loc>https://derooce.github.io/categories/</loc>
-    <lastmod>2022-07-29T11:52:38+08:00</lastmod>
-  </url><url>
-    <loc>https://derooce.github.io/</loc>
-    <lastmod>2022-07-29T15:52:59+08:00</lastmod>
-  </url><url>
-    <loc>https://derooce.github.io/posts/</loc>
-    <lastmod>2022-07-29T11:52:38+08:00</lastmod>
-  </url><url>
     <loc>https://derooce.github.io/tags/programming/</loc>
     <lastmod>2021-06-11T10:09:52+08:00</lastmod>
-  </url><url>
-    <loc>https://derooce.github.io/tags/</loc>
-    <lastmod>2022-07-29T11:52:38+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/categories/tech/</loc>
     <lastmod>2021-06-11T10:09:52+08:00</lastmod>
@@ -30,7 +48,7 @@
     <lastmod>2021-06-11T10:09:52+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/categories/miscellaneous/</loc>
-    <lastmod>2022-07-29T11:52:38+08:00</lastmod>
+    <lastmod>2022-07-31T23:33:14+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/tags/workflow/</loc>
     <lastmod>2021-06-11T09:54:24+08:00</lastmod>
@@ -41,25 +59,16 @@
     <loc>https://derooce.github.io/posts/%E5%B7%A5%E4%BD%9C%E5%BF%83%E5%BE%97/</loc>
     <lastmod>2021-06-11T09:54:24+08:00</lastmod>
   </url><url>
-    <loc>https://derooce.github.io/tags/nlp/</loc>
-    <lastmod>2022-07-28T22:38:25+08:00</lastmod>
-  </url><url>
     <loc>https://derooce.github.io/categories/nlp-papers/</loc>
-    <lastmod>2021-03-15T19:20:54+08:00</lastmod>
+    <lastmod>2022-08-10T10:32:43+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/posts/nlp-paper-reading-1/</loc>
-    <lastmod>2021-03-15T19:20:54+08:00</lastmod>
-  </url><url>
-    <loc>https://derooce.github.io/tags/papers/</loc>
-    <lastmod>2021-03-15T19:20:54+08:00</lastmod>
+    <lastmod>2022-08-10T10:32:43+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/categories/papers/</loc>
-    <lastmod>2021-03-15T19:20:54+08:00</lastmod>
+    <lastmod>2022-08-10T10:32:43+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/categories/language-modeling/</loc>
-    <lastmod>2022-07-28T22:38:25+08:00</lastmod>
-  </url><url>
-    <loc>https://derooce.github.io/categories/nlp/</loc>
     <lastmod>2022-07-28T22:38:25+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/posts/language-modeling-notes/</loc>
@@ -87,24 +96,24 @@
     <lastmod>2021-03-14T00:02:12+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/posts/blog-css-style/</loc>
-    <lastmod>2022-07-29T11:52:38+08:00</lastmod>
+    <lastmod>2022-07-29T16:05:23+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/categories/blog-tech/</loc>
-    <lastmod>2022-07-29T11:52:38+08:00</lastmod>
+    <lastmod>2022-07-31T23:33:14+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/tags/css/</loc>
-    <lastmod>2022-07-29T11:52:38+08:00</lastmod>
+    <lastmod>2022-07-29T16:05:23+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/tags/html/</loc>
-    <lastmod>2022-07-29T11:52:38+08:00</lastmod>
+    <lastmod>2022-07-29T16:05:23+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/about/</loc>
     <lastmod>2022-07-29T15:52:59+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/posts/fancy-settings-for-hugo/</loc>
-    <lastmod>2022-07-29T11:52:02+08:00</lastmod>
+    <lastmod>2022-07-31T23:33:14+08:00</lastmod>
   </url><url>
     <loc>https://derooce.github.io/tags/hugo/</loc>
-    <lastmod>2022-07-29T11:52:02+08:00</lastmod>
+    <lastmod>2022-07-31T23:33:14+08:00</lastmod>
   </url>
 </urlset>

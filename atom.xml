@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">Writing and Sharing something insightful!</subtitle>
-    <updated>2022-07-29T15:53:12&#43;08:00</updated>
+    <updated>2022-08-10T10:53:04&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -16,6 +16,225 @@
             </author>
     <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights>
     <generator uri="https://gohugo.io/" version="0.101.0">Hugo</generator>
+        <entry>
+            <title type="text">Prefix Tuning</title>
+            <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/nlp-paper-reading-2/" />
+            <id>https://derooce.github.io/posts/nlp-paper-reading-2/</id>
+            <updated>2022-08-10T10:52:13&#43;08:00</updated>
+            <published>2022-08-10T10:30:22&#43;08:00</published>
+            <author>
+                    <name>DEROOCE</name>
+                    <uri>https://derooce.github.io/</uri>
+                    <email>vanace.jc@gmail.com</email>
+                    </author>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">链接 论文 https://arxiv.org/pdf/2101.00190.pdf 代码 GitHub - XiangLi1999/PrefixTuning: Prefix-Tuning: Optimizing Continuous Prompts for Generation 直觉 传统微调需要调整整个模型的参数，并且为每个任务都存储一个模型的参数，带来的开销大 Prefix tuning: 对自然语言生成任务，将语言模型参数冻结，转为优化一个小的,任务导向的连续向量（continuous task-specific vectors, 称为prefix) 相关工作 lightweight fine-tuning 关键的挑战是识别模型中蕴含的高性能架构和要调优的……</summary>
+            
+                <content type="html">&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/pMrhgc.png&#34; alt=&#34;paper title&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;链接&#34;&gt;链接&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;论文&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://arxiv.org/pdf/2101.00190.pdf&#34;&gt;https://arxiv.org/pdf/2101.00190.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;代码&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/XiangLi1999/PrefixTuning&#34;&gt;GitHub - XiangLi1999/PrefixTuning: Prefix-Tuning: Optimizing Continuous Prompts for Generation&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;直觉&#34;&gt;直觉&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;传统微调需要调整整个模型的参数，并且为每个任务都存储一个模型的参数，带来的开销大&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Prefix tuning: 对自然语言生成任务，将语言模型参数冻结，转为优化一个小的,任务导向的连续向量（continuous task-specific vectors, 称为prefix)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;相关工作&#34;&gt;相关工作&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;lightweight fine-tuning&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;关键的挑战是识别模型中蕴含的高性能架构和要调优的预训练参数子集。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;prefix tuning的训练参数要比lightweight tuning还要少上30x倍&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;GPT-3： prompt, in-context learning&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用人工设计的prompts&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;模型结构&#34;&gt;模型结构&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;对自回归LM结构，采用 $z=[\text{Prefix}; x; y]$的方式， 对于encoder-decoder结构，采用 $z=[\text{Prefix}; x; \text{Prefix&#39;}, y]$的方式&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;自回归$y$的生成是一个字一个字的生产，而其输入的$y$是先前生成的$y$，例如生成“天气好真开心”，生成到“心”时，模型的输入$y$为&amp;quot;天气好真开“&lt;/li&gt;
+&lt;li&gt;prefix tuning在模型的每层都加了prefix参数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/3gnYrB.png&#34; alt=&#34;model structure&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;heading&#34;&gt;&lt;/h2&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;训练策略&#34;&gt;训练策略&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;prefix可以看做是一些虚拟的输入tokens, 语言模型(transformer)可以对这些虚拟tokens也做attention,但是这些prefix的参数与真实token的参数是完全独立的，而prefix的参数量相对真实token的参数量是极少的（比fine-tuning的存储参数少1000x倍）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;对于不同任务，只需要使用一个LM模型，然后训练一个单独的prefix即可&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;prefix不是离散的tokens,而是看当做连续的词嵌入来优化&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;prefix tuning初始化一个可训练的参数矩阵，用于存储prefix向量参数&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;直接优化prefix矩阵会对学习率和初始化参数的选择非常敏感&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;为稳定优化过程和效果，再将prefix矩阵做重参数化(reparametrize)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;直接优化Prompt参数不太稳定，加了个更大的MLP，训练完只保存MLP变换后的参数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用AdamW, 线性学习率衰减策略(linear-learning rate scheduler)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;数据集&#34;&gt;数据集&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;table2text&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;数据集：E2E，WebNLG，DART&lt;/li&gt;
+&lt;li&gt;评估指标：BLEU,  METEOR, TER, Mover-Score，BERT, BLEURT,&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;摘要&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;数据集：XSum&lt;/li&gt;
+&lt;li&gt;评估指标： ROUGE-1, ROUGE-2, ROUGE-L&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;实验效果&#34;&gt;实验效果&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;模型： GPT-2做table2text生成任务；BART做摘要任务&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;基准tuning方法&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;整体微调(fine-tuning), 只fine-tuning网络的头两层(FT-top2), adapter-tuning(adapter)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;结果&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;在table-to-text generation任务上，prefix tuning和fine tuning在整个数据集上训练后的测试效果相近&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;任务描述：如给定table: “name: Starbucks | type: coffee shop”, 生成描述“Starbucks serves coffee.”&lt;/li&gt;
+&lt;li&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/FosdFt.png&#34; alt=&#34;table2text&#34;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在摘要任务上，prefix tuning的效果仅比fine tuning退化了一点&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/srpCSS.png&#34; alt=&#34;summarization&#34;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在少样本的设定下，prefix tuning在两个任务上平均效果超过了fine tuning&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在少样本设定下，使用真实词的激活值来初始化prefix会比随机初始化显著outperform&lt;/li&gt;
+&lt;li&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/d9qxgs.png&#34; alt=&#34;small data&#34;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对比prefix tuning和infix tuning: $[\text{prefix};x;y]$ v.s. $[x;\text{infix};y]$&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;infix tuning比prefix tuning效果略差&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/GDUooV.png&#34; alt=&#34;prefix v.s. infix&#34;&gt;&lt;/li&gt;
+&lt;li&gt;可能因为prefix tuning会同时影响x和y的激活情况（因为在头部），而infix tuning只会影响y的激活&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/nlp/" term="NLP" label="NLP" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/language-models/" term="Language Models" label="Language Models" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/nlp/" term="NLP" label="NLP" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/papers/" term="Papers" label="Papers" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/prompts/" term="Prompts" label="Prompts" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
         <entry>
             <title type="text">Awesome Programming Books</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/awesome-tech-books-i-had-read/" />
@@ -202,7 +421,7 @@
             <title type="text">NLP 论文阅读系列: 第1期</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/nlp-paper-reading-1/" />
             <id>https://derooce.github.io/posts/nlp-paper-reading-1/</id>
-            <updated>2021-03-15T19:20:54&#43;08:00</updated>
+            <updated>2022-08-10T10:32:43&#43;08:00</updated>
             <published>2021-03-15T14:40:09&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -2648,16 +2867,16 @@ $$&lt;/p&gt;
             <title type="text">Blog Css Style</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/blog-css-style/" />
             <id>https://derooce.github.io/posts/blog-css-style/</id>
-            <updated>2022-07-29T11:52:38&#43;08:00</updated>
+            <updated>2022-07-29T16:05:23&#43;08:00</updated>
             <published>2021-03-13T14:14:04&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
                     <uri>https://derooce.github.io/</uri>
                     <email>vanace.jc@gmail.com</email>
                     </author>
-            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">博客页面的css style记录（备忘） 博客主题：MemE 图片浮动在页面右端： 1 &amp;lt;img src=&amp;#34;image.jpg&amp;#34; style=&amp;#34;float:right; margin: 5px;&amp;#34; /&amp;gt; 实现段落两端对齐 1 2 3 4 p { text-align: justify; /* 文本两端对齐 */ text-justify: inter-ideograph; /* 调整表意文字间距以保持两端对齐 */ } 博客链接到本页面章节 1 2 3 4 &amp;lt;!-- links to element on this page with id=&amp;#34;attr-href&amp;#34; --&amp;gt; &amp;lt;a href=&amp;#34;#属性&amp;#34;&amp;gt; Description of Same-Page Links &amp;lt;/a&amp;gt;</summary>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">博客页面的style设定记录（备忘） 博客主题：MemE 图片浮动在页面右端： 1 &amp;lt;img src=&amp;#34;image.jpg&amp;#34; style=&amp;#34;float:right; margin: 5px;&amp;#34; /&amp;gt; 实现段落两端对齐 1 2 3 4 p { text-align: justify; /* 文本两端对齐 */ text-justify: inter-ideograph; /* 调整表意文字间距以保持两端对齐 */ } 博客链接到本页面章节 1 2 3 4 &amp;lt;!-- links to element on this page with id=&amp;#34;attr-href&amp;#34; --&amp;gt; &amp;lt;a href=&amp;#34;#属性&amp;#34;&amp;gt; Description of Same-Page Links &amp;lt;/a&amp;gt; 博客个人简历页面制作……</summary>
             
-                <content type="html">&lt;h2 id=&#34;博客页面的css-style记录备忘&#34;&gt;博客页面的css style记录（备忘）&lt;/h2&gt;
+                <content type="html">&lt;h2 id=&#34;博客页面的style设定记录备忘&#34;&gt;博客页面的style设定记录（备忘）&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;博客主题：&lt;a href=&#34;https://github.com/reuixiy/hugo-theme-meme&#34;&gt;MemE&lt;/a&gt;&lt;/p&gt;
@@ -2708,7 +2927,18 @@ $$&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;</content>
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;博客个人简历页面制作&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.imfing.com/2021/04/rebuild-personal-site-with-hugo-1/&#34;&gt;https://blog.imfing.com/2021/04/rebuild-personal-site-with-hugo-1/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在博客页面嵌入交互图表&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</content>
             
             
             
@@ -2754,7 +2984,7 @@ $$&lt;/p&gt;
             <title type="text">Hello Hugo</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/fancy-settings-for-hugo/" />
             <id>https://derooce.github.io/posts/fancy-settings-for-hugo/</id>
-            <updated>2022-07-29T11:52:02&#43;08:00</updated>
+            <updated>2022-07-31T23:33:14&#43;08:00</updated>
             <published>2021-03-12T11:05:36&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -3082,6 +3312,11 @@ $$&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;hr&gt;
+&lt;h2 id=&#34;hugo-shortcodes&#34;&gt;Hugo shortcodes&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/content-management/shortcodes/&#34;&gt;Shortcodes | Hugo&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
 &lt;h2 id=&#34;hugo-workflow&#34;&gt;hugo workflow&lt;/h2&gt;
 &lt;p&gt;部署博客内容&lt;sup id=&#34;fnref:5&#34;&gt;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fn:5&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;5&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
