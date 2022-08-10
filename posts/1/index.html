@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+    <meta charset="UTF-8" />
+
+    <meta name="generator" content="Hugo 0.101.0" /><meta name="theme-color" content="#fff" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+    
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    <title> | DEROOCE</title>
+
+    <link rel="stylesheet" href="/css/meme.min.fe7f848215a11b493a1755d8037e48b091cdee6e432054767a15650ff9adf10e.css"/>
+
+    
+    
+        <script src="/js/meme.min.1c645d16f9c548af673db0b0617ea2152bee7bcf3f2ba433e369e289bc941f76.js"></script>
+
+    
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" media="print" onload="this.media='all'" />
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" /></noscript>
+
+    <meta name="author" content="DEROOCE" /><meta name="description" content="Prompt 清华 P-tuning 链接 论文 https://arxiv.org/pdf/2103.10385.pdf 代码 https://github.com/THUDM/P-tuning 问题 GPT使用传统的微调策略没法在自然语言理解任务上取得较好结果，而通过新的调整策略，可以让大小相似的GPT在NLU上取得比BERT相近或更好的结果。 方法细节 思路 给定一个prompt T={[P(0:i)],x,[P(i&#43;1:m)]}，传统的离散prompt模板将其映射为，其中……" />
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#2a6df4" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="DEROOCE" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="DEROOCE" />
+    <meta name="msapplication-starturl" content="../../" />
+    <meta name="msapplication-TileColor" content="#fff" />
+    <meta name="msapplication-TileImage" content="../../icons/mstile-150x150.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <script src="https://kit.fontawesome.com/e2d29a5fca.js" crossorigin="anonymous"></script>
+    
+    
+
+
+
+    
+    <link rel="canonical" href="https://derooce.github.io/posts/1/" />
+    
+
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "datePublished": "2021-03-12T20:12:12+00:00",
+        "dateModified": "2022-08-10T15:47:17+08:00",
+        "url": "https://derooce.github.io/posts/1/",
+        "headline": "",
+        "description": "Prompt 清华 P-tuning 链接 论文 https://arxiv.org/pdf/2103.10385.pdf 代码 https://github.com/THUDM/P-tuning 问题 GPT使用传统的微调策略没法在自然语言理解任务上取得较好结果，而通过新的调整策略，可以让大小相似的GPT在NLU上取得比BERT相近或更好的结果。 方法细节 思路 给定一个prompt T={[P(0:i)],x,[P(i+1:m)]}，传统的离散prompt模板将其映射为，其中……",
+        "inLanguage" : "zh-CN",
+        "articleSection": "posts",
+        "wordCount":  5222 ,
+        "image": "https://derooce.github.io/icons/apple-touch-icon.png",
+        "author": {
+            "@type": "Person",
+            "description": "Do or die",
+            "email": "vanace.jc@gmail.com",
+            "image": "https://derooce.github.io/icons/apple-touch-icon.png",
+            "url": "https://derooce.github.io/",
+            "name": "DEROOCE"
+        },
+        "license": "[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)",
+        "publisher": {
+            "@type": "Organization",
+            "name": "DEROOCE",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://derooce.github.io/icons/apple-touch-icon.png"
+            },
+            "url": "https://derooce.github.io/"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebSite",
+            "@id": "https://derooce.github.io/"
+        }
+    }
+</script>
+
+    
+
+<meta name="twitter:card" content="summary" />
+
+<meta name="twitter:site" content="@vanace_jc" />
+<meta name="twitter:creator" content="@vanace_jc" />
+
+    
+
+
+
+<meta property="og:title" content="" />
+<meta property="og:description" content="Prompt 清华 P-tuning 链接 论文 https://arxiv.org/pdf/2103.10385.pdf 代码 https://github.com/THUDM/P-tuning 问题 GPT使用传统的微调策略没法在自然语言理解任务上取得较好结果，而通过新的调整策略，可以让大小相似的GPT在NLU上取得比BERT相近或更好的结果。 方法细节 思路 给定一个prompt T={[P(0:i)],x,[P(i&#43;1:m)]}，传统的离散prompt模板将其映射为，其中……" />
+<meta property="og:url" content="https://derooce.github.io/posts/1/" />
+<meta property="og:site_name" content="DEROOCE" />
+<meta property="og:locale" content="zh" /><meta property="og:image" content="https://derooce.github.io/icons/apple-touch-icon.png" />
+    <meta property="og:type" content="article" />
+    <meta property="article:published_time" content="2021-03-12T20:12:12&#43;00:00" />
+    <meta property="article:modified_time" content="2022-08-10T15:47:17&#43;08:00" />
+    
+    <meta property="article:section" content="posts" />
+
+
+        <link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
+
+        
+
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KFL8D48FDC"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-KFL8D48FDC');
+    </script>
+
+
+
+
+    
+
+
+</head>
+
+    <body>
+        <div class="container">
+            
+    <header class="header">
+        
+            <div class="header-wrapper">
+                <div class="header-inner single">
+                    
+    <div class="site-brand">
+        
+            <a href="/" class="brand">DEROOCE</a>
+        
+    </div>
+
+                    <nav class="nav">
+    <ul class="menu" id="menu">
+        
+            
+        
+        
+        
+        
+            
+                <li class="menu-item"><a href="/posts/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon archive"><path d="M32 448c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32V160H32v288zm160-212c0-6.6 5.4-12 12-12h104c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12H204c-6.6 0-12-5.4-12-12v-8zM480 32H32C14.3 32 0 46.3 0 64v48c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16V64c0-17.7-14.3-32-32-32z"/></svg><span class="menu-item-name">文章</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/categories/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon th"><path d="M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"/></svg><span class="menu-item-name">分类</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/tags/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="icon tags"><path d="M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"/></svg><span class="menu-item-name">标签</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/about/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon user-circle"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/></svg><span class="menu-item-name">关于</span></a>
+                </li>
+            
+        
+            
+                
+                    
+                    
+                        <li class="menu-item">
+                            <a id="theme-switcher" href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-light"><path d="M193.2 104.5l48.8-97.5a18 18 0 0128 0l48.8 97.5 103.4 -34.5a18 18 0 0119.8 19.8l-34.5 103.4l97.5 48.8a18 18 0 010 28l-97.5 48.8 34.5 103.4a18 18 0 01-19.8 19.8l-103.4-34.5-48.8 97.5a18 18 0 01-28 0l-48.8-97.5l-103.4 34.5a18 18 0 01-19.8-19.8l34.5-103.4-97.5-48.8a18 18 0 010-28l97.5-48.8-34.5-103.4a18 18 0 0119.8-19.8zM256 128a128 128 0 10.01 0M256 160a96 96 0 10.01 0"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-dark"><path d="M27 412a256 256 0 10154-407a11.5 11.5 0 00-5 20a201.5 201.5 0 01-134 374a11.5 11.5 0 00-15 13"/></svg></a>
+                        </li>
+                    
+                
+            
+        
+    </ul>
+</nav>
+
+                    
+                </div>
+            </div>
+            
+    <input type="checkbox" id="nav-toggle" aria-hidden="true" />
+    <label for="nav-toggle" class="nav-toggle"></label>
+    <label for="nav-toggle" class="nav-curtain"></label>
+
+
+        
+
+        
+    
+
+    </header>
+
+
+
+
+
+
+            
+            
+    <main class="main single" id="main">
+    <div class="main-inner">
+
+        
+
+        <article class="content post h-entry" data-small-caps="true" data-align="justify" data-type="posts" data-toc-num="true">
+
+            <h1 class="post-title p-name"></h1>
+
+            
+
+            
+                
+            
+
+            
+                
+
+<div class="post-meta">
+    
+    
+    
+    
+        
+        
+        
+            
+        
+    
+    
+        
+        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;5222</span>
+    
+    
+    
+    
+</div>
+
+            
+
+            <nav class="contents">
+  <h2 id="contents" class="contents-title">目录</h2><ol class="toc">
+    <li><a id="contents:清华" href="#清华">清华</a>
+      <ol>
+        <li><a id="contents:p-tuning" href="#p-tuning">P-tuning</a></li>
+        <li><a id="contents:p-tuning-v2" href="#p-tuning-v2">P-tuning v2</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:stanford" href="#stanford">Stanford</a>
+      <ol>
+        <li><a id="contents:prefix-tuning" href="#prefix-tuning">Prefix-Tuning</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:1" href="#1">1</a>
+      <ol>
+        <li><a id="contents:p-tuning-1" href="#p-tuning-1">P-tuning</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav><div class="post-body e-content">
+                <h1 id="prompt"><a href="#prompt" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:prompt" class="headings">Prompt</a></h1>
+<h2 id="清华"><a href="#清华" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:清华" class="headings">清华</a></h2>
+<h3 id="p-tuning"><a href="#p-tuning" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:p-tuning" class="headings">P-tuning</a></h3>
+<ul>
+<li>
+<p>链接</p>
+<ul>
+<li>
+<p>论文</p>
+<ul>
+<li><a href="https://arxiv.org/pdf/2103.10385.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/2103.10385.pdf</a></li>
+</ul>
+</li>
+<li>
+<p>代码</p>
+<ul>
+<li><a href="https://github.com/THUDM/P-tuning" target="_blank" rel="noopener">https://github.com/THUDM/P-tuning</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>问题</p>
+<ul>
+<li>GPT使用传统的微调策略没法在自然语言理解任务上取得较好结果，而通过新的调整策略，可以让大小相似的GPT在NLU上取得比BERT相近或更好的结果。</li>
+</ul>
+</li>
+<li>
+<p>方法细节</p>
+<ul>
+<li>
+<p>思路</p>
+<ul>
+<li>
+<p>给定一个prompt T={[P(0:i)],x,[P(i+1:m)]}，传统的离散prompt模板将其映射为，其中的Pi所用的词语是模型词汇表中的词。</p>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>- P-tuning将[Pi]当成一个伪token（之所以叫伪token是因为后续还将进行更新），将其映射为
+  
+  - 
+</code></pre>
+<ul>
+<li>
+<p>步骤</p>
+<ul>
+<li>
+<p>输入一个句子，以及预先设计的一个离散的模板：The Disney film is good! It was [MASK].；</p>
+</li>
+<li>
+<p>对输入的template中，挑选一个（或多个）token作为pseudo token：The Disney film is good! [pseudo] was [MASK].</p>
+<ul>
+<li>其初始化可以直接使用原本的token embedding；</li>
+</ul>
+</li>
+<li>
+<p>对所有的pseudo token P_i ，传入一层LSTM，并获得每个pseudo token输出的隐状态向量 h_i</p>
+<ul>
+<li>
+<p>P-tuning并不是随机初始化这些pseudo tokens然后直接训练，而是通过一个BiLSTM模型把这几个Embedding算出来，并且将这个LSTM模型设为可学习的。避免了人工构建离散的template，而让模型可以自动学习continuous embedding</p>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>- 将整个句子传入预训练语言模型层,对于pseudo token传入隐藏状态h_i, 对于原始词和[mask]，则传入embedding e_i
+</code></pre>
+<ul>
+<li>
+<p>效果</p>
+<ul>
+<li>
+<p>LAMA+SuperGLUE基准数据集</p>
+<ul>
+<li>
+<p>LAMA数据集，根据知识库中结构化三元组（事实）构建的完形填空类型的数据。</p>
+<ul>
+<li>
+<ul>
+<li>具有110亿个参数的MegatronLM2，虽然微调几乎不起作用，但Ptuning仍然适用</li>
+<li>Manual Prompt (MP): use original handcraft prompts from LAMA.（提供了人造的prompt).</li>
+</ul>
+</li>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>结论</p>
+<ul>
+<li>作者发现添加少量锚标记（anchor tokens）有助于SuperGLUE的一些NLU任务。例如在prompt模板“[PRE][prompt tokens][HYP]?[prompt tokens][MASK]”中的“?”就是一个锚节点，对性能影响很大。</li>
+<li>知识探测任务中：语言模型仅仅通过找到更好的prompt，不进行微调，就能捕捉到更多的知识。</li>
+<li>P-tuning可以有效的提高bert和gpt模型在NLU任务上的性能。并且使用P-tuning，可以让相似代销的GPT2实现比bert模型相当的甚至更好的结果，这个发现颠覆普遍认为的——双向模型比单向模型在NLU任务中表现的更好。</li>
+<li>当预训练模型足够大的时候，我们的设备可能无法finetune整个模型，而P-tuning可以选择只优化几个Token的参数，因为优化所需要的显存和算力都会大大减少，所以P-tuning实则上给了我们一种在有限算力下调用大型预训练模型的思路。</li>
+</ul>
+</li>
+<li>
+<p>问题</p>
+<ul>
+<li>当预训练语言模型的参数量低于100亿时，Prompt-tuning会比传统的Fine-tuning差；</li>
+<li>像序列标注等对推理和理解要求高的任务，prompt-tuning效果会变差；</li>
+</ul>
+</li>
+</ul>
+<h3 id="p-tuning-v2"><a href="#p-tuning-v2" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:p-tuning-v2" class="headings">P-tuning v2</a></h3>
+<ul>
+<li>
+<p>链接</p>
+<ul>
+<li>
+<p>论文</p>
+<ul>
+<li><a href="https://arxiv.org/pdf/2110.07602.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/2110.07602.pdf</a></li>
+</ul>
+</li>
+<li>
+<p>代码</p>
+<ul>
+<li><a href="https://github.com/THUDM/P-tuning-v2" target="_blank" rel="noopener">https://github.com/THUDM/P-tuning-v2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>动机</p>
+<ul>
+<li>
+<p>Fine-tuning需要微调整个预训练语言模型，且额外添加了新的参数，而Prompting则可以将整个预训练语言模型的参数保持固定，而只需要添加prompt来预测结果即可；因此无需微调，但容易陷入局部最优；</p>
+</li>
+<li>
+<p>在几个较难的序列标签任务中，如extractive QA, P-tuning的效果相比fine-tuning要差</p>
+<ul>
+<li>Prompt-tuning则是将Prompt加入到微调过程中，此时只对Prompt部分的参数进行训练，而语言模型的参数固定不变。例如，在P-tuning中引入continuous template，此时template是连续可微调的token，而不是离散的token，模型可以学习一个pseudo token；但发现P-tuning等Prompt-tuning方法在一些自然语言理解（NLU）任务中（例如抽extractive QA、序列标注等），基于普通的预训练语言模型，现有的prompting工作推理能力十分有限；</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>优化策略</p>
+<ul>
+<li>
+<p>先前的P-tuning用了一层BiLSTM来表征pseudo token，显然是推理能力不足的原因之一，因此该部分提出Deep Prompt Tuning，使用Prefix-tuning中的深层模型替换原来的BiLSTM</p>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>- 引入Prefix-tuning技术
+  
+  - Prefix-tuning（前缀微调）最开始应用在NLG任务上，由[Prefix, x, y]三部分构成：Prefix为前缀，x为输入，y为输出。
+  - Prefix-tuning将预训练参数固定，Prefix参数进行微调：不仅只在embedding上进行微调，也在TransFormer上的embedding输入每一层进行微调。
+  - 而P-tuning v1只有transformer第一层的embedding输入需要被tuned。
+</code></pre>
+<ul>
+<li>
+<p>取消了reparamerization：对pseudo token，不再使用BiLSTM或MLP进行表征，转为直接对pseudo token对应的深层模型的参数进行微调；</p>
+</li>
+<li>
+<p>采用了多任务学习优化：基于多任务数据集的Prompt进行预训练，然后再适配的下游任务。</p>
+</li>
+<li>
+<p>P-tuning V2舍弃了词汇Mapping的Verbalizer的使用，重新利用[CLS]和字符标签，完全变为生成模型，可以在[CLS]部分输出sentence-level class，以及每个token位置上输出token-level class，增强通用性，使其可以适配到序列标注任务。</p>
+</li>
+<li>
+<p>实验效果</p>
+<ul>
+<li>
+<p>在设定模型参数量大小上的实验</p>
+<ul>
+<li>
+<p>Prompt-tuning/P-tuning方法在参数规模小的语言模型上，效果低于传统的Fine-tuning；</p>
+</li>
+<li>
+<p>p-tuning v2相对v1不论在小模型还是大模型上，均可以提升；</p>
+</li>
+<li>
+<p>当选择100亿参数规模的语言模型时，P-tuning V2基本可以与传统的Fine-tuning保持相当水平甚至达到outperform；</p>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>
+<p>在不同任务上的实验</p>
+<ul>
+<li>MPT-2：本文提出的P-tuning V2，并采用Multi-task learning方法；</li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+</li>
+<li>
+<p>总结</p>
+<ul>
+<li>P-tuning v2本质上将Prefix-tuning应用到NLU任务上的一种方法。</li>
+<li>P-tuning v2还未在few-shot上验证性能，有待进一步验证。</li>
+</ul>
+</li>
+</ul>
+<h2 id="stanford"><a href="#stanford" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:stanford" class="headings">Stanford</a></h2>
+<h3 id="prefix-tuning"><a href="#prefix-tuning" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:prefix-tuning" class="headings">Prefix-Tuning</a></h3>
+<ul>
+<li>
+<p>链接</p>
+<ul>
+<li>
+<p>论文</p>
+<ul>
+<li><a href="https://arxiv.org/pdf/2101.00190.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/2101.00190.pdf</a></li>
+</ul>
+</li>
+<li>
+<p>代码</p>
+<ul>
+<li><a href="https://github.com/XiangLi1999/PrefixTuning" target="_blank" rel="noopener">https://github.com/XiangLi1999/PrefixTuning</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>直觉</p>
+<ul>
+<li>
+<p>传统微调需要调整整个模型的参数，并且为每个任务都存储一个模型的参数，带来的开销大</p>
+</li>
+<li>
+<p>Prefix tuning: 对自然语言生成任务，将语言模型参数冻结，转为优化一个小的,任务导向的连续向量（continuous task-specific vectors, 称为prefix)</p>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>相关工作</p>
+<ul>
+<li>
+<p>lightweight fine-tuning</p>
+<ul>
+<li>
+<p>关键的挑战是识别模型中蕴含的高性能架构和要调优的预训练参数子集。</p>
+<ul>
+<li>prefix tuning的训练参数要比lightweight tuning还要少上30x倍</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>GPT-3： prompt, in-context learning</p>
+<ul>
+<li>使用人工设计的prompts</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>模型结构</p>
+<ul>
+<li>
+<p>对自回归LM结构，采用 z=[Prefix; x; y]的方式， 对于encoder-decoder结构，采用 z=[Prefix; x; prefix', y]的方式</p>
+<ul>
+<li>自回归输入的y是已经生成的y，就比如生成“我今天很开心”（肯定是一个字一个字生成的），要生成到“很”字的时候，输入是x和“我今天”</li>
+<li>在每层都加了prompt的参数</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>训练策略</p>
+<ul>
+<li>
+<p>这些prefix可以看做是一些虚拟的输入token, 语言模型(transformer)可以对这些虚拟tokens也做attention,但是这些prefix的参数与真实token的参数是完全独立的，而prefix的参数量相对真实token的参数量是极少的（比fine-tuning的存储参数少1000x倍）</p>
+<ul>
+<li>
+<p>对于不同任务，我们只需要使用一个LM模型，然后训练一个单独的prefix即可</p>
+</li>
+<li>
+<p>prefix不是离散的tokens,而是看当做连续的词嵌入来优化</p>
+</li>
+<li>
+<p>prefix tuning初始化一个可训练的参数矩阵，用于存储prefix向量参数</p>
+<ul>
+<li>直接优化prefix矩阵会对学习率和初始化参数的选择非常敏感</li>
+</ul>
+</li>
+<li>
+<p>为稳定优化过程和效果，再将prefix矩阵做重参数化(reparametrize)</p>
+<ul>
+<li>
+<ul>
+<li>行数相同，列数减少</li>
+</ul>
+</li>
+<li>
+<p>直接优化Prompt参数不太稳定，加了个更大的MLP，训练完只保存MLP变换后的参数</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>使用AdamW, 线性学习率衰减策略(linear-learning rate scheduler)</p>
+</li>
+</ul>
+</li>
+<li>
+<p>数据集</p>
+<ul>
+<li>
+<p>table2text</p>
+<ul>
+<li>数据集：E2E，WebNLG，DART
+指标：BLEU, METEOR, TER, Mover-Score, BERTScore, BLEURT</li>
+</ul>
+</li>
+<li>
+<p>摘要</p>
+<ul>
+<li>数据集：XSum
+指标： ROUGE-1, ROUGE-2, ROUGE-L</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>效果</p>
+<ul>
+<li>
+<p>模型： GPT-2做table2text生成任务；BART做摘要任务</p>
+</li>
+<li>
+<p>基准tuning方法</p>
+<ul>
+<li>整体微调(fine-tuning), 只fine-tuning网络的头两层(FT-top2), adapter-tuning(adapter)</li>
+</ul>
+</li>
+<li>
+<p>结果</p>
+<ul>
+<li>
+<p>在table-to-text generation任务上，prefix tuning和fine tuning在整个数据集上训练后的测试效果相近</p>
+<ul>
+<li>任务描述：如给定table: “name: Starbucks | type: coffee shop”, 生成描述“Starbucks serves coffee.”</li>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>- 在摘要任务上，prefix tuning的效果仅比fine tuning退化了一点
+  
+  - 
+
+- 在少样本的设定下，prefix tuning在两个任务上平均效果超过了fine tuning 
+  
+  - 
+  
+  - 在少样本设定下，使用真实词的激活值来初始化prefix会比随机初始化显著outperform
+    
+    - 
+
+- 对比prefix tuning和infix tuning: [prefix;x;y] v.s. [x;infix;y]
+  
+  - 
+  
+  - infix tuning比prefix tuning效果略差
+    
+    - 可能因为prefix tuning会同时影响x和y的激活情况（因为在头部），而infix tuning只会影响y的激活
+</code></pre>
+<h2 id="1"><a href="#1" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:1" class="headings">1</a></h2>
+<h3 id="p-tuning-1"><a href="#p-tuning-1" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:p-tuning-1" class="headings">P-tuning</a></h3>
+<ul>
+<li>
+<p>链接</p>
+<ul>
+<li>
+<p>论文</p>
+<ul>
+<li><a href="https://arxiv.org/pdf/2103.10385.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/2103.10385.pdf</a></li>
+</ul>
+</li>
+<li>
+<p>代码</p>
+<ul>
+<li><a href="https://github.com/THUDM/P-tuning" target="_blank" rel="noopener">https://github.com/THUDM/P-tuning</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>问题</p>
+<ul>
+<li>GPT使用传统的微调策略没法在自然语言理解任务上取得较好结果，而通过新的调整策略，可以让大小相似的GPT在NLU上取得比BERT相近或更好的结果。</li>
+</ul>
+</li>
+<li>
+<p>方法细节</p>
+<ul>
+<li>
+<p>思路</p>
+<ul>
+<li>
+<p>自动化地寻找连续空间中的知识模板；训练知识模板，但不fine-tune语言模型。</p>
+</li>
+<li>
+<p>给定一个prompt T={[P(0:i)],x,[P(i+1:m)]}，传统的离散prompt模板将其映射为，其中的Pi所用的词语是模型词汇表中的词。</p>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre><code>- P-tuning将[Pi]当成一个伪token（之所以叫伪token是因为后续还将进行更新），将其映射为
+  
+  - 
+</code></pre>
+<ul>
+<li>
+<p>步骤</p>
+<ul>
+<li>
+<p>输入一个句子，以及预先设计的一个离散的模板：The Disney film is good! It was [MASK].；</p>
+</li>
+<li>
+<p>对输入的template中，挑选一个（或多个）token作为pseudo token：The Disney film is good! [pseudo] was [MASK].</p>
+<ul>
+<li>
+<p>其初始化可以直接使用原本的token embedding；</p>
+</li>
+<li>
+<ul>
+<li>代表BERT词表里边的[unused1]～[unused6]，也就是用几个从未见过的token来构成模板</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>对所有的pseudo token P_i ，传入一层LSTM，并获得每个pseudo token输出的隐状态向量 h_i (hi就是一个可以训练的连续的稠密的张量，从而促使模型可以找个更好的连续prompts)</p>
+<ul>
+<li>
+<p>P-tuning并不是随机初始化这些pseudo tokens然后直接训练，而是通过一个BiLSTM模型，加上一个使用ReLU作为激活函数的双层MLP,把这几个Embedding算出来，并且将这个LSTM模型设为可学习的。避免了人工构建离散的template，而让模型可以自动学习continuous embedding</p>
+<ul>
+<li>
+<ul>
+<li>只对Prompt部分的参数进行训练，而语言模型的参数固定不变</li>
+</ul>
+</li>
+<li>
+<p>使用BiLSTM+MLP本质上也是类似prefix-tuning中的重参数化作用</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>将整个句子传入预训练语言模型层,对于pseudo token传入隐藏状态h_i, 对于原始词和[mask]，则传入embedding e_i</p>
+</li>
+</ul>
+</li>
+<li>
+<p>效果</p>
+<ul>
+<li>
+<p>LAMA+SuperGLUE基准数据集</p>
+<ul>
+<li>
+<p>LAMA数据集，根据知识库中结构化三元组（事实）构建的完形填空类型的数据。</p>
+<ul>
+<li>
+<ul>
+<li>Manual Prompt (MP): use original handcraft prompts from LAMA.（提供了人造的prompt).</li>
+<li>具有110亿个参数的MegatronLM2，虽然微调几乎不起作用，但Ptuning仍然适用</li>
+</ul>
+</li>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>结论</p>
+<ul>
+<li>作者发现添加少量锚标记（anchor tokens）有助于SuperGLUE的一些NLU任务。例如在prompt模板“[PRE][prompt tokens][HYP]?[prompt tokens][MASK]”中的“?”就是一个锚节点，对性能影响很大。</li>
+<li>知识探测任务中：语言模型仅仅通过找到更好的prompt，不进行微调，就能捕捉到更多的知识。</li>
+<li>P-tuning可以有效的提高bert和gpt模型在NLU任务上的性能。并且使用P-tuning，可以让相似代销的GPT2实现比bert模型相当的甚至更好的结果，这个发现颠覆普遍认为的——双向模型比单向模型在NLU任务中表现的更好。</li>
+<li>当预训练模型足够大的时候，我们的设备可能无法finetune整个模型，而P-tuning可以选择只优化几个Token的参数，因为优化所需要的显存和算力都会大大减少，所以P-tuning实则上给了我们一种在有限算力下调用大型预训练模型的思路。</li>
+</ul>
+</li>
+<li>
+<p>问题</p>
+<ul>
+<li>当预训练语言模型的参数量低于100亿时，Prompt-tuning会比传统的Fine-tuning差；</li>
+<li>像序列标注等对推理和理解要求高的任务，prompt-tuning效果会变差；</li>
+</ul>
+</li>
+<li>
+<p>应用</p>
+<ul>
+<li>在盘古模型中,p-tuning也被用于其的微调框架中</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+
+            
+
+
+        </article>
+
+        
+
+        
+    <div class="updated-badge-container">
+        <span title="Updated @ 2022-08-10 15:47:17 CST" style="cursor:help">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2022-08-10</text><text x="915" y="140" textLength="650" transform="scale(.1)">2022-08-10</text></g></svg>
+        </span></div>
+
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+    
+
+
+
+        
+
+
+        
+
+
+        
+    
+        
+        
+    
+    
+    
+    
+        <ul class="post-nav">
+            
+                <li class="post-nav-prev">
+                    <a href="/posts/fancy-settings-for-hugo/" rel="prev">&lt; Hello Hugo</a>
+                </li>
+            
+            
+        </ul>
+    
+
+
+
+        
+    
+
+        
+            <div class="load-comments">
+                <div id="load-comments">加载评论</div>
+            </div>
+        
+
+        
+            <div id="disqus_thread"></div>
+        
+
+        
+
+        
+
+        
+    
+
+
+
+    </div>
+</main>
+
+
+            
+    <div id="back-to-top" class="back-to-top">
+        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon arrow-up"><path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"/></svg></a>
+    </div>
+
+
+            
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="site-info">&nbsp;DEROOCE&nbsp;&nbsp;©&nbsp;2021–2022</div><div class="site-copyright"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></div><div class="custom-footer">愚蠢的人总是对事情很确定，而聪明的人总是充满疑惑</div>
+
+            
+
+
+            
+        </div>
+    </footer>
+
+
+        </div>
+        <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('\/sw.js');
+            });
+        }
+    </script>
+
+
+        
+
+
+    <script>
+    if (typeof MathJax === 'undefined') {
+        window.MathJax = {
+            loader: {
+                load: ['[tex]/mhchem']
+            },
+            
+            tex: {
+                inlineMath: {'[+]': [['$', '$']]},
+                tags: 'ams',
+                packages: {'[+]': ['mhchem']}
+            }
+        };
+        (function() {
+            const script = document.createElement('script');
+            script.src = 'https:\/\/cdn.jsdelivr.net\/npm\/mathjax@3.1.2\/es5\/tex-mml-chtml.js';
+            script.defer = true;
+            document.head.appendChild(script);
+        })();
+    } else {
+        MathJax.texReset();
+        MathJax.typeset();
+    }
+</script>
+
+
+
+
+
+
+    
+
+        
+            <script>
+    function loadComments() {
+        if (!document.getElementById('disqus_thread')) {
+            return;
+        }
+        if (typeof DISQUS === 'undefined') {
+            const disqus_config = function() {
+                this.page.url = 'https:\/\/derooce.github.io\/posts\/1\/';
+                this.page.identifier = '\/posts\/1\/';
+                
+            };
+            (function() {
+                const d = document, s = d.createElement('script'); s.async = true;
+                s.src = 'https://derooce.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        } else {
+            DISQUS.reset({
+                reload: true,
+                config: function() {
+                    this.page.url = 'https:\/\/derooce.github.io\/posts\/1\/';
+                    this.page.identifier = '\/posts\/1\/';
+                    
+                }
+            });
+        }
+    }
+</script>
+
+        
+
+        
+
+        
+
+        
+
+    
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@latest/dist/medium-zoom.min.js"></script>
+
+<script>
+    let imgNodes = document.querySelectorAll('div.post-body img');
+    imgNodes = Array.from(imgNodes).filter(node => node.parentNode.tagName !== "A");
+
+    mediumZoom(imgNodes, {
+        background: 'hsla(var(--color-bg-h), var(--color-bg-s), var(--color-bg-l), 0.95)'
+    })
+</script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/instant.page@5.1.0/instantpage.min.js" type="module" defer></script>
+
+
+
+
+
+
+    </body>
+</html>

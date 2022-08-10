@@ -23,10 +23,203 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
         
-        <lastBuildDate>Wed, 10 Aug 2022 10:58:40 &#43;0800</lastBuildDate>
+        <lastBuildDate>Wed, 10 Aug 2022 16:27:01 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://derooce.github.io/rss.xml" />
         
+        
+            <item>
+                <title>NLP 论文阅读系列: P-Tuning</title>
+                <link>https://derooce.github.io/posts/nlp-paper-reading-3/</link>
+                <guid isPermaLink="true">https://derooce.github.io/posts/nlp-paper-reading-3/</guid>
+                <pubDate>Wed, 10 Aug 2022 15:47:59 &#43;0800</pubDate>
+                
+                    <author>vanace.jc@gmail.com (DEROOCE)</author>
+                
+                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
+                
+                    <description>&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/mCfQsN.png&#34; alt=&#34;p-tuning&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;链接&#34;&gt;链接&lt;/h2&gt;
+&lt;p&gt;论文&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://arxiv.org/pdf/2103.10385.pdf&#34;&gt;https://arxiv.org/pdf/2103.10385.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;代码&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/THUDM/P-tuning&#34;&gt;https://github.com/THUDM/P-tuning&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;问题描述&#34;&gt;问题描述&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;GPT使用传统的微调策略没法在自然语言理解任务上取得较好结果，而通过新的调整策略，可以让大小相似的GPT在NLU上取得比BERT相近或更好的结果。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;方法细节&#34;&gt;方法细节&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;思路&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;自动化地寻找连续空间中的知识模板；训练知识模板，但不fine-tune语言模型。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;给定一个prompt $T={[P_{0:i}],x,[P_{i+1:m}]}$，传统的离散prompt模板将其映射为${e([P_{0;i}]), e(x), e([P_{i+1,m}]), e(y)}$，其中的Pi所用的词语是模型词汇表中的词。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;P-tuning将$[P_i]$当成一个伪token（之所以叫伪token是因为后续还将进行更新），将其映射为${h_0,...,h_i,e(x),h_{i+1},...,h_m,e(y)}$&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;步骤&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;输入一个句子，以及预先设计的一个离散的模板：&lt;code&gt;The Disney film is good! It was [MASK].&lt;/code&gt;；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对输入的template中，挑选一个（或多个）token 作为pseudo token：&lt;code&gt;The Disney film is good! [pseudo] was [MASK].&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;其初始化可以直接使用原本的token embedding；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/F35CA9B5E8B2C0930EA768B7FBC6074D.jpg&#34; alt=&#34;model&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;其中&lt;code&gt;[u1,...,u6]&lt;/code&gt;代表BERT词表里边的&lt;code&gt;[unused1]～[unused6]&lt;/code&gt;，也就是用几个从未见过的token来构成模板&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对所有的pseudo token $[P_i]$ ，传入一层LSTM，并获得每个pseudo token输出的隐状态向量 $h_i$ ($h_i$就是一个可以训练的连续的稠密的张量，从而促使模型可以找个更好的连续prompts)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;P-tuning并不是随机初始化这些pseudo tokens然后直接训练，而是通过一个BiLSTM模型，加上一个使用ReLU作为激活函数的双层MLP,把这几个Embedding算出来，并且将这个LSTM模型设为可学习的。避免了人工构建离散的template，而让模型可以自动学习continuous embedding&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/ipgAK7.jpg&#34; alt=&#34;architecture&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;只对Prompt部分的参数进行训练，而语言模型的参数固定不变&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;使用BiLSTM+MLP本质上也是类似prefix-tuning中的重参数化作用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;将整个句子传入预训练语言模型层,对于pseudo token传入隐藏状态 $h_i$, 对于原始词和 &lt;code&gt;[mask]&lt;/code&gt;，则传入embedding $e_i$&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;效果&#34;&gt;效果&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;LAMA+SuperGLUE基准数据集&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;LAMA数据集，根据知识库中结构化三元组（事实）构建的完形填空类型的数据。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/Eg37tB.jpg&#34; alt=&#34;data1&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;Manual Prompt (MP): use original handcraft prompts from LAMA.（提供了人造的prompt).&lt;/li&gt;
+&lt;li&gt;对于具有110亿个参数的MegatronLM2，虽然微调几乎不起作用，但P-tuning仍然可以进一步提高精度&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/IEhYXY.jpg&#34; alt=&#34;data2&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;结论&#34;&gt;结论&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;作者发现添加少量锚标记（anchor tokens）有助于SuperGLUE的一些NLU任务。例如在prompt模板“[PRE][prompt tokens][HYP]?[prompt tokens][MASK]”中的&lt;code&gt;“?”&lt;/code&gt;就是一个锚节点，对性能影响很大。&lt;/li&gt;
+&lt;li&gt;在知识探测任务中：语言模型可以仅通过找到更好的prompt，不进行微调，就能捕捉到更多的知识。&lt;/li&gt;
+&lt;li&gt;P-tuning可以有效的提高BERT和GPT模型在NLU任务上的性能。并且使用P-tuning，可以让相似代销的GPT2实现比bert模型相当的甚至更好的结果，这个发现颠覆普遍认为的——双向模型比单向模型在NLU任务中表现的更好。&lt;/li&gt;
+&lt;li&gt;当预训练模型足够大的时候，我们的设备可能无法finetune整个模型，而P-tuning可以选择只优化几个Token的参数，因为优化所需要的显存和算力都会大大减少，所以P-tuning实则上给了我们一种在有限算力下调用大型预训练模型的思路。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;结论部分大部分引用参考笔记中的总结。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;问题&#34;&gt;问题&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;当预训练语言模型的参数量低于100亿时，Prompt-tuning会比传统的Fine-tuning差；&lt;/li&gt;
+&lt;li&gt;像序列标注等对推理和理解要求高的任务，prompt-tuning效果会变差；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;应用&#34;&gt;应用&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;在HUAWEI推出的盘古-$\alpha$模型中,P-tuning也被用于其的微调框架中&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;参考笔记&#34;&gt;参考笔记&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.csdn.net/qq_36426650/article/details/120806554https://blog.csdn.net/qq_36426650/article/details/120806554&#34;&gt;s论文解读：P-Tuning v2: Prompt Tuning Can Be Comparable to Finetuning Universally Across Scales and Tasks&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://kexue.fm/archives/8295&#34;&gt;P-tuning：自动构建模版，释放语言模型潜能&lt;/a&gt; （Highly recommended)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+                
+                
+                
+                
+                
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/categories/nlp/">NLP</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/categories/language-models/">Language Models</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/categories/model-tuning/">Model tuning</category>
+                                
+                            
+                        
+                    
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/tags/nlp/">NLP</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/tags/papers/">Papers</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/tags/prompts/">Prompts</category>
+                                
+                            
+                        
+                    
+                
+            </item>
         
             <item>
                 <title>NLP 论文阅读系列: Prefix-Tuning</title>
@@ -3382,6 +3575,559 @@ $$&lt;/p&gt;
                                     <category domain="https://derooce.github.io/tags/hugo/">Hugo</category>
                                 
                             
+                        
+                    
+                
+            </item>
+        
+            <item>
+                <title></title>
+                <link>https://derooce.github.io/posts/1/</link>
+                <guid isPermaLink="true">https://derooce.github.io/posts/1/</guid>
+                <pubDate>Mon, 01 Jan 0001 00:00:00 &#43;0000</pubDate>
+                
+                    <author>vanace.jc@gmail.com (DEROOCE)</author>
+                
+                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
+                
+                    <description>&lt;h1 id=&#34;prompt&#34;&gt;Prompt&lt;/h1&gt;
+&lt;h2 id=&#34;清华&#34;&gt;清华&lt;/h2&gt;
+&lt;h3 id=&#34;p-tuning&#34;&gt;P-tuning&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;链接&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;论文&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://arxiv.org/pdf/2103.10385.pdf&#34;&gt;https://arxiv.org/pdf/2103.10385.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;代码&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/THUDM/P-tuning&#34;&gt;https://github.com/THUDM/P-tuning&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;问题&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;GPT使用传统的微调策略没法在自然语言理解任务上取得较好结果，而通过新的调整策略，可以让大小相似的GPT在NLU上取得比BERT相近或更好的结果。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;方法细节&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;思路&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;给定一个prompt T={[P(0:i)],x,[P(i+1:m)]}，传统的离散prompt模板将其映射为，其中的Pi所用的词语是模型词汇表中的词。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;- P-tuning将[Pi]当成一个伪token（之所以叫伪token是因为后续还将进行更新），将其映射为
+  
+  - 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;步骤&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;输入一个句子，以及预先设计的一个离散的模板：The Disney film is good! It was [MASK].；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对输入的template中，挑选一个（或多个）token作为pseudo token：The Disney film is good! [pseudo] was [MASK].&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;其初始化可以直接使用原本的token embedding；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对所有的pseudo token P_i ，传入一层LSTM，并获得每个pseudo token输出的隐状态向量 h_i&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;P-tuning并不是随机初始化这些pseudo tokens然后直接训练，而是通过一个BiLSTM模型把这几个Embedding算出来，并且将这个LSTM模型设为可学习的。避免了人工构建离散的template，而让模型可以自动学习continuous embedding&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;- 将整个句子传入预训练语言模型层,对于pseudo token传入隐藏状态h_i, 对于原始词和[mask]，则传入embedding e_i
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;效果&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;LAMA+SuperGLUE基准数据集&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;LAMA数据集，根据知识库中结构化三元组（事实）构建的完形填空类型的数据。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;具有110亿个参数的MegatronLM2，虽然微调几乎不起作用，但Ptuning仍然适用&lt;/li&gt;
+&lt;li&gt;Manual Prompt (MP): use original handcraft prompts from LAMA.（提供了人造的prompt).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;结论&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;作者发现添加少量锚标记（anchor tokens）有助于SuperGLUE的一些NLU任务。例如在prompt模板“[PRE][prompt tokens][HYP]?[prompt tokens][MASK]”中的“?”就是一个锚节点，对性能影响很大。&lt;/li&gt;
+&lt;li&gt;知识探测任务中：语言模型仅仅通过找到更好的prompt，不进行微调，就能捕捉到更多的知识。&lt;/li&gt;
+&lt;li&gt;P-tuning可以有效的提高bert和gpt模型在NLU任务上的性能。并且使用P-tuning，可以让相似代销的GPT2实现比bert模型相当的甚至更好的结果，这个发现颠覆普遍认为的——双向模型比单向模型在NLU任务中表现的更好。&lt;/li&gt;
+&lt;li&gt;当预训练模型足够大的时候，我们的设备可能无法finetune整个模型，而P-tuning可以选择只优化几个Token的参数，因为优化所需要的显存和算力都会大大减少，所以P-tuning实则上给了我们一种在有限算力下调用大型预训练模型的思路。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;问题&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当预训练语言模型的参数量低于100亿时，Prompt-tuning会比传统的Fine-tuning差；&lt;/li&gt;
+&lt;li&gt;像序列标注等对推理和理解要求高的任务，prompt-tuning效果会变差；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;p-tuning-v2&#34;&gt;P-tuning v2&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;链接&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;论文&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://arxiv.org/pdf/2110.07602.pdf&#34;&gt;https://arxiv.org/pdf/2110.07602.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;代码&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/THUDM/P-tuning-v2&#34;&gt;https://github.com/THUDM/P-tuning-v2&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;动机&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Fine-tuning需要微调整个预训练语言模型，且额外添加了新的参数，而Prompting则可以将整个预训练语言模型的参数保持固定，而只需要添加prompt来预测结果即可；因此无需微调，但容易陷入局部最优；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在几个较难的序列标签任务中，如extractive QA, P-tuning的效果相比fine-tuning要差&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Prompt-tuning则是将Prompt加入到微调过程中，此时只对Prompt部分的参数进行训练，而语言模型的参数固定不变。例如，在P-tuning中引入continuous template，此时template是连续可微调的token，而不是离散的token，模型可以学习一个pseudo token；但发现P-tuning等Prompt-tuning方法在一些自然语言理解（NLU）任务中（例如抽extractive QA、序列标注等），基于普通的预训练语言模型，现有的prompting工作推理能力十分有限；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;优化策略&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;先前的P-tuning用了一层BiLSTM来表征pseudo token，显然是推理能力不足的原因之一，因此该部分提出Deep Prompt Tuning，使用Prefix-tuning中的深层模型替换原来的BiLSTM&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;- 引入Prefix-tuning技术
+  
+  - Prefix-tuning（前缀微调）最开始应用在NLG任务上，由[Prefix, x, y]三部分构成：Prefix为前缀，x为输入，y为输出。
+  - Prefix-tuning将预训练参数固定，Prefix参数进行微调：不仅只在embedding上进行微调，也在TransFormer上的embedding输入每一层进行微调。
+  - 而P-tuning v1只有transformer第一层的embedding输入需要被tuned。
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;取消了reparamerization：对pseudo token，不再使用BiLSTM或MLP进行表征，转为直接对pseudo token对应的深层模型的参数进行微调；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;采用了多任务学习优化：基于多任务数据集的Prompt进行预训练，然后再适配的下游任务。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;P-tuning V2舍弃了词汇Mapping的Verbalizer的使用，重新利用[CLS]和字符标签，完全变为生成模型，可以在[CLS]部分输出sentence-level class，以及每个token位置上输出token-level class，增强通用性，使其可以适配到序列标注任务。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;实验效果&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;在设定模型参数量大小上的实验&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Prompt-tuning/P-tuning方法在参数规模小的语言模型上，效果低于传统的Fine-tuning；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;p-tuning v2相对v1不论在小模型还是大模型上，均可以提升；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;当选择100亿参数规模的语言模型时，P-tuning V2基本可以与传统的Fine-tuning保持相当水平甚至达到outperform；&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;在不同任务上的实验&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MPT-2：本文提出的P-tuning V2，并采用Multi-task learning方法；&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;总结&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;P-tuning v2本质上将Prefix-tuning应用到NLU任务上的一种方法。&lt;/li&gt;
+&lt;li&gt;P-tuning v2还未在few-shot上验证性能，有待进一步验证。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;stanford&#34;&gt;Stanford&lt;/h2&gt;
+&lt;h3 id=&#34;prefix-tuning&#34;&gt;Prefix-Tuning&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;链接&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;论文&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://arxiv.org/pdf/2101.00190.pdf&#34;&gt;https://arxiv.org/pdf/2101.00190.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;代码&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/XiangLi1999/PrefixTuning&#34;&gt;https://github.com/XiangLi1999/PrefixTuning&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;直觉&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;传统微调需要调整整个模型的参数，并且为每个任务都存储一个模型的参数，带来的开销大&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Prefix tuning: 对自然语言生成任务，将语言模型参数冻结，转为优化一个小的,任务导向的连续向量（continuous task-specific vectors, 称为prefix)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;相关工作&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;lightweight fine-tuning&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;关键的挑战是识别模型中蕴含的高性能架构和要调优的预训练参数子集。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;prefix tuning的训练参数要比lightweight tuning还要少上30x倍&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;GPT-3： prompt, in-context learning&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用人工设计的prompts&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;模型结构&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;对自回归LM结构，采用 z=[Prefix; x; y]的方式， 对于encoder-decoder结构，采用 z=[Prefix; x; prefix&#39;, y]的方式&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;自回归输入的y是已经生成的y，就比如生成“我今天很开心”（肯定是一个字一个字生成的），要生成到“很”字的时候，输入是x和“我今天”&lt;/li&gt;
+&lt;li&gt;在每层都加了prompt的参数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;训练策略&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;这些prefix可以看做是一些虚拟的输入token, 语言模型(transformer)可以对这些虚拟tokens也做attention,但是这些prefix的参数与真实token的参数是完全独立的，而prefix的参数量相对真实token的参数量是极少的（比fine-tuning的存储参数少1000x倍）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;对于不同任务，我们只需要使用一个LM模型，然后训练一个单独的prefix即可&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;prefix不是离散的tokens,而是看当做连续的词嵌入来优化&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;prefix tuning初始化一个可训练的参数矩阵，用于存储prefix向量参数&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;直接优化prefix矩阵会对学习率和初始化参数的选择非常敏感&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;为稳定优化过程和效果，再将prefix矩阵做重参数化(reparametrize)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;行数相同，列数减少&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;直接优化Prompt参数不太稳定，加了个更大的MLP，训练完只保存MLP变换后的参数&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用AdamW, 线性学习率衰减策略(linear-learning rate scheduler)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;数据集&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;table2text&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;数据集：E2E，WebNLG，DART
+指标：BLEU, METEOR, TER, Mover-Score, BERTScore, BLEURT&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;摘要&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;数据集：XSum
+指标： ROUGE-1, ROUGE-2, ROUGE-L&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;效果&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;模型： GPT-2做table2text生成任务；BART做摘要任务&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;基准tuning方法&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;整体微调(fine-tuning), 只fine-tuning网络的头两层(FT-top2), adapter-tuning(adapter)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;结果&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;在table-to-text generation任务上，prefix tuning和fine tuning在整个数据集上训练后的测试效果相近&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;任务描述：如给定table: “name: Starbucks | type: coffee shop”, 生成描述“Starbucks serves coffee.”&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;- 在摘要任务上，prefix tuning的效果仅比fine tuning退化了一点
+  
+  - 
+
+- 在少样本的设定下，prefix tuning在两个任务上平均效果超过了fine tuning 
+  
+  - 
+  
+  - 在少样本设定下，使用真实词的激活值来初始化prefix会比随机初始化显著outperform
+    
+    - 
+
+- 对比prefix tuning和infix tuning: [prefix;x;y] v.s. [x;infix;y]
+  
+  - 
+  
+  - infix tuning比prefix tuning效果略差
+    
+    - 可能因为prefix tuning会同时影响x和y的激活情况（因为在头部），而infix tuning只会影响y的激活
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;1&#34;&gt;1&lt;/h2&gt;
+&lt;h3 id=&#34;p-tuning-1&#34;&gt;P-tuning&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;链接&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;论文&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://arxiv.org/pdf/2103.10385.pdf&#34;&gt;https://arxiv.org/pdf/2103.10385.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;代码&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/THUDM/P-tuning&#34;&gt;https://github.com/THUDM/P-tuning&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;问题&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;GPT使用传统的微调策略没法在自然语言理解任务上取得较好结果，而通过新的调整策略，可以让大小相似的GPT在NLU上取得比BERT相近或更好的结果。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;方法细节&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;思路&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;自动化地寻找连续空间中的知识模板；训练知识模板，但不fine-tune语言模型。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;给定一个prompt T={[P(0:i)],x,[P(i+1:m)]}，传统的离散prompt模板将其映射为，其中的Pi所用的词语是模型词汇表中的词。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;- P-tuning将[Pi]当成一个伪token（之所以叫伪token是因为后续还将进行更新），将其映射为
+  
+  - 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;步骤&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;输入一个句子，以及预先设计的一个离散的模板：The Disney film is good! It was [MASK].；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对输入的template中，挑选一个（或多个）token作为pseudo token：The Disney film is good! [pseudo] was [MASK].&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;其初始化可以直接使用原本的token embedding；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;代表BERT词表里边的[unused1]～[unused6]，也就是用几个从未见过的token来构成模板&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对所有的pseudo token P_i ，传入一层LSTM，并获得每个pseudo token输出的隐状态向量 h_i (hi就是一个可以训练的连续的稠密的张量，从而促使模型可以找个更好的连续prompts)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;P-tuning并不是随机初始化这些pseudo tokens然后直接训练，而是通过一个BiLSTM模型，加上一个使用ReLU作为激活函数的双层MLP,把这几个Embedding算出来，并且将这个LSTM模型设为可学习的。避免了人工构建离散的template，而让模型可以自动学习continuous embedding&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;只对Prompt部分的参数进行训练，而语言模型的参数固定不变&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用BiLSTM+MLP本质上也是类似prefix-tuning中的重参数化作用&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;将整个句子传入预训练语言模型层,对于pseudo token传入隐藏状态h_i, 对于原始词和[mask]，则传入embedding e_i&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;效果&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;LAMA+SuperGLUE基准数据集&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;LAMA数据集，根据知识库中结构化三元组（事实）构建的完形填空类型的数据。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;ul&gt;
+&lt;li&gt;Manual Prompt (MP): use original handcraft prompts from LAMA.（提供了人造的prompt).&lt;/li&gt;
+&lt;li&gt;具有110亿个参数的MegatronLM2，虽然微调几乎不起作用，但Ptuning仍然适用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;结论&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;作者发现添加少量锚标记（anchor tokens）有助于SuperGLUE的一些NLU任务。例如在prompt模板“[PRE][prompt tokens][HYP]?[prompt tokens][MASK]”中的“?”就是一个锚节点，对性能影响很大。&lt;/li&gt;
+&lt;li&gt;知识探测任务中：语言模型仅仅通过找到更好的prompt，不进行微调，就能捕捉到更多的知识。&lt;/li&gt;
+&lt;li&gt;P-tuning可以有效的提高bert和gpt模型在NLU任务上的性能。并且使用P-tuning，可以让相似代销的GPT2实现比bert模型相当的甚至更好的结果，这个发现颠覆普遍认为的——双向模型比单向模型在NLU任务中表现的更好。&lt;/li&gt;
+&lt;li&gt;当预训练模型足够大的时候，我们的设备可能无法finetune整个模型，而P-tuning可以选择只优化几个Token的参数，因为优化所需要的显存和算力都会大大减少，所以P-tuning实则上给了我们一种在有限算力下调用大型预训练模型的思路。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;问题&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当预训练语言模型的参数量低于100亿时，Prompt-tuning会比传统的Fine-tuning差；&lt;/li&gt;
+&lt;li&gt;像序列标注等对推理和理解要求高的任务，prompt-tuning效果会变差；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;应用&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在盘古模型中,p-tuning也被用于其的微调框架中&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+                
+                
+                
+                
+                
+                    
+                        
+                    
                         
                     
                 
