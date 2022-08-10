@@ -57,7 +57,7 @@
         "@context": "https://schema.org",
         "@type": "BlogPosting",
         "datePublished": "2021-03-14T12:38:29+08:00",
-        "dateModified": "2021-03-20T22:59:52+08:00",
+        "dateModified": "2022-08-10T10:58:14+08:00",
         "url": "https://derooce.github.io/posts/text-classification-notes/",
         "headline": "NLP Notes series: Text Classification",
         "description": "文本分类 简介 文本分类是一个非常流行的任务。例如在你在使用邮件系统时，就享受到了文本分类器的便利：正常邮件与垃圾邮件分类。其他应用还包括文档分类(document classification)、评论分类(review classification)等。 ◎ 文本分类任务 文本分类通常不是作为一个单独的任务，而……",
@@ -109,7 +109,7 @@
 <meta property="og:locale" content="zh" /><meta property="og:image" content="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314151716.png" />
 <meta property="og:type" content="article" />
     <meta property="article:published_time" content="2021-03-14T12:38:29&#43;08:00" />
-    <meta property="article:modified_time" content="2021-03-20T22:59:52&#43;08:00" />
+    <meta property="article:modified_time" content="2022-08-10T10:58:14&#43;08:00" />
     
     <meta property="article:section" content="posts" />
 
@@ -623,23 +623,30 @@ $$
 
 <p>一个寻常的分类流程为：</p>
 <ul>
-<li>获取输入文本的特征表示: $\color{#7aab00}{h}\color{black}=(\color{#7aab00}{f_1}\color{black},\color{#7aab00}{f_2}\color{black}, \dots,           \color{#7aab00}{f_n}\color{black}{)}$</li>
-<li>获取每个类别的特征权重向量： $w^{(i)}=(w_1^{(i)}, \dots, w_n^{(i)})$， <strong>一个类别对应一个权重向量</strong></li>
-<li>对每个类别，将特征进行加权，即将特征表示$\color{#7aab00}{h}$与特征权重向量$w^{(k)}$做点积: $w^{(k)}\color{#7aab00}{h}\color{black} =w_1^{(k)}\cdot\color{#7aab00}{f_1}\color{black}+\dots+w_n^{(k)}\cdot\color{#7aab00}{f_n}\color{black}{, \ \ \ \ \ k=1, \dots, K.}$
+<li>
+<p>获取输入文本的特征表示: $\color{#7aab00}{h}\color{black}=(\color{#7aab00}{f_1}\color{black},\color{#7aab00}{f_2}\color{black}, \dots,           \color{#7aab00}{f_n}\color{black}{)}$</p>
+</li>
+<li>
+<p>获取每个类别的特征权重向量： $w^{(i)}=(w_1^{(i)}, \dots, w_n^{(i)})$， <strong>一个类别对应一个权重向量</strong></p>
+</li>
+<li>
+<p>对每个类别，将特征进行加权，即将特征表示$\color{#7aab00}{h}$与特征权重向量$w^{(k)}$做点积: $w^{(k)}\color{#7aab00}{h}\color{black} =w_1^{(k)}\cdot\color{#7aab00}{f_1}\color{black}+\dots+w_n^{(k)}\cdot\color{#7aab00}{f_n}\color{black}{, \ \ \ \ \ k=1, \dots, K.}$</p>
 <ul>
 <li>为了在上述累加和中加入偏置项，我们定义一个值为1的特征$\color{#7aab00}{f_0}=1$,则有$w^{(k)}\color{#7aab00}{h}\color{black} = \color{red}{w_0^{(k)}}\color{black} + w_1^{(k)}\cdot\color{#7aab00}{f_1}\color{black}+\dots+ w_n^{(k)}\cdot\color{#7aab00}{f_{n}}\color{black}{, \ \ \ \ \ k=1, \dots, K.}$</li>
 </ul>
 </li>
-<li>使用softmax函数获得每个类别的概率：
-$$
+<li>
+<p>使用softmax函数获得每个类别的概率：</p>
+<p>$$
 P(class=k|\color{#7aab00}{h}\color{black})=
 \frac{\exp(w^{(k)}\color{#7aab00}{h}\color{black})}{\sum\limits_{i=1}^K
 \exp(w^{(i)}\color{#7aab00}{h}\color{black})}.
-$$</li>
-</ul>
+$$</p>
 <blockquote>
 <p>Softmax将在上一步中做点积获得的$K$个值归一化为输出类上的概率分布。</p>
 </blockquote>
+</li>
+</ul>
 <p><img src="https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154245.png" alt=""><span class="caption">◎ 每个类别的权重向量$w_k$与文本的特征表示$h$做点积</span></p>
 <hr>
 <h4 id="训练极大似然估计"><a href="#训练极大似然估计" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:训练极大似然估计" class="headings">训练：极大似然估计</a></h4>
@@ -1236,9 +1243,9 @@ $$</p>
 
         
     <div class="updated-badge-container">
-        <span title="Updated @ 2021-03-20 22:59:52 CST" style="cursor:help">
+        <span title="Updated @ 2022-08-10 10:58:14 CST" style="cursor:help">
 
-<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2021-03-20</text><text x="915" y="140" textLength="650" transform="scale(.1)">2021-03-20</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2022-08-10</text><text x="915" y="140" textLength="650" transform="scale(.1)">2022-08-10</text></g></svg>
         </span></div>
 
 

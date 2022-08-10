@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">Writing and Sharing something insightful!</subtitle>
-    <updated>2022-08-10T10:53:04&#43;08:00</updated>
+    <updated>2022-08-10T10:58:40&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -17,10 +17,10 @@
     <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights>
     <generator uri="https://gohugo.io/" version="0.101.0">Hugo</generator>
         <entry>
-            <title type="text">Prefix Tuning</title>
+            <title type="text">NLP 论文阅读系列: Prefix-Tuning</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/nlp-paper-reading-2/" />
             <id>https://derooce.github.io/posts/nlp-paper-reading-2/</id>
-            <updated>2022-08-10T10:52:13&#43;08:00</updated>
+            <updated>2022-08-10T10:58:28&#43;08:00</updated>
             <published>2022-08-10T10:30:22&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -88,7 +88,6 @@
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/3gnYrB.png&#34; alt=&#34;model structure&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;heading&#34;&gt;&lt;/h2&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;训练策略&#34;&gt;训练策略&lt;/h2&gt;
 &lt;ul&gt;
@@ -206,6 +205,12 @@
                             
                             
                                 <category scheme="https://derooce.github.io/categories/language-models/" term="Language Models" label="Language Models" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/model-tuning/" term="Model tuning" label="Model tuning" />
                             
                         
                     
@@ -418,10 +423,10 @@
         </entry>
     
         <entry>
-            <title type="text">NLP 论文阅读系列: 第1期</title>
+            <title type="text">NLP 论文阅读系列: 用递归神经网络表示</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/nlp-paper-reading-1/" />
             <id>https://derooce.github.io/posts/nlp-paper-reading-1/</id>
-            <updated>2022-08-10T10:32:43&#43;08:00</updated>
+            <updated>2022-08-10T10:56:14&#43;08:00</updated>
             <published>2021-03-15T14:40:09&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -1073,7 +1078,7 @@ Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &amp;=
             <title type="text">NLP Notes series: Text Classification</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/text-classification-notes/" />
             <id>https://derooce.github.io/posts/text-classification-notes/</id>
-            <updated>2021-03-20T22:59:52&#43;08:00</updated>
+            <updated>2022-08-10T10:58:14&#43;08:00</updated>
             <published>2021-03-14T12:38:29&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -1360,23 +1365,30 @@ $$
 
 &lt;p&gt;一个寻常的分类流程为：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;获取输入文本的特征表示: $\color{#7aab00}{h}\color{black}=(\color{#7aab00}{f_1}\color{black},\color{#7aab00}{f_2}\color{black}, \dots,           \color{#7aab00}{f_n}\color{black}{)}$&lt;/li&gt;
-&lt;li&gt;获取每个类别的特征权重向量： $w^{(i)}=(w_1^{(i)}, \dots, w_n^{(i)})$， &lt;strong&gt;一个类别对应一个权重向量&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;对每个类别，将特征进行加权，即将特征表示$\color{#7aab00}{h}$与特征权重向量$w^{(k)}$做点积: $w^{(k)}\color{#7aab00}{h}\color{black} =w_1^{(k)}\cdot\color{#7aab00}{f_1}\color{black}+\dots+w_n^{(k)}\cdot\color{#7aab00}{f_n}\color{black}{, \ \ \ \ \ k=1, \dots, K.}$
+&lt;li&gt;
+&lt;p&gt;获取输入文本的特征表示: $\color{#7aab00}{h}\color{black}=(\color{#7aab00}{f_1}\color{black},\color{#7aab00}{f_2}\color{black}, \dots,           \color{#7aab00}{f_n}\color{black}{)}$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;获取每个类别的特征权重向量： $w^{(i)}=(w_1^{(i)}, \dots, w_n^{(i)})$， &lt;strong&gt;一个类别对应一个权重向量&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对每个类别，将特征进行加权，即将特征表示$\color{#7aab00}{h}$与特征权重向量$w^{(k)}$做点积: $w^{(k)}\color{#7aab00}{h}\color{black} =w_1^{(k)}\cdot\color{#7aab00}{f_1}\color{black}+\dots+w_n^{(k)}\cdot\color{#7aab00}{f_n}\color{black}{, \ \ \ \ \ k=1, \dots, K.}$&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;为了在上述累加和中加入偏置项，我们定义一个值为1的特征$\color{#7aab00}{f_0}=1$,则有$w^{(k)}\color{#7aab00}{h}\color{black} = \color{red}{w_0^{(k)}}\color{black} + w_1^{(k)}\cdot\color{#7aab00}{f_1}\color{black}+\dots+ w_n^{(k)}\cdot\color{#7aab00}{f_{n}}\color{black}{, \ \ \ \ \ k=1, \dots, K.}$&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;使用softmax函数获得每个类别的概率：
-$$
+&lt;li&gt;
+&lt;p&gt;使用softmax函数获得每个类别的概率：&lt;/p&gt;
+&lt;p&gt;$$
 P(class=k|\color{#7aab00}{h}\color{black})=
 \frac{\exp(w^{(k)}\color{#7aab00}{h}\color{black})}{\sum\limits_{i=1}^K
 \exp(w^{(i)}\color{#7aab00}{h}\color{black})}.
-$$&lt;/li&gt;
-&lt;/ul&gt;
+$$&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Softmax将在上一步中做点积获得的$K$个值归一化为输出类上的概率分布。&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
 &lt;p&gt;&lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314154245.png&#34; alt=&#34;&#34; title=&#34;每个类别的权重向量$w_k$与文本的特征表示$h$做点积&#34;&gt;&lt;/p&gt;
 &lt;hr&gt;
 &lt;h4 id=&#34;训练极大似然估计&#34;&gt;训练：极大似然估计&lt;/h4&gt;
