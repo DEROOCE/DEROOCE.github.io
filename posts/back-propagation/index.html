@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+    <meta charset="UTF-8" />
+
+    <meta name="generator" content="Hugo 0.101.0" /><meta name="theme-color" content="#fff" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+    
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    <title>弄懂系列： 反向传播算法 | DEROOCE</title>
+
+    <link rel="stylesheet" href="/css/meme.min.fe7f848215a11b493a1755d8037e48b091cdee6e432054767a15650ff9adf10e.css"/>
+
+    
+    
+        <script src="/js/meme.min.1c645d16f9c548af673db0b0617ea2152bee7bcf3f2ba433e369e289bc941f76.js"></script>
+
+    
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" media="print" onload="this.media='all'" />
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" /></noscript>
+
+    <meta name="author" content="DEROOCE" /><meta name="description" content="backpropagation 参数化模型 Parameterized models: $\bar{y}=G(x,w)$. 简单来讲，参数化模型就是依赖于输入和可训练参数的函数。 其中，可训练参数在不同训练样本中是共享的，而输入则因每个样本不同而不同。在大多数深度学习框架中，参数是隐性的(implicit)：当函数被调用时，参数不被传递。 如果把模型比作面向对象编程，这些参数相当于被“储存在函数中”。 变量（……" />
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#2a6df4" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="DEROOCE" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="DEROOCE" />
+    <meta name="msapplication-starturl" content="../../" />
+    <meta name="msapplication-TileColor" content="#fff" />
+    <meta name="msapplication-TileImage" content="../../icons/mstile-150x150.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <script src="https://kit.fontawesome.com/e2d29a5fca.js" crossorigin="anonymous"></script>
+    
+    
+
+
+
+    
+    <link rel="canonical" href="https://derooce.github.io/posts/back-propagation/" />
+    
+
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "datePublished": "2022-08-17T20:58:47+08:00",
+        "dateModified": "2022-08-17T21:43:45+08:00",
+        "url": "https://derooce.github.io/posts/back-propagation/",
+        "headline": "弄懂系列： 反向传播算法",
+        "description": "backpropagation 参数化模型 Parameterized models: $\\bar{y}=G(x,w)$. 简单来讲，参数化模型就是依赖于输入和可训练参数的函数。 其中，可训练参数在不同训练样本中是共享的，而输入则因每个样本不同而不同。在大多数深度学习框架中，参数是隐性的(implicit)：当函数被调用时，参数不被传递。 如果把模型比作面向对象编程，这些参数相当于被“储存在函数中”。 变量（……",
+        "inLanguage" : "zh-CN",
+        "articleSection": "posts",
+        "wordCount":  912 ,
+        "image": ["https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/smwdfA.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/JZ2Zmu.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/VFQuEZ.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/bjmDLP.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/y0GeqY.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/dIVGVe.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/p7J1Yh.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/UeG12k.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/lgzey9.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/4XjmlS.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/Jha89O.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/jVjDEO.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/YWKplX.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/Jk6Oh2.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/pKFSjE.png"],
+        "author": {
+            "@type": "Person",
+            "description": "Do or die",
+            "email": "vanace.jc@gmail.com",
+            "image": "https://derooce.github.io/icons/apple-touch-icon.png",
+            "url": "https://derooce.github.io/",
+            "name": "DEROOCE"
+        },
+        "license": "[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)",
+        "publisher": {
+            "@type": "Organization",
+            "name": "DEROOCE",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://derooce.github.io/icons/apple-touch-icon.png"
+            },
+            "url": "https://derooce.github.io/"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebSite",
+            "@id": "https://derooce.github.io/"
+        }
+    }
+</script>
+
+    
+
+<meta name="twitter:card" content="summary_large_image" />
+
+
+<meta name="twitter:site" content="@vanace_jc" />
+<meta name="twitter:creator" content="@vanace_jc" />
+
+    
+
+
+
+<meta property="og:title" content="弄懂系列： 反向传播算法" />
+<meta property="og:description" content="backpropagation 参数化模型 Parameterized models: $\bar{y}=G(x,w)$. 简单来讲，参数化模型就是依赖于输入和可训练参数的函数。 其中，可训练参数在不同训练样本中是共享的，而输入则因每个样本不同而不同。在大多数深度学习框架中，参数是隐性的(implicit)：当函数被调用时，参数不被传递。 如果把模型比作面向对象编程，这些参数相当于被“储存在函数中”。 变量（……" />
+<meta property="og:url" content="https://derooce.github.io/posts/back-propagation/" />
+<meta property="og:site_name" content="DEROOCE" />
+<meta property="og:locale" content="zh" /><meta property="og:image" content="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/smwdfA.png" />
+<meta property="og:type" content="article" />
+    <meta property="article:published_time" content="2022-08-17T20:58:47&#43;08:00" />
+    <meta property="article:modified_time" content="2022-08-17T21:43:45&#43;08:00" />
+    
+    <meta property="article:section" content="posts" />
+
+
+        <link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
+
+        
+
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KFL8D48FDC"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-KFL8D48FDC');
+    </script>
+
+
+
+
+    
+
+
+</head>
+
+    <body>
+        <div class="container">
+            
+    <header class="header">
+        
+            <div class="header-wrapper">
+                <div class="header-inner single">
+                    
+    <div class="site-brand">
+        
+            <a href="/" class="brand">DEROOCE</a>
+        
+    </div>
+
+                    <nav class="nav">
+    <ul class="menu" id="menu">
+        
+            
+        
+        
+        
+        
+            
+                <li class="menu-item"><a href="/posts/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon archive"><path d="M32 448c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32V160H32v288zm160-212c0-6.6 5.4-12 12-12h104c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12H204c-6.6 0-12-5.4-12-12v-8zM480 32H32C14.3 32 0 46.3 0 64v48c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16V64c0-17.7-14.3-32-32-32z"/></svg><span class="menu-item-name">文章</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/categories/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon th"><path d="M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"/></svg><span class="menu-item-name">分类</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/tags/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="icon tags"><path d="M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"/></svg><span class="menu-item-name">标签</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/about/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon user-circle"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/></svg><span class="menu-item-name">关于</span></a>
+                </li>
+            
+        
+            
+                
+                    
+                    
+                        <li class="menu-item">
+                            <a id="theme-switcher" href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-light"><path d="M193.2 104.5l48.8-97.5a18 18 0 0128 0l48.8 97.5 103.4 -34.5a18 18 0 0119.8 19.8l-34.5 103.4l97.5 48.8a18 18 0 010 28l-97.5 48.8 34.5 103.4a18 18 0 01-19.8 19.8l-103.4-34.5-48.8 97.5a18 18 0 01-28 0l-48.8-97.5l-103.4 34.5a18 18 0 01-19.8-19.8l34.5-103.4-97.5-48.8a18 18 0 010-28l97.5-48.8-34.5-103.4a18 18 0 0119.8-19.8zM256 128a128 128 0 10.01 0M256 160a96 96 0 10.01 0"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-dark"><path d="M27 412a256 256 0 10154-407a11.5 11.5 0 00-5 20a201.5 201.5 0 01-134 374a11.5 11.5 0 00-15 13"/></svg></a>
+                        </li>
+                    
+                
+            
+        
+    </ul>
+</nav>
+
+                    
+                </div>
+            </div>
+            
+    <input type="checkbox" id="nav-toggle" aria-hidden="true" />
+    <label for="nav-toggle" class="nav-toggle"></label>
+    <label for="nav-toggle" class="nav-curtain"></label>
+
+
+        
+
+        
+    
+
+    </header>
+
+
+
+
+
+
+            
+            
+    <main class="main single" id="main">
+    <div class="main-inner">
+
+        
+
+        <article class="content post h-entry" data-align="justify" data-type="posts" data-toc-num="true">
+
+            <h1 class="post-title p-name">弄懂系列： 反向传播算法</h1>
+
+            
+
+            
+                
+            
+
+            
+                
+
+<div class="post-meta">
+    
+        
+        <time datetime="2022-08-17T20:58:47&#43;08:00" class="post-meta-item published dt-published"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>&nbsp;2022.8.17</time>
+    
+    
+    
+    
+        
+        
+        
+            
+                <span class="post-meta-item category"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M464 128H272l-54.63-54.63c-6-6-14.14-9.37-22.63-9.37H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48zm0 272H48V112h140.12l54.63 54.63c6 6 14.14 9.37 22.63 9.37H464v224z"/></svg>&nbsp;<a href="/categories/deep-learning/" class="category-link p-category">Deep Learning</a>/<a href="/categories/optimization/" class="category-link p-category">Optimization</a></span>
+            
+        
+    
+    
+        
+        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;912</span>
+    
+    
+    
+    
+</div>
+
+            
+
+            <nav class="contents">
+  <h2 id="contents" class="contents-title">目录</h2><ol class="toc">
+    <li><a id="contents:参数化模型" href="#参数化模型">参数化模型</a></li>
+    <li><a id="contents:notation-summary" href="#notation-summary">Notation summary</a></li>
+    <li><a id="contents:layer-output-relation-from-a-to-z" href="#layer-output-relation-from-a-to-z">Layer output relation: from $a$ to $z$</a></li>
+    <li><a id="contents:loss-function-for-training" href="#loss-function-for-training">Loss function for training</a></li>
+    <li><a id="contents:backpropagation" href="#backpropagation">Backpropagation</a></li>
+    <li><a id="contents:总结" href="#总结">总结</a></li>
+    <li><a id="contents:向量-雅克比乘积" href="#向量-雅克比乘积">向量-雅克比乘积</a></li>
+    <li><a id="contents:其他注意事项" href="#其他注意事项">其他注意事项</a></li>
+  </ol>
+</nav><div class="post-body e-content">
+                <p>backpropagation</p>
+<h2 id="参数化模型"><a href="#参数化模型" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:参数化模型" class="headings">参数化模型</a></h2>
+<p>Parameterized models: $\bar{y}=G(x,w)$.</p>
+<p>简单来讲，参数化模型就是依赖于输入和可训练参数的函数。 其中，可训练参数在不同训练样本中是共享的，而输入则因每个样本不同而不同。在大多数深度学习框架中，参数是隐性的(implicit)：当函数被调用时，参数不被传递。 如果把模型比作面向对象编程，这些参数相当于被“储存在函数中”。</p>
+<ul>
+<li>
+<p>变量（张量，标量，连续变量，离散变量）</p>
+<ul>
+<li>$x$是参数模型的输入</li>
+<li>$\tilde{y}$是由函数计算出的变量，这个函数是确定，非随机的。</li>
+</ul>
+</li>
+<li>
+<p>确定性函数: $x\rightarrow G(x,w) \rightarrow \tilde{y}$</p>
+<ul>
+<li>可以有多个输入和多个输出</li>
+<li>包含一些隐性的参数变量 $w$</li>
+</ul>
+</li>
+<li>
+<p>标量函数: $\tilde{y}\rightarrow C(y,\tilde{y}\leftarrow y$</p>
+<ul>
+<li>用来表示代价函数</li>
+<li>拥有一个隐性的标量输出</li>
+<li>用多个输入计算出一个值（通常情况下这个值是这几个输入之间的距离）</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>==深度学习说白了就是围绕着<strong>梯度</strong>相关方法展开的。==</p>
+</blockquote>
+<p>SGD (随机梯度下降)的参数更新法则：</p>
+<ul>
+<li>从样本集中$\lbrace 0, \cdots, P-1 \rbrace$里选取一个 $p$ ，进行参数更新: $w \leftarrow w-\eta \frac{\partial L(x[p], y[p], w)}{\partial w}$</li>
+</ul>
+<hr>
+<h2 id="notation-summary"><a href="#notation-summary" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:notation-summary" class="headings">Notation summary</a></h2>
+<div class="table-container"><table>
+<thead>
+<tr>
+<th>notation</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$a_i^l$</td>
+<td>output of a neuron</td>
+</tr>
+<tr>
+<td>$a^l$</td>
+<td>output vector of a layer</td>
+</tr>
+<tr>
+<td>$z_i^l$</td>
+<td>input of activation function</td>
+</tr>
+<tr>
+<td>$z^l$</td>
+<td>input vector of activation function for a layer</td>
+</tr>
+<tr>
+<td>$w_{ij}^l$</td>
+<td>a weight</td>
+</tr>
+<tr>
+<td>$W^l$</td>
+<td>a weight matrix</td>
+</tr>
+<tr>
+<td>$b_i^l$</td>
+<td>a bias</td>
+</tr>
+<tr>
+<td>$b^l$</td>
+<td>a bias vector</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="layer-output-relation-from-a-to-z"><a href="#layer-output-relation-from-a-to-z" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:layer-output-relation-from-a-to-z" class="headings">Layer output relation: from $a$ to $z$</a></h2>
+<p><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/smwdfA.png" alt="back1"></p>
+<p>其次，$z_i^l$与$a_i^l$的关系为$a_i^l=\sigma(z_i^l)$,因此有：</p>
+<p>$$
+\left[\begin{array}{c}a_{1}^{l} \ a_{2}^{l} \ \vdots \ a_{i}^{l} \ \vdots\end{array}\right]=\left[\begin{array}{l}\sigma\left(z_{1}^{l}\right) \ \sigma\left(z_{2}^{l}\right) \ \vdots \ \sigma\left(z_{i}^{l}\right) \ \vdots\end{array}\right]\quad\Rightarrow
+\quad a^l=\sigma(z^l)=\sigma(W^la^{l-1}+b^l)
+$$</p>
+<hr>
+<p><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/JZ2Zmu.png" alt="back2"></p>
+<p>$$
+y=f(x)=\sigma\left(W^{L} \cdots \sigma\left(W^{2} \sigma\left(W^{1} x+b^{1}\right)+b^{2}\right) \ldots+b^{L}\right)
+$$</p>
+<hr>
+<h2 id="loss-function-for-training"><a href="#loss-function-for-training" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:loss-function-for-training" class="headings">Loss function for training</a></h2>
+<ul>
+<li>
+<p>A &quot;Good&quot; function: $f(x ; \theta) \sim \hat{y} \Rightarrow |\hat{y}-f(x ; \theta)| \approx 0$</p>
+</li>
+<li>
+<p>Define an example loss function: $C(\theta)=\sum_{k}\left|\hat{y}<em>{k}-f\left(x</em>{k} ; \theta\right)\right|$</p>
+</li>
+</ul>
+<hr>
+<p><strong>Gradient Descent for Neural Network</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/VFQuEZ.png" alt="back3"></p>
+<hr>
+<h2 id="backpropagation"><a href="#backpropagation" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:backpropagation" class="headings">Backpropagation</a></h2>
+<p>In a feedforward neural network:</p>
+<ul>
+<li>forward propagation
+<ul>
+<li>from input $𝑥$ to output $𝑦$ information <u><em>flows forward</em></u> through the network</li>
+<li>during training, forward propagation can <em>continue onward</em> until it produces a scalar cost $C(θ)$</li>
+</ul>
+</li>
+<li>back-propagation
+<ul>
+<li>allows the information from the cost to then <u><em>flow backwards</em></u> through the network, in order to compute the gradient</li>
+<li>can be applied to any function</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/bjmDLP.png" alt="back4"></p>
+<hr>
+<p><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/y0GeqY.png" alt="back5"></p>
+<p>$$
+\frac{\partial C(\theta)}{\partial w_{i j}^{l}}=\frac{\partial C(\theta)}{\partial z_{i}^{l}} \frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}
+$$</p>
+<p>$$
+z^{l}=W^{l} a^{l-1}+b^{l}
+$$</p>
+<p>$$
+z_{i}^{l}=\sum_{j} w_{i j}^{l} a_{j}^{l-1}+b_{i}^{l}
+$$</p>
+<p>$$
+\frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}=a_{j}^{l-1}
+$$</p>
+<p>$$
+\frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}=\left{\begin{array}{cl}a_{j}^{l-1} &amp; , l&gt;1 \ x_{j} &amp; , l=1\end{array}\right.
+$$</p>
+<hr>
+<p><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/dIVGVe.png" alt="back6"></p>
+<blockquote>
+<p>★★★★★ : $\delta_i^l$是第$l$层的传播梯度。==直接将这个难求的$\partial{C(\theta)}/\partial{z_i^l}$设为$\delta_i^l$.==</p>
+</blockquote>
+<p>Idea: from $L$ to $1$：</p>
+<ul>
+<li>Initialization: compute $\delta^L$</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/p7J1Yh.png" alt="back7"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/UeG12k.png" alt="back8"></p>
+<ul>
+<li>★★★★★ : ==Compute $\delta^l$ based on $\delta^{𝑙+1}$==</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/lgzey9.png" alt="back9"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/4XjmlS.png" alt="back10"></p>
+<hr>
+<p><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/Jha89O.png" alt="back11"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/jVjDEO.png" alt="back15"></p>
+<hr>
+<p>$$
+\frac{\partial C(\theta)}{\partial w_{i j}^{l}}={\color{red}{\frac{\partial C(\theta)}{\partial z_{i}^{l}}}} \frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}
+$$</p>
+<p>★★★★<strong>重要</strong></p>
+<p>$$
+\begin{array}{l}
+\delta^{L}=\sigma^{\prime}\left(z^{L}\right) \odot \nabla C(y) \
+\delta^{l}=\sigma^{\prime}\left(z^{l}\right) \odot\left(W^{l+1}\right)^{T} \delta^{l+1}
+\end{array}
+$$</p>
+<p><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/YWKplX.png" alt="back11"></p>
+<hr>
+<h2 id="总结"><a href="#总结" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:总结" class="headings">总结</a></h2>
+<div class="table-container"><table>
+<thead>
+<tr>
+<th>$\frac{\partial C(\theta)}{\partial w_{i j}^{l}}=\frac{\partial C(\theta)}{\partial z_{i}^{l}} {\color{red}\frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}}$</th>
+<th>$\frac{\partial C(\theta)}{\partial w_{i j}^{l}}={\color{red}\frac{\partial C(\theta)}{\partial z_{i}^{l}}} \frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/Jk6Oh2.png" alt="back13"></td>
+<td><img src="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/pKFSjE.png" alt="back14"></td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2 id="向量-雅克比乘积"><a href="#向量-雅克比乘积" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:向量-雅克比乘积" class="headings">向量-雅克比乘积</a></h2>
+<blockquote>
+<p>PyTorch :<a href="%E8%87%AA%E5%8A%A8%E6%B1%82%E5%AF%BC.md#%E5%90%91%E9%87%8F-%E9%9B%85%E5%85%8B%E6%AF%94%E4%B9%98%E7%A7%AF">自动求导</a>.</p>
+</blockquote>
+<hr>
+<h2 id="其他注意事项"><a href="#其他注意事项" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:其他注意事项" class="headings">其他注意事项</a></h2>
+<ol>
+<li>反向传播不只适用于层层堆叠的模型；它可用于任何<strong>有向无环图</strong>（DAG）只要模组间具有偏序关系，</li>
+</ol>
+
+            </div>
+
+            
+
+
+        </article>
+
+        
+
+        
+    <div class="updated-badge-container">
+        <span title="Updated @ 2022-08-17 21:43:45 CST" style="cursor:help">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2022-08-17</text><text x="915" y="140" textLength="650" transform="scale(.1)">2022-08-17</text></g></svg>
+        </span></div>
+
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+    
+        <div class="post-tags">
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/deep-learning/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>Deep Learning</a>
+                
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/optimization/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>Optimization</a>
+                
+            
+        </div>
+    
+
+
+
+        
+
+
+        
+
+
+        
+    
+        
+        
+    
+    
+    
+    
+        <ul class="post-nav">
+            
+                <li class="post-nav-prev">
+                    <a href="/posts/seq-to-seq/" rel="prev">&lt; 弄懂系列： Seq2Seq模型</a>
+                </li>
+            
+            
+                <li class="post-nav-next">
+                    <a href="/posts/td-idf/" rel="next">弄懂系列： TF-IDF算法 &gt;</a>
+                </li>
+            
+        </ul>
+    
+
+
+
+        
+    
+
+        
+            <div class="load-comments">
+                <div id="load-comments">加载评论</div>
+            </div>
+        
+
+        
+            <div id="disqus_thread"></div>
+        
+
+        
+
+        
+
+        
+    
+
+
+
+    </div>
+</main>
+
+
+            
+    <div id="back-to-top" class="back-to-top">
+        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon arrow-up"><path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"/></svg></a>
+    </div>
+
+
+            
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="site-info">&nbsp;DEROOCE&nbsp;&nbsp;©&nbsp;2021–2022</div><div class="site-copyright"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></div><div class="custom-footer">愚蠢的人总是对事情很确定，而聪明的人总是充满疑惑</div>
+
+            
+
+
+            
+        </div>
+    </footer>
+
+
+        </div>
+        <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('\/sw.js');
+            });
+        }
+    </script>
+
+
+        
+
+
+    <script>
+    if (typeof MathJax === 'undefined') {
+        window.MathJax = {
+            loader: {
+                load: ['[tex]/mhchem']
+            },
+            
+            tex: {
+                inlineMath: {'[+]': [['$', '$']]},
+                tags: 'ams',
+                packages: {'[+]': ['mhchem']}
+            }
+        };
+        (function() {
+            const script = document.createElement('script');
+            script.src = 'https:\/\/cdn.jsdelivr.net\/npm\/mathjax@3.1.2\/es5\/tex-mml-chtml.js';
+            script.defer = true;
+            document.head.appendChild(script);
+        })();
+    } else {
+        MathJax.texReset();
+        MathJax.typeset();
+    }
+</script>
+
+
+
+
+
+
+    
+
+        
+            <script>
+    function loadComments() {
+        if (!document.getElementById('disqus_thread')) {
+            return;
+        }
+        if (typeof DISQUS === 'undefined') {
+            const disqus_config = function() {
+                this.page.url = 'https:\/\/derooce.github.io\/posts\/back-propagation\/';
+                this.page.identifier = '\/posts\/back-propagation\/';
+                this.page.title = '弄懂系列： 反向传播算法';
+            };
+            (function() {
+                const d = document, s = d.createElement('script'); s.async = true;
+                s.src = 'https://derooce.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        } else {
+            DISQUS.reset({
+                reload: true,
+                config: function() {
+                    this.page.url = 'https:\/\/derooce.github.io\/posts\/back-propagation\/';
+                    this.page.identifier = '\/posts\/back-propagation\/';
+                    this.page.title = '弄懂系列： 反向传播算法';
+                }
+            });
+        }
+    }
+</script>
+
+        
+
+        
+
+        
+
+        
+
+    
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@latest/dist/medium-zoom.min.js"></script>
+
+<script>
+    let imgNodes = document.querySelectorAll('div.post-body img');
+    imgNodes = Array.from(imgNodes).filter(node => node.parentNode.tagName !== "A");
+
+    mediumZoom(imgNodes, {
+        background: 'hsla(var(--color-bg-h), var(--color-bg-s), var(--color-bg-l), 0.95)'
+    })
+</script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/instant.page@5.1.0/instantpage.min.js" type="module" defer></script>
+
+
+
+
+
+
+    </body>
+</html>

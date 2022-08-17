@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">Writing and Sharing something insightful!</subtitle>
-    <updated>2022-08-10T16:27:01&#43;08:00</updated>
+    <updated>2022-08-17T21:47:00&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -17,10 +17,524 @@
     <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights>
     <generator uri="https://gohugo.io/" version="0.101.0">Hugo</generator>
         <entry>
+            <title type="text">弄懂系列： Seq2Seq模型</title>
+            <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/seq-to-seq/" />
+            <id>https://derooce.github.io/posts/seq-to-seq/</id>
+            <updated>2022-08-17T21:43:57&#43;08:00</updated>
+            <published>2022-08-17T20:58:54&#43;08:00</published>
+            <author>
+                    <name>DEROOCE</name>
+                    <uri>https://derooce.github.io/</uri>
+                    <email>vanace.jc@gmail.com</email>
+                    </author>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">Seq2Seq 由来 在⾃然语⾔处理的很多应⽤中，输⼊和输出都可以是不定⻓序列。以机器翻译为例，输⼊可以是⼀段不定⻓的中文⽂本序列，输出可以是⼀段不定⻓的英语⽂本序列。 当输⼊和输出都是不定⻓序列时，我们可以使⽤==编码器-解码器架构==（encoder-decoder）或者seq2seq模型。 序列到序列模型，简称s……</summary>
+            
+                <content type="html">&lt;p&gt;Seq2Seq&lt;/p&gt;
+&lt;h2 id=&#34;由来&#34;&gt;由来&lt;/h2&gt;
+&lt;p&gt;在⾃然语⾔处理的很多应⽤中，输⼊和输出都可以是不定⻓序列。以机器翻译为例，输⼊可以是⼀段不定⻓的中文⽂本序列，输出可以是⼀段不定⻓的英语⽂本序列。&lt;/p&gt;
+&lt;p&gt;当输⼊和输出都是不定⻓序列时，我们可以使⽤==编码器-解码器架构==（encoder-decoder）或者&lt;strong&gt;seq2seq模型&lt;/strong&gt;。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;序列到序列模型，简称seq2seq模型。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这两个模型本质上都⽤到了两个&lt;strong&gt;循环神经⽹络&lt;/strong&gt;，分别叫做编码器和解码器。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;编码器⽤来分析输⼊序列&lt;/li&gt;
+&lt;li&gt;解码器⽤来⽣成输出序列。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;两个循环神经网络是&lt;strong&gt;共同训练&lt;/strong&gt;的。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;编码器-解码器图示&#34;&gt;编码器-解码器图示&lt;/h2&gt;
+&lt;p&gt;在训练数据集中，我们可以在每个句⼦后附上特殊符号“&lt;code&gt;&amp;lt;eos&amp;gt;&lt;/code&gt;”（end of sequence）以表⽰序列的终⽌。&lt;/p&gt;
+&lt;p&gt;编码器每个时间步的输⼊依次为输入句⼦中的单词、标点和特殊符号“&lt;code&gt;&amp;lt;eos&amp;gt;&lt;/code&gt;”。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/6giLzr.png&#34; alt=&#34;seq2seq&#34;&gt;&lt;/p&gt;
+&lt;p&gt;在前向传播训练过程中，编码器在最终时间步的隐藏层状态将会作为输⼊句⼦的表征或编码信息供给后续的解码器使用。将编码器输出的编码信息记为h^T。&lt;/p&gt;
+&lt;p&gt;解码器在各个时间步中将使用到如下数据作为输入：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;使⽤输⼊句⼦的编码信息h^T&lt;/li&gt;
+&lt;li&gt;上个时间步的隐藏层状态&lt;/li&gt;
+&lt;li&gt;上个时间步的输出&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我们希望解码器在各个时间步能正确依次输出翻译后的英语单词、标点和特殊符号“&lt;code&gt;&amp;lt;eos&amp;gt;&lt;/code&gt;”。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;需要注意的是，解码器在最初时间步的输⼊⽤到了⼀个表⽰序列开始的特殊符号“&lt;code&gt;&amp;lt;bos&amp;gt;&lt;/code&gt;”（beginning of sequence）。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;编码器&#34;&gt;编码器&lt;/h2&gt;
+&lt;p&gt;编码器的作⽤是把⼀个&lt;strong&gt;不定⻓的输⼊序列&lt;/strong&gt;变换成⼀个&lt;strong&gt;定⻓的背景变量&lt;/strong&gt;$C$。该背景变量将会存储输⼊序列的编码信息。常⽤的编码器是循环神经⽹络。&lt;/p&gt;
+&lt;p&gt;让我们考虑批量⼤小为$1$的时序数据样本。假设输⼊序列是$x_1, . . . , x_T$，例设$x_t$是输⼊句⼦中的第$t$个词。在时间步$t$时刻，循环神经⽹络将输⼊$x^t$的特征向量$\mathbf{x}&lt;em&gt;t$，以及上个时间步的隐藏状态$h&lt;/em&gt;{t-1}$变换为当前时间步的隐藏状态$h_t$。若使用函数f表达循环神经⽹络隐藏层的变换,则有$h_t=f(\mathbf{x}&lt;em&gt;t,h&lt;/em&gt;{t-1})$。&lt;/p&gt;
+&lt;p&gt;接着，编码器通过⾃定义函数$q$将各个时间步的隐藏状态变换为上下文变量(context variable) ：$c=q(h_1,...,h_T)$。例如，当选择$q(h_1, . . . ,h_T) =h_T$时，上下文变量是输⼊序列最终时间步的隐藏状态$h^T$。&lt;/p&gt;
+&lt;p&gt;以上描述的编码器是⼀个&lt;strong&gt;单向&lt;/strong&gt;的循环神经⽹络，每个时间步的隐藏状态只取决于该时间步及之前的输⼊⼦序列。我们也可以使⽤&lt;strong&gt;双向&lt;/strong&gt;循环神经⽹络构造编码器。在这种情况下，编码器每个时间步的隐藏状态同时取决于该时间步&lt;strong&gt;之前和之后的⼦序列&lt;/strong&gt;（包括当前时间步的输⼊），并编码了整个序列的信息。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;解码器&#34;&gt;解码器&lt;/h2&gt;
+&lt;p&gt;编码器的输出--上下文变量$c$是对整个输入蓄力$x_1,...,x_T$编码后的结果。给定训练样本中的输出序列$y_1, y_2, . . . , y_{T&#39;}$,在每个时间步$t^′$上（符号与输⼊序列或编码器的时间步$t$有区别），解码器输出$y_{t^′}$的条件概率将基于解码器之前时间步的输出序列$y_1,...,y_{t&#39;-1}$和背景变量$c$，即：&lt;/p&gt;
+&lt;p&gt;$$
+P\left(y_{t^{\prime}} \mid y_{1}, \ldots, y_{t^{\prime}-1}, c\right)
+$$&lt;/p&gt;
+&lt;p&gt;为了对这种序列中的条件概率建模，我们需要使用另一个RNN作为解码器。在输出序列中的任意时间步$t&#39;$上，RNN接受之前时间步的输出$y_{t&#39;-1}$以及上下文变量$c$作为输入，并且将它们以及之前时间步的隐藏状态$s_{t&#39;-1}$一起变换为当前时间步的隐藏状态$s_{t&#39;}$。&lt;/p&gt;
+&lt;p&gt;使用上述输入，解码器将获得当前时间步t的隐藏状态$s^{t^′}$。若使用函数$g$表达解码器隐藏层的变换，则有&lt;/p&gt;
+&lt;p&gt;$$
+s_{t^{\prime}}=g\left(y_{t^{\prime}-1}, c, s_{t^{\prime}-1}\right).
+$$&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/IdTcj8.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;有了解码器的各个时间步上的隐藏状态后，我们可以使⽤输出层和softmax运算来计算条件概率$P\left(y_{t^{\prime}} \mid y_{1}, \ldots, y_{t^{\prime}-1}, c\right)$。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/EF0cgo.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;训练模型&#34;&gt;训练模型&lt;/h2&gt;
+&lt;p&gt;根据最⼤似然估计，我们可以最⼤化输出序列基于输⼊序列的条件概率：&lt;/p&gt;
+&lt;p&gt;$$
+\begin{aligned}
+P\left(y^{1}, \ldots, y^{t^{\prime}-1} \mid x^{1}, \ldots, x^{T}\right)
+&amp;amp;=\prod_{t^{\prime}=1}^{T^{\prime}} P\left(y^{t^{\prime}} \mid y^{1}, \ldots, y^{t^{\prime}-1}, x^{1}, \ldots, x^{T}\right)&lt;br&gt;
+&amp;amp;=\prod_{t^{\prime}=1}^{T^{\prime}} P\left(y^{t^{\prime}} \mid y^{1}, \ldots, y^{t^{\prime}-1}, C\right).
+\end{aligned}
+$$&lt;/p&gt;
+&lt;p&gt;并得到该输出序列的损失：&lt;/p&gt;
+&lt;p&gt;$$
+-\log P\left(y^{1}, \ldots, y^{t^{\prime}-1} \mid x^{1}, \ldots, x^{T}\right)=-\sum_{t^{\prime}=1}^{T^{\prime}} \log P\left(y^{t^{\prime}} \mid y^{1}, \ldots, y^{t^{\prime}-1}, C\right).
+$$&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;评估预测的序列&#34;&gt;评估预测的序列&lt;/h2&gt;
+&lt;p&gt;通过将预测序列与标签序列(the ground-truth)对比进行衡量。&lt;strong&gt;双语替换评测&lt;/strong&gt;(英语：bilingual evaluation understudy，缩写：BLEU)是用于评估自然语言的字句用机器翻译出来的品质的一种算法。BLEU最早由&lt;em&gt;Papineni et al., 2002&lt;/em&gt;提出用于评估机器翻译的结果，然而其在其他应用上也广泛使用。原则上，对于预测序列中的任意n-grams，BLEU可以评估这个n-grams是否出现在标签序列(label sequence)中。&lt;/p&gt;
+&lt;p&gt;n-grams的精度(precision)使用$p_n$表示，其代表着预测序列和标签序列中匹配的n-grams的数量与预测序列中的总n-grams数量的比值。为了更好解释，给定一个标签序列$A,B,C,D,E,F$,以及预测序列$A,B,B,C,D$,我们可以记错$p_1=4/5$（n-grams中n=1时），$p_2=3/4(A-B、B-C、C-D)$,$p_3=1/3(B-C-D)$,$p_4=0$.&lt;/p&gt;
+&lt;p&gt;另外，令$\mathrm{len}&lt;em&gt;{label}$和$\mathrm{len}&lt;/em&gt;{pred}$分别代表标签序列和预测序列中的单词数。于是，BLEU可以定义为：&lt;/p&gt;
+&lt;p&gt;$$
+\exp\left(\min\left(0, 1 - \frac{\mathrm{len}&lt;em&gt;{\text{label}}}{\mathrm{len}&lt;/em&gt;{\text{pred}}}\right)\right) \prod_{n=1}^k p_n^{1/2^n},
+$$&lt;/p&gt;
+&lt;p&gt;其中k表示匹配最长的n-grams的n。基于BLEU的定义式，当预测序列与标签序列完全一致时，BLEU的值为1。此外，由于越长的n-grams越难成功匹配，为了对其精度值进行调整，BLEU会对越长的n-grams的精度赋予越大的&lt;strong&gt;权重&lt;/strong&gt;。特别地，当$p_n$是固定的时候，$p_n^{1/2^n}$会随着n的增加而增大（初始论文中使用的是$p_n^{1/n}$）。&lt;/p&gt;
+&lt;p&gt;由于预测越短的序列，得到的$p_n$值也就会越高，在BLUE定义式中的前面的指数项其实就是对短序列的一种惩罚项。例如，当$k=2$时，给定标签序列$A,B,C,D,E,F$以及预测序列$A,B$,尽管$p_1=p_2=1$,而惩罚项因子$\exp(1-6/2)\approx 0.14$会将整个BLEU得分降低。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;reference&#34;&gt;Reference&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;http://d2l.ai/chapter_recurrent-modern/seq2seq.html&#34;&gt;Sequence to Sequence Learning&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/deep-learning/" term="Deep Learning" label="Deep Learning" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/nlp/" term="NLP" label="NLP" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/language-models/" term="Language Models" label="Language Models" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/deep-learning/" term="Deep Learning" label="Deep Learning" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/nlp/" term="NLP" label="NLP" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/language-models/" term="Language Models" label="Language Models" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
+        <entry>
+            <title type="text">弄懂系列： 反向传播算法</title>
+            <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/back-propagation/" />
+            <id>https://derooce.github.io/posts/back-propagation/</id>
+            <updated>2022-08-17T21:43:45&#43;08:00</updated>
+            <published>2022-08-17T20:58:47&#43;08:00</published>
+            <author>
+                    <name>DEROOCE</name>
+                    <uri>https://derooce.github.io/</uri>
+                    <email>vanace.jc@gmail.com</email>
+                    </author>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">backpropagation 参数化模型 Parameterized models: $\bar{y}=G(x,w)$. 简单来讲，参数化模型就是依赖于输入和可训练参数的函数。 其中，可训练参数在不同训练样本中是共享的，而输入则因每个样本不同而不同。在大多数深度学习框架中，参数是隐性的(implicit)：当函数被调用时，参数不被传递。 如果把模型比作面向对象编程，这些参数相当于被“储存在函数中”。 变量（……</summary>
+            
+                <content type="html">&lt;p&gt;backpropagation&lt;/p&gt;
+&lt;h2 id=&#34;参数化模型&#34;&gt;参数化模型&lt;/h2&gt;
+&lt;p&gt;Parameterized models: $\bar{y}=G(x,w)$.&lt;/p&gt;
+&lt;p&gt;简单来讲，参数化模型就是依赖于输入和可训练参数的函数。 其中，可训练参数在不同训练样本中是共享的，而输入则因每个样本不同而不同。在大多数深度学习框架中，参数是隐性的(implicit)：当函数被调用时，参数不被传递。 如果把模型比作面向对象编程，这些参数相当于被“储存在函数中”。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;变量（张量，标量，连续变量，离散变量）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$x$是参数模型的输入&lt;/li&gt;
+&lt;li&gt;$\tilde{y}$是由函数计算出的变量，这个函数是确定，非随机的。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;确定性函数: $x\rightarrow G(x,w) \rightarrow \tilde{y}$&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;可以有多个输入和多个输出&lt;/li&gt;
+&lt;li&gt;包含一些隐性的参数变量 $w$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;标量函数: $\tilde{y}\rightarrow C(y,\tilde{y}\leftarrow y$&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用来表示代价函数&lt;/li&gt;
+&lt;li&gt;拥有一个隐性的标量输出&lt;/li&gt;
+&lt;li&gt;用多个输入计算出一个值（通常情况下这个值是这几个输入之间的距离）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;==深度学习说白了就是围绕着&lt;strong&gt;梯度&lt;/strong&gt;相关方法展开的。==&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;SGD (随机梯度下降)的参数更新法则：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;从样本集中$\lbrace 0, \cdots, P-1 \rbrace$里选取一个 $p$ ，进行参数更新: $w \leftarrow w-\eta \frac{\partial L(x[p], y[p], w)}{\partial w}$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;notation-summary&#34;&gt;Notation summary&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;notation&lt;/th&gt;
+&lt;th&gt;meaning&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;$a_i^l$&lt;/td&gt;
+&lt;td&gt;output of a neuron&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$a^l$&lt;/td&gt;
+&lt;td&gt;output vector of a layer&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$z_i^l$&lt;/td&gt;
+&lt;td&gt;input of activation function&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$z^l$&lt;/td&gt;
+&lt;td&gt;input vector of activation function for a layer&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$w_{ij}^l$&lt;/td&gt;
+&lt;td&gt;a weight&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$W^l$&lt;/td&gt;
+&lt;td&gt;a weight matrix&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$b_i^l$&lt;/td&gt;
+&lt;td&gt;a bias&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$b^l$&lt;/td&gt;
+&lt;td&gt;a bias vector&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;layer-output-relation-from-a-to-z&#34;&gt;Layer output relation: from $a$ to $z$&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/smwdfA.png&#34; alt=&#34;back1&#34;&gt;&lt;/p&gt;
+&lt;p&gt;其次，$z_i^l$与$a_i^l$的关系为$a_i^l=\sigma(z_i^l)$,因此有：&lt;/p&gt;
+&lt;p&gt;$$
+\left[\begin{array}{c}a_{1}^{l} \ a_{2}^{l} \ \vdots \ a_{i}^{l} \ \vdots\end{array}\right]=\left[\begin{array}{l}\sigma\left(z_{1}^{l}\right) \ \sigma\left(z_{2}^{l}\right) \ \vdots \ \sigma\left(z_{i}^{l}\right) \ \vdots\end{array}\right]\quad\Rightarrow
+\quad a^l=\sigma(z^l)=\sigma(W^la^{l-1}+b^l)
+$$&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/JZ2Zmu.png&#34; alt=&#34;back2&#34;&gt;&lt;/p&gt;
+&lt;p&gt;$$
+y=f(x)=\sigma\left(W^{L} \cdots \sigma\left(W^{2} \sigma\left(W^{1} x+b^{1}\right)+b^{2}\right) \ldots+b^{L}\right)
+$$&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;loss-function-for-training&#34;&gt;Loss function for training&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;A &amp;quot;Good&amp;quot; function: $f(x ; \theta) \sim \hat{y} \Rightarrow |\hat{y}-f(x ; \theta)| \approx 0$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Define an example loss function: $C(\theta)=\sum_{k}\left|\hat{y}&lt;em&gt;{k}-f\left(x&lt;/em&gt;{k} ; \theta\right)\right|$&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;strong&gt;Gradient Descent for Neural Network&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/VFQuEZ.png&#34; alt=&#34;back3&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;backpropagation&#34;&gt;Backpropagation&lt;/h2&gt;
+&lt;p&gt;In a feedforward neural network:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;forward propagation
+&lt;ul&gt;
+&lt;li&gt;from input $𝑥$ to output $𝑦$ information &lt;u&gt;&lt;em&gt;flows forward&lt;/em&gt;&lt;/u&gt; through the network&lt;/li&gt;
+&lt;li&gt;during training, forward propagation can &lt;em&gt;continue onward&lt;/em&gt; until it produces a scalar cost $C(θ)$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;back-propagation
+&lt;ul&gt;
+&lt;li&gt;allows the information from the cost to then &lt;u&gt;&lt;em&gt;flow backwards&lt;/em&gt;&lt;/u&gt; through the network, in order to compute the gradient&lt;/li&gt;
+&lt;li&gt;can be applied to any function&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/bjmDLP.png&#34; alt=&#34;back4&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/y0GeqY.png&#34; alt=&#34;back5&#34;&gt;&lt;/p&gt;
+&lt;p&gt;$$
+\frac{\partial C(\theta)}{\partial w_{i j}^{l}}=\frac{\partial C(\theta)}{\partial z_{i}^{l}} \frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}
+$$&lt;/p&gt;
+&lt;p&gt;$$
+z^{l}=W^{l} a^{l-1}+b^{l}
+$$&lt;/p&gt;
+&lt;p&gt;$$
+z_{i}^{l}=\sum_{j} w_{i j}^{l} a_{j}^{l-1}+b_{i}^{l}
+$$&lt;/p&gt;
+&lt;p&gt;$$
+\frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}=a_{j}^{l-1}
+$$&lt;/p&gt;
+&lt;p&gt;$$
+\frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}=\left{\begin{array}{cl}a_{j}^{l-1} &amp;amp; , l&amp;gt;1 \ x_{j} &amp;amp; , l=1\end{array}\right.
+$$&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/dIVGVe.png&#34; alt=&#34;back6&#34;&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;★★★★★ : $\delta_i^l$是第$l$层的传播梯度。==直接将这个难求的$\partial{C(\theta)}/\partial{z_i^l}$设为$\delta_i^l$.==&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Idea: from $L$ to $1$：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Initialization: compute $\delta^L$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/p7J1Yh.png&#34; alt=&#34;back7&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/UeG12k.png&#34; alt=&#34;back8&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;★★★★★ : ==Compute $\delta^l$ based on $\delta^{𝑙+1}$==&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/lgzey9.png&#34; alt=&#34;back9&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/4XjmlS.png&#34; alt=&#34;back10&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/Jha89O.png&#34; alt=&#34;back11&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/jVjDEO.png&#34; alt=&#34;back15&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;$$
+\frac{\partial C(\theta)}{\partial w_{i j}^{l}}={\color{red}{\frac{\partial C(\theta)}{\partial z_{i}^{l}}}} \frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}
+$$&lt;/p&gt;
+&lt;p&gt;★★★★&lt;strong&gt;重要&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;$$
+\begin{array}{l}
+\delta^{L}=\sigma^{\prime}\left(z^{L}\right) \odot \nabla C(y) \
+\delta^{l}=\sigma^{\prime}\left(z^{l}\right) \odot\left(W^{l+1}\right)^{T} \delta^{l+1}
+\end{array}
+$$&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/YWKplX.png&#34; alt=&#34;back11&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;$\frac{\partial C(\theta)}{\partial w_{i j}^{l}}=\frac{\partial C(\theta)}{\partial z_{i}^{l}} {\color{red}\frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}}$&lt;/th&gt;
+&lt;th&gt;$\frac{\partial C(\theta)}{\partial w_{i j}^{l}}={\color{red}\frac{\partial C(\theta)}{\partial z_{i}^{l}}} \frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}$&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/Jk6Oh2.png&#34; alt=&#34;back13&#34;&gt;&lt;/td&gt;
+&lt;td&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/pKFSjE.png&#34; alt=&#34;back14&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;向量-雅克比乘积&#34;&gt;向量-雅克比乘积&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;PyTorch :&lt;a href=&#34;%E8%87%AA%E5%8A%A8%E6%B1%82%E5%AF%BC.md#%E5%90%91%E9%87%8F-%E9%9B%85%E5%85%8B%E6%AF%94%E4%B9%98%E7%A7%AF&#34;&gt;自动求导&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;其他注意事项&#34;&gt;其他注意事项&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;反向传播不只适用于层层堆叠的模型；它可用于任何&lt;strong&gt;有向无环图&lt;/strong&gt;（DAG）只要模组间具有偏序关系，&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/deep-learning/" term="Deep Learning" label="Deep Learning" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/optimization/" term="Optimization" label="Optimization" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/deep-learning/" term="Deep Learning" label="Deep Learning" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/optimization/" term="Optimization" label="Optimization" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
+        <entry>
+            <title type="text">弄懂系列： TF-IDF算法</title>
+            <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/td-idf/" />
+            <id>https://derooce.github.io/posts/td-idf/</id>
+            <updated>2022-08-17T21:47:00&#43;08:00</updated>
+            <published>2022-08-17T20:58:20&#43;08:00</published>
+            <author>
+                    <name>DEROOCE</name>
+                    <uri>https://derooce.github.io/</uri>
+                    <email>vanace.jc@gmail.com</email>
+                    </author>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">TF-IDF算法 简介 TF-IDF(term frequency–inverse document frequency)是一种用于信息检索与数据挖掘的常用加权技术，常用于挖掘文章中的关键词，而且算法简单高效，常被工业用于最开始的文本数据清洗。 TF-IDF有两层意思，一层是&amp;quot;词频&amp;quot;（Term Frequency，缩写为TF）……</summary>
+            
+                <content type="html">&lt;h1 id=&#34;tf-idf算法&#34;&gt;TF-IDF算法&lt;/h1&gt;
+&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;TF-IDF(term frequency–inverse document frequency)是一种用于信息检索与数据挖掘的常用加权技术，常用于挖掘文章中的关键词，而且算法简单高效，常被工业用于最开始的&lt;strong&gt;文本数据清洗&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;TF-IDF有两层意思，一层是&amp;quot;&lt;strong&gt;词频&lt;/strong&gt;&amp;quot;（Term Frequency，缩写为TF），另一层是&amp;quot;&lt;strong&gt;逆文档频率&lt;/strong&gt;&amp;quot;（Inverse Document Frequency，缩写为IDF）。&lt;/p&gt;
+&lt;p&gt;假设我们现在有一片长文叫做《量化系统架构设计》词频高在文章中往往是停用词，“的”，“是”，“了”等，这些在文档中最常见但对结果毫无帮助、需要过滤掉的词，用&lt;strong&gt;TF&lt;/strong&gt;可以统计到这些&lt;strong&gt;停用词&lt;/strong&gt;并把它们过滤。当高频词过滤后就只需考虑剩下的有实际意义的词。&lt;/p&gt;
+&lt;p&gt;但这样又会遇到了另一个问题，我们可能发现&amp;quot;量化&amp;quot;、&amp;quot;系统&amp;quot;、&amp;quot;架构&amp;quot;这三个词的出现次数一样多。这是不是意味着，作为关键词，它们的&lt;strong&gt;重要性&lt;/strong&gt;是一样的？事实上系统应该在其他文章比较常见，所以在关键词排序上，“量化”和“架构”应该排在“系统”前面，这个时候就需要&lt;strong&gt;IDF&lt;/strong&gt;，&lt;strong&gt;IDF会给常见的词较小的权重，它的大小与一个词的常见程度成反比&lt;/strong&gt;。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;TF: 通过统计频数，过滤一些没有实际意义的停用词&lt;/li&gt;
+&lt;li&gt;IDF: 对常见词赋予较小权重，权重大小与词的常见程度成反比&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;当有TF(词频)和IDF(逆文档频率)后，将这两个词相乘，就能得到一个词的TF-IDF的值。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;某个词在文章中的&lt;b&gt;TF-IDF越大，那么一般而言这个词对&lt;font style=&#34;color: red;&#34;&gt;该文档分类的影响价值就越高&lt;/font&gt;&lt;/b&gt;，所以通过计算文章中各个词的TF-IDF，由大到小排序，排在最前面的几个词，就是该文章的关键词。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;tf-idf算法步骤&#34;&gt;TF-IDF算法步骤&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;计算词频： $词频(TF)=某个词在文章中出现的次数$
+&lt;ol&gt;
+&lt;li&gt;考虑到文章有长短之分，为了便于不同文章的比较，进行&amp;quot;词频&amp;quot;标准化： $词频(TF) =\frac{\text { 某个词在文章中的出现次数 }}{\text { 文章的总词数 }}$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;计算逆文档频率
+&lt;ol&gt;
+&lt;li&gt;数据：一个语料库(corpus),包含多篇文档，用于模拟语言的使用环境&lt;/li&gt;
+&lt;li&gt;$文档频率(IDF) =\log \left(\frac{\text { 语料库的文档总数 }}{\text { 包含该词的文档数 }+1}\right) .$&lt;/li&gt;
+&lt;li&gt;如果一个词越常见，则包含该词的文档数就越多，此时IDF计算式中的分母越小，IDF值越小就越接近0，&lt;/li&gt;
+&lt;li&gt;分母+1是为了避免分母为0&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;计算TF-IDF
+&lt;ol&gt;
+&lt;li&gt;$\mathrm{TF}-\mathrm{IDF}=词频(TF ) \times 逆文档频率(\mathrm{IDF})$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;TF-IDF与一个词在文档中的出现次数成正比，与该词在整个语言环境中的出现次数成反比。&lt;strong&gt;计算出文档的每个词的TF-IDF值，然后按降序排列，取排在最前面的几个词。&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;优缺点&#34;&gt;优缺点&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;优点：
+&lt;ul&gt;
+&lt;li&gt;简单快速，容易理解&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;缺点：
+&lt;ul&gt;
+&lt;li&gt;有时候用&lt;strong&gt;词频&lt;/strong&gt;来衡量文章中的一个词的重要性不够全面&lt;/li&gt;
+&lt;li&gt;有时候重要的词出现的可能不够多&lt;/li&gt;
+&lt;li&gt;这种计算无法体现&lt;strong&gt;位置信息&lt;/strong&gt;，无法体现**词在上下文的重要性*&lt;/li&gt;
+&lt;li&gt;tf-idf算法可以给我们提供词在文档中的相对重要性的信息，然而却无法带给我们任何关于词语义的信息&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如果要体现词的上下文结构，那么你可能需要使用word2vec算法来支持。&lt;/p&gt;
+&lt;/blockquote&gt;
+</content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/deep-learning/" term="Deep Learning" label="Deep Learning" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/nlp/" term="NLP" label="NLP" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/text-mining/" term="Text Mining" label="Text Mining" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/nlp/" term="NLP" label="NLP" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/tags/text-mining/" term="Text Mining" label="Text Mining" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
+        <entry>
             <title type="text">NLP 论文阅读系列: P-Tuning</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/nlp-paper-reading-3/" />
             <id>https://derooce.github.io/posts/nlp-paper-reading-3/</id>
-            <updated>2022-08-10T16:25:10&#43;08:00</updated>
+            <updated>2022-08-17T21:31:00&#43;08:00</updated>
             <published>2022-08-10T15:47:59&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -72,11 +586,9 @@
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;其初始化可以直接使用原本的token embedding；&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
 &lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/F35CA9B5E8B2C0930EA768B7FBC6074D.jpg&#34; alt=&#34;model&#34;&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;其中&lt;code&gt;[u1,...,u6]&lt;/code&gt;代表BERT词表里边的&lt;code&gt;[unused1]～[unused6]&lt;/code&gt;，也就是用几个从未见过的token来构成模板&lt;/li&gt;
+&lt;li&gt;其中&lt;code&gt;[u1,...,u6]&lt;/code&gt;代表词表中的&lt;code&gt;[unused1]～[unused6]&lt;/code&gt;，也就是用几个从未见过的tokens来构成模板&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -86,13 +598,14 @@
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;P-tuning并不是随机初始化这些pseudo tokens然后直接训练，而是通过一个BiLSTM模型，加上一个使用ReLU作为激活函数的双层MLP,把这几个Embedding算出来，并且将这个LSTM模型设为可学习的。避免了人工构建离散的template，而让模型可以自动学习continuous embedding&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/ipgAK7.jpg&#34; alt=&#34;architecture&#34;&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/ipgAK7.jpg&#34; alt=&#34;architecture&#34;&gt;
-&lt;ul&gt;
-&lt;li&gt;只对Prompt部分的参数进行训练，而语言模型的参数固定不变&lt;/li&gt;
-&lt;/ul&gt;
+&lt;li&gt;
+&lt;p&gt;只对Prompt部分的参数进行训练，而语言模型的参数固定不变&lt;/p&gt;
 &lt;/li&gt;
-&lt;li&gt;使用BiLSTM+MLP本质上也是类似prefix-tuning中的重参数化作用&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用BiLSTM+MLP本质上也是类似prefix-tuning中的重参数化作用&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -111,8 +624,7 @@
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;LAMA数据集，根据知识库中结构化三元组（事实）构建的完形填空类型的数据。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/Eg37tB.jpg&#34; alt=&#34;data1&#34;&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/Eg37tB.jpg&#34; alt=&#34;data1&#34;&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Manual Prompt (MP): use original handcraft prompts from LAMA.（提供了人造的prompt).&lt;/li&gt;
 &lt;li&gt;对于具有110亿个参数的MegatronLM2，虽然微调几乎不起作用，但P-tuning仍然可以进一步提高精度&lt;/li&gt;
@@ -122,8 +634,6 @@
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/IEhYXY.jpg&#34; alt=&#34;data2&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr&gt;
@@ -152,7 +662,7 @@
 &lt;h2 id=&#34;参考笔记&#34;&gt;参考笔记&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;a href=&#34;https://blog.csdn.net/qq_36426650/article/details/120806554https://blog.csdn.net/qq_36426650/article/details/120806554&#34;&gt;s论文解读：P-Tuning v2: Prompt Tuning Can Be Comparable to Finetuning Universally Across Scales and Tasks&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.csdn.net/qq_36426650/article/details/120806554https://blog.csdn.net/qq_36426650/article/details/120806554&#34;&gt;论文解读：P-Tuning v2: Prompt Tuning Can Be Comparable to Finetuning Universally Across Scales and Tasks&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;a href=&#34;https://kexue.fm/archives/8295&#34;&gt;P-tuning：自动构建模版，释放语言模型潜能&lt;/a&gt; （Highly recommended)&lt;/p&gt;
@@ -185,6 +695,12 @@
                                 <category scheme="https://derooce.github.io/categories/model-tuning/" term="Model tuning" label="Model tuning" />
                             
                         
+                            
+                            
+                            
+                                <category scheme="https://derooce.github.io/categories/papers/" term="Papers" label="Papers" />
+                            
+                        
                     
                 
                     
@@ -198,7 +714,7 @@
                             
                             
                             
-                                <category scheme="https://derooce.github.io/tags/papers/" term="Papers" label="Papers" />
+                                <category scheme="https://derooce.github.io/tags/nlp-papers/" term="NLP papers" label="NLP papers" />
                             
                         
                             
@@ -216,7 +732,7 @@
             <title type="text">NLP 论文阅读系列: Prefix-Tuning</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/nlp-paper-reading-2/" />
             <id>https://derooce.github.io/posts/nlp-paper-reading-2/</id>
-            <updated>2022-08-10T14:00:41&#43;08:00</updated>
+            <updated>2022-08-17T21:31:02&#43;08:00</updated>
             <published>2022-08-10T10:30:22&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -422,7 +938,7 @@
                             
                             
                             
-                                <category scheme="https://derooce.github.io/tags/papers/" term="Papers" label="Papers" />
+                                <category scheme="https://derooce.github.io/tags/nlp-papers/" term="NLP papers" label="NLP papers" />
                             
                         
                             
@@ -622,7 +1138,7 @@
             <title type="text">NLP 论文阅读系列: 用递归神经网络表示</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/nlp-paper-reading-1/" />
             <id>https://derooce.github.io/posts/nlp-paper-reading-1/</id>
-            <updated>2022-08-10T10:56:14&#43;08:00</updated>
+            <updated>2022-08-17T21:31:01&#43;08:00</updated>
             <published>2021-03-15T14:40:09&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -1274,7 +1790,7 @@ Perplexity(y_{1:M})=2^{-\frac{1}{M}L(y_{1:M})} &amp;=
             <title type="text">NLP Notes series: Text Classification</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/text-classification-notes/" />
             <id>https://derooce.github.io/posts/text-classification-notes/</id>
-            <updated>2022-08-10T10:58:14&#43;08:00</updated>
+            <updated>2022-08-17T21:05:37&#43;08:00</updated>
             <published>2021-03-14T12:38:29&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -3596,562 +4112,6 @@ $$&lt;/p&gt;
                                 <category scheme="https://derooce.github.io/tags/hugo/" term="Hugo" label="Hugo" />
                             
                         
-                    
-                
-            
-        </entry>
-    
-        <entry>
-            <title type="text"></title>
-            <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/1/" />
-            <id>https://derooce.github.io/posts/1/</id>
-            <updated>2022-08-10T15:47:17&#43;08:00</updated>
-            <published>0001-01-01T00:00:00&#43;00:00</published>
-            <author>
-                    <name>DEROOCE</name>
-                    <uri>https://derooce.github.io/</uri>
-                    <email>vanace.jc@gmail.com</email>
-                    </author>
-            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">Prompt 清华 P-tuning 链接 论文 https://arxiv.org/pdf/2103.10385.pdf 代码 https://github.com/THUDM/P-tuning 问题 GPT使用传统的微调策略没法在自然语言理解任务上取得较好结果，而通过新的调整策略，可以让大小相似的GPT在NLU上取得比BERT相近或更好的结果。 方法细节 思路 给定一个prompt T={[P(0:i)],x,[P(i+1:m)]}，传统的离散prompt模板将其映射为，其中……</summary>
-            
-                <content type="html">&lt;h1 id=&#34;prompt&#34;&gt;Prompt&lt;/h1&gt;
-&lt;h2 id=&#34;清华&#34;&gt;清华&lt;/h2&gt;
-&lt;h3 id=&#34;p-tuning&#34;&gt;P-tuning&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;链接&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;论文&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://arxiv.org/pdf/2103.10385.pdf&#34;&gt;https://arxiv.org/pdf/2103.10385.pdf&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;代码&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/THUDM/P-tuning&#34;&gt;https://github.com/THUDM/P-tuning&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;问题&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;GPT使用传统的微调策略没法在自然语言理解任务上取得较好结果，而通过新的调整策略，可以让大小相似的GPT在NLU上取得比BERT相近或更好的结果。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;方法细节&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;思路&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;给定一个prompt T={[P(0:i)],x,[P(i+1:m)]}，传统的离散prompt模板将其映射为，其中的Pi所用的词语是模型词汇表中的词。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;- P-tuning将[Pi]当成一个伪token（之所以叫伪token是因为后续还将进行更新），将其映射为
-  
-  - 
-&lt;/code&gt;&lt;/pre&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;步骤&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;输入一个句子，以及预先设计的一个离散的模板：The Disney film is good! It was [MASK].；&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;对输入的template中，挑选一个（或多个）token作为pseudo token：The Disney film is good! [pseudo] was [MASK].&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;其初始化可以直接使用原本的token embedding；&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;对所有的pseudo token P_i ，传入一层LSTM，并获得每个pseudo token输出的隐状态向量 h_i&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;P-tuning并不是随机初始化这些pseudo tokens然后直接训练，而是通过一个BiLSTM模型把这几个Embedding算出来，并且将这个LSTM模型设为可学习的。避免了人工构建离散的template，而让模型可以自动学习continuous embedding&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;- 将整个句子传入预训练语言模型层,对于pseudo token传入隐藏状态h_i, 对于原始词和[mask]，则传入embedding e_i
-&lt;/code&gt;&lt;/pre&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;效果&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;LAMA+SuperGLUE基准数据集&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;LAMA数据集，根据知识库中结构化三元组（事实）构建的完形填空类型的数据。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;ul&gt;
-&lt;li&gt;具有110亿个参数的MegatronLM2，虽然微调几乎不起作用，但Ptuning仍然适用&lt;/li&gt;
-&lt;li&gt;Manual Prompt (MP): use original handcraft prompts from LAMA.（提供了人造的prompt).&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;结论&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;作者发现添加少量锚标记（anchor tokens）有助于SuperGLUE的一些NLU任务。例如在prompt模板“[PRE][prompt tokens][HYP]?[prompt tokens][MASK]”中的“?”就是一个锚节点，对性能影响很大。&lt;/li&gt;
-&lt;li&gt;知识探测任务中：语言模型仅仅通过找到更好的prompt，不进行微调，就能捕捉到更多的知识。&lt;/li&gt;
-&lt;li&gt;P-tuning可以有效的提高bert和gpt模型在NLU任务上的性能。并且使用P-tuning，可以让相似代销的GPT2实现比bert模型相当的甚至更好的结果，这个发现颠覆普遍认为的——双向模型比单向模型在NLU任务中表现的更好。&lt;/li&gt;
-&lt;li&gt;当预训练模型足够大的时候，我们的设备可能无法finetune整个模型，而P-tuning可以选择只优化几个Token的参数，因为优化所需要的显存和算力都会大大减少，所以P-tuning实则上给了我们一种在有限算力下调用大型预训练模型的思路。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;问题&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;当预训练语言模型的参数量低于100亿时，Prompt-tuning会比传统的Fine-tuning差；&lt;/li&gt;
-&lt;li&gt;像序列标注等对推理和理解要求高的任务，prompt-tuning效果会变差；&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;p-tuning-v2&#34;&gt;P-tuning v2&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;链接&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;论文&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://arxiv.org/pdf/2110.07602.pdf&#34;&gt;https://arxiv.org/pdf/2110.07602.pdf&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;代码&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/THUDM/P-tuning-v2&#34;&gt;https://github.com/THUDM/P-tuning-v2&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;动机&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Fine-tuning需要微调整个预训练语言模型，且额外添加了新的参数，而Prompting则可以将整个预训练语言模型的参数保持固定，而只需要添加prompt来预测结果即可；因此无需微调，但容易陷入局部最优；&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;在几个较难的序列标签任务中，如extractive QA, P-tuning的效果相比fine-tuning要差&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Prompt-tuning则是将Prompt加入到微调过程中，此时只对Prompt部分的参数进行训练，而语言模型的参数固定不变。例如，在P-tuning中引入continuous template，此时template是连续可微调的token，而不是离散的token，模型可以学习一个pseudo token；但发现P-tuning等Prompt-tuning方法在一些自然语言理解（NLU）任务中（例如抽extractive QA、序列标注等），基于普通的预训练语言模型，现有的prompting工作推理能力十分有限；&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;优化策略&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;先前的P-tuning用了一层BiLSTM来表征pseudo token，显然是推理能力不足的原因之一，因此该部分提出Deep Prompt Tuning，使用Prefix-tuning中的深层模型替换原来的BiLSTM&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;- 引入Prefix-tuning技术
-  
-  - Prefix-tuning（前缀微调）最开始应用在NLG任务上，由[Prefix, x, y]三部分构成：Prefix为前缀，x为输入，y为输出。
-  - Prefix-tuning将预训练参数固定，Prefix参数进行微调：不仅只在embedding上进行微调，也在TransFormer上的embedding输入每一层进行微调。
-  - 而P-tuning v1只有transformer第一层的embedding输入需要被tuned。
-&lt;/code&gt;&lt;/pre&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;取消了reparamerization：对pseudo token，不再使用BiLSTM或MLP进行表征，转为直接对pseudo token对应的深层模型的参数进行微调；&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;采用了多任务学习优化：基于多任务数据集的Prompt进行预训练，然后再适配的下游任务。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;P-tuning V2舍弃了词汇Mapping的Verbalizer的使用，重新利用[CLS]和字符标签，完全变为生成模型，可以在[CLS]部分输出sentence-level class，以及每个token位置上输出token-level class，增强通用性，使其可以适配到序列标注任务。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;实验效果&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;在设定模型参数量大小上的实验&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Prompt-tuning/P-tuning方法在参数规模小的语言模型上，效果低于传统的Fine-tuning；&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;p-tuning v2相对v1不论在小模型还是大模型上，均可以提升；&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;当选择100亿参数规模的语言模型时，P-tuning V2基本可以与传统的Fine-tuning保持相当水平甚至达到outperform；&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;在不同任务上的实验&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;MPT-2：本文提出的P-tuning V2，并采用Multi-task learning方法；&lt;/li&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;总结&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;P-tuning v2本质上将Prefix-tuning应用到NLU任务上的一种方法。&lt;/li&gt;
-&lt;li&gt;P-tuning v2还未在few-shot上验证性能，有待进一步验证。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;stanford&#34;&gt;Stanford&lt;/h2&gt;
-&lt;h3 id=&#34;prefix-tuning&#34;&gt;Prefix-Tuning&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;链接&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;论文&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://arxiv.org/pdf/2101.00190.pdf&#34;&gt;https://arxiv.org/pdf/2101.00190.pdf&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;代码&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/XiangLi1999/PrefixTuning&#34;&gt;https://github.com/XiangLi1999/PrefixTuning&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;直觉&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;传统微调需要调整整个模型的参数，并且为每个任务都存储一个模型的参数，带来的开销大&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Prefix tuning: 对自然语言生成任务，将语言模型参数冻结，转为优化一个小的,任务导向的连续向量（continuous task-specific vectors, 称为prefix)&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;相关工作&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;lightweight fine-tuning&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;关键的挑战是识别模型中蕴含的高性能架构和要调优的预训练参数子集。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;prefix tuning的训练参数要比lightweight tuning还要少上30x倍&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;GPT-3： prompt, in-context learning&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;使用人工设计的prompts&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;模型结构&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;对自回归LM结构，采用 z=[Prefix; x; y]的方式， 对于encoder-decoder结构，采用 z=[Prefix; x; prefix&#39;, y]的方式&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;自回归输入的y是已经生成的y，就比如生成“我今天很开心”（肯定是一个字一个字生成的），要生成到“很”字的时候，输入是x和“我今天”&lt;/li&gt;
-&lt;li&gt;在每层都加了prompt的参数&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;训练策略&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;这些prefix可以看做是一些虚拟的输入token, 语言模型(transformer)可以对这些虚拟tokens也做attention,但是这些prefix的参数与真实token的参数是完全独立的，而prefix的参数量相对真实token的参数量是极少的（比fine-tuning的存储参数少1000x倍）&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;对于不同任务，我们只需要使用一个LM模型，然后训练一个单独的prefix即可&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;prefix不是离散的tokens,而是看当做连续的词嵌入来优化&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;prefix tuning初始化一个可训练的参数矩阵，用于存储prefix向量参数&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;直接优化prefix矩阵会对学习率和初始化参数的选择非常敏感&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;为稳定优化过程和效果，再将prefix矩阵做重参数化(reparametrize)&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;ul&gt;
-&lt;li&gt;行数相同，列数减少&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;直接优化Prompt参数不太稳定，加了个更大的MLP，训练完只保存MLP变换后的参数&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;使用AdamW, 线性学习率衰减策略(linear-learning rate scheduler)&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;数据集&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;table2text&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;数据集：E2E，WebNLG，DART
-指标：BLEU, METEOR, TER, Mover-Score, BERTScore, BLEURT&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;摘要&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;数据集：XSum
-指标： ROUGE-1, ROUGE-2, ROUGE-L&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;效果&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;模型： GPT-2做table2text生成任务；BART做摘要任务&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;基准tuning方法&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;整体微调(fine-tuning), 只fine-tuning网络的头两层(FT-top2), adapter-tuning(adapter)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;结果&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;在table-to-text generation任务上，prefix tuning和fine tuning在整个数据集上训练后的测试效果相近&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;任务描述：如给定table: “name: Starbucks | type: coffee shop”, 生成描述“Starbucks serves coffee.”&lt;/li&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;- 在摘要任务上，prefix tuning的效果仅比fine tuning退化了一点
-  
-  - 
-
-- 在少样本的设定下，prefix tuning在两个任务上平均效果超过了fine tuning 
-  
-  - 
-  
-  - 在少样本设定下，使用真实词的激活值来初始化prefix会比随机初始化显著outperform
-    
-    - 
-
-- 对比prefix tuning和infix tuning: [prefix;x;y] v.s. [x;infix;y]
-  
-  - 
-  
-  - infix tuning比prefix tuning效果略差
-    
-    - 可能因为prefix tuning会同时影响x和y的激活情况（因为在头部），而infix tuning只会影响y的激活
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&#34;1&#34;&gt;1&lt;/h2&gt;
-&lt;h3 id=&#34;p-tuning-1&#34;&gt;P-tuning&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;链接&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;论文&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://arxiv.org/pdf/2103.10385.pdf&#34;&gt;https://arxiv.org/pdf/2103.10385.pdf&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;代码&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/THUDM/P-tuning&#34;&gt;https://github.com/THUDM/P-tuning&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;问题&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;GPT使用传统的微调策略没法在自然语言理解任务上取得较好结果，而通过新的调整策略，可以让大小相似的GPT在NLU上取得比BERT相近或更好的结果。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;方法细节&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;思路&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;自动化地寻找连续空间中的知识模板；训练知识模板，但不fine-tune语言模型。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;给定一个prompt T={[P(0:i)],x,[P(i+1:m)]}，传统的离散prompt模板将其映射为，其中的Pi所用的词语是模型词汇表中的词。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;- P-tuning将[Pi]当成一个伪token（之所以叫伪token是因为后续还将进行更新），将其映射为
-  
-  - 
-&lt;/code&gt;&lt;/pre&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;步骤&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;输入一个句子，以及预先设计的一个离散的模板：The Disney film is good! It was [MASK].；&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;对输入的template中，挑选一个（或多个）token作为pseudo token：The Disney film is good! [pseudo] was [MASK].&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;其初始化可以直接使用原本的token embedding；&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;ul&gt;
-&lt;li&gt;代表BERT词表里边的[unused1]～[unused6]，也就是用几个从未见过的token来构成模板&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;对所有的pseudo token P_i ，传入一层LSTM，并获得每个pseudo token输出的隐状态向量 h_i (hi就是一个可以训练的连续的稠密的张量，从而促使模型可以找个更好的连续prompts)&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;P-tuning并不是随机初始化这些pseudo tokens然后直接训练，而是通过一个BiLSTM模型，加上一个使用ReLU作为激活函数的双层MLP,把这几个Embedding算出来，并且将这个LSTM模型设为可学习的。避免了人工构建离散的template，而让模型可以自动学习continuous embedding&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;ul&gt;
-&lt;li&gt;只对Prompt部分的参数进行训练，而语言模型的参数固定不变&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;使用BiLSTM+MLP本质上也是类似prefix-tuning中的重参数化作用&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;将整个句子传入预训练语言模型层,对于pseudo token传入隐藏状态h_i, 对于原始词和[mask]，则传入embedding e_i&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;效果&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;LAMA+SuperGLUE基准数据集&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;LAMA数据集，根据知识库中结构化三元组（事实）构建的完形填空类型的数据。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;ul&gt;
-&lt;li&gt;Manual Prompt (MP): use original handcraft prompts from LAMA.（提供了人造的prompt).&lt;/li&gt;
-&lt;li&gt;具有110亿个参数的MegatronLM2，虽然微调几乎不起作用，但Ptuning仍然适用&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;结论&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;作者发现添加少量锚标记（anchor tokens）有助于SuperGLUE的一些NLU任务。例如在prompt模板“[PRE][prompt tokens][HYP]?[prompt tokens][MASK]”中的“?”就是一个锚节点，对性能影响很大。&lt;/li&gt;
-&lt;li&gt;知识探测任务中：语言模型仅仅通过找到更好的prompt，不进行微调，就能捕捉到更多的知识。&lt;/li&gt;
-&lt;li&gt;P-tuning可以有效的提高bert和gpt模型在NLU任务上的性能。并且使用P-tuning，可以让相似代销的GPT2实现比bert模型相当的甚至更好的结果，这个发现颠覆普遍认为的——双向模型比单向模型在NLU任务中表现的更好。&lt;/li&gt;
-&lt;li&gt;当预训练模型足够大的时候，我们的设备可能无法finetune整个模型，而P-tuning可以选择只优化几个Token的参数，因为优化所需要的显存和算力都会大大减少，所以P-tuning实则上给了我们一种在有限算力下调用大型预训练模型的思路。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;问题&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;当预训练语言模型的参数量低于100亿时，Prompt-tuning会比传统的Fine-tuning差；&lt;/li&gt;
-&lt;li&gt;像序列标注等对推理和理解要求高的任务，prompt-tuning效果会变差；&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;应用&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;在盘古模型中,p-tuning也被用于其的微调框架中&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-</content>
-            
-            
-            
-            
-            
-                
-                    
-                
                     
                 
             
