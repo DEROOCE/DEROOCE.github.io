@@ -23,7 +23,7 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
         
-        <lastBuildDate>Wed, 17 Aug 2022 21:47:00 &#43;0800</lastBuildDate>
+        <lastBuildDate>Wed, 17 Aug 2022 21:55:13 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://derooce.github.io/rss.xml" />
         
@@ -38,7 +38,7 @@
                 
                 <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
                 
-                    <description>&lt;p&gt;Seq2Seq&lt;/p&gt;
+                    <description>&lt;h1 id=&#34;seq2seq模型&#34;&gt;Seq2Seq模型&lt;/h1&gt;
 &lt;h2 id=&#34;由来&#34;&gt;由来&lt;/h2&gt;
 &lt;p&gt;在⾃然语⾔处理的很多应⽤中，输⼊和输出都可以是不定⻓序列。以机器翻译为例，输⼊可以是⼀段不定⻓的中文⽂本序列，输出可以是⼀段不定⻓的英语⽂本序列。&lt;/p&gt;
 &lt;p&gt;当输⼊和输出都是不定⻓序列时，我们可以使⽤==编码器-解码器架构==（encoder-decoder）或者&lt;strong&gt;seq2seq模型&lt;/strong&gt;。&lt;/p&gt;
@@ -124,12 +124,6 @@ $$&lt;/p&gt;
                 
                     
                         
-                            
-                                
-                                
-                                
-                                    <category domain="https://derooce.github.io/categories/deep-learning/">Deep Learning</category>
-                                
                             
                                 
                                 
@@ -497,12 +491,6 @@ $$&lt;/p&gt;
                                 
                                 
                                 
-                                    <category domain="https://derooce.github.io/categories/deep-learning/">Deep Learning</category>
-                                
-                            
-                                
-                                
-                                
                                     <category domain="https://derooce.github.io/categories/nlp/">NLP</category>
                                 
                             
@@ -680,25 +668,13 @@ $$&lt;/p&gt;
                                 
                                 
                                 
-                                    <category domain="https://derooce.github.io/categories/nlp/">NLP</category>
-                                
-                            
-                                
-                                
-                                
-                                    <category domain="https://derooce.github.io/categories/language-models/">Language Models</category>
-                                
-                            
-                                
-                                
-                                
-                                    <category domain="https://derooce.github.io/categories/model-tuning/">Model tuning</category>
-                                
-                            
-                                
-                                
-                                
                                     <category domain="https://derooce.github.io/categories/papers/">Papers</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/categories/nlp-papers/">NLP papers</category>
                                 
                             
                         
@@ -714,13 +690,25 @@ $$&lt;/p&gt;
                                 
                                 
                                 
-                                    <category domain="https://derooce.github.io/tags/nlp-papers/">NLP papers</category>
+                                    <category domain="https://derooce.github.io/tags/nlp-papers/">NLP Papers</category>
                                 
                             
                                 
                                 
                                 
                                     <category domain="https://derooce.github.io/tags/prompts/">Prompts</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/tags/language-models/">Language Models</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/tags/model-tuning/">Model tuning</category>
                                 
                             
                         
@@ -907,19 +895,13 @@ $$&lt;/p&gt;
                                 
                                 
                                 
-                                    <category domain="https://derooce.github.io/categories/nlp/">NLP</category>
+                                    <category domain="https://derooce.github.io/categories/papers/">Papers</category>
                                 
                             
                                 
                                 
                                 
-                                    <category domain="https://derooce.github.io/categories/language-models/">Language Models</category>
-                                
-                            
-                                
-                                
-                                
-                                    <category domain="https://derooce.github.io/categories/model-tuning/">Model tuning</category>
+                                    <category domain="https://derooce.github.io/categories/nlp-papers/">NLP papers</category>
                                 
                             
                         
@@ -935,13 +917,25 @@ $$&lt;/p&gt;
                                 
                                 
                                 
-                                    <category domain="https://derooce.github.io/tags/nlp-papers/">NLP papers</category>
+                                    <category domain="https://derooce.github.io/tags/nlp-papers/">NLP Papers</category>
                                 
                             
                                 
                                 
                                 
                                     <category domain="https://derooce.github.io/tags/prompts/">Prompts</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/tags/language-models/">Language Models</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="https://derooce.github.io/tags/model-tuning/">Model tuning</category>
                                 
                             
                         
@@ -1253,7 +1247,7 @@ $$&lt;/p&gt;
                                 
                                 
                                 
-                                    <category domain="https://derooce.github.io/tags/papers/">Papers</category>
+                                    <category domain="https://derooce.github.io/tags/nlp-papers/">NLP Papers</category>
                                 
                             
                         
