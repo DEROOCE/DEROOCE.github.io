@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">Writing and Sharing something insightful!</subtitle>
-    <updated>2022-08-17T21:55:13&#43;08:00</updated>
+    <updated>2022-08-17T22:23:19&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -20,7 +20,7 @@
             <title type="text">弄懂系列： Seq2Seq模型</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/seq-to-seq/" />
             <id>https://derooce.github.io/posts/seq-to-seq/</id>
-            <updated>2022-08-17T21:54:50&#43;08:00</updated>
+            <updated>2022-08-17T22:10:52&#43;08:00</updated>
             <published>2022-08-17T20:58:54&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -47,7 +47,7 @@
 &lt;p&gt;在训练数据集中，我们可以在每个句⼦后附上特殊符号“&lt;code&gt;&amp;lt;eos&amp;gt;&lt;/code&gt;”（end of sequence）以表⽰序列的终⽌。&lt;/p&gt;
 &lt;p&gt;编码器每个时间步的输⼊依次为输入句⼦中的单词、标点和特殊符号“&lt;code&gt;&amp;lt;eos&amp;gt;&lt;/code&gt;”。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/6giLzr.png&#34; alt=&#34;seq2seq&#34;&gt;&lt;/p&gt;
-&lt;p&gt;在前向传播训练过程中，编码器在最终时间步的隐藏层状态将会作为输⼊句⼦的表征或编码信息供给后续的解码器使用。将编码器输出的编码信息记为h^T。&lt;/p&gt;
+&lt;p&gt;在前向传播训练过程中，编码器在最终时间步的隐藏层状态将会作为输⼊句⼦的表征或编码信息供给后续的解码器使用。将编码器输出的编码信息记为$h^T$。&lt;/p&gt;
 &lt;p&gt;解码器在各个时间步中将使用到如下数据作为输入：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;使⽤输⼊句⼦的编码信息h^T&lt;/li&gt;
@@ -61,7 +61,7 @@
 &lt;hr&gt;
 &lt;h2 id=&#34;编码器&#34;&gt;编码器&lt;/h2&gt;
 &lt;p&gt;编码器的作⽤是把⼀个&lt;strong&gt;不定⻓的输⼊序列&lt;/strong&gt;变换成⼀个&lt;strong&gt;定⻓的背景变量&lt;/strong&gt;$C$。该背景变量将会存储输⼊序列的编码信息。常⽤的编码器是循环神经⽹络。&lt;/p&gt;
-&lt;p&gt;让我们考虑批量⼤小为$1$的时序数据样本。假设输⼊序列是$x_1, . . . , x_T$，例设$x_t$是输⼊句⼦中的第$t$个词。在时间步$t$时刻，循环神经⽹络将输⼊$x^t$的特征向量$\mathbf{x}&lt;em&gt;t$，以及上个时间步的隐藏状态$h&lt;/em&gt;{t-1}$变换为当前时间步的隐藏状态$h_t$。若使用函数f表达循环神经⽹络隐藏层的变换,则有$h_t=f(\mathbf{x}&lt;em&gt;t,h&lt;/em&gt;{t-1})$。&lt;/p&gt;
+&lt;p&gt;让我们考虑批量⼤小为$1$的时序数据样本。假设输⼊序列是$x_1, . . . , x_T$，例设$x_t$是输⼊句⼦中的第$t$个词。在时间步$t$时刻，循环神经⽹络将输⼊$x^t$的特征向量$\mathbf{x}^t$，以及上个时间步的隐藏状态$h_{t-1}$变换为当前时间步的隐藏状态$h_t$。若使用函数f表达循环神经⽹络隐藏层的变换,则有$h_t=f(\mathbf{x}^t,h_{t-1})$。&lt;/p&gt;
 &lt;p&gt;接着，编码器通过⾃定义函数$q$将各个时间步的隐藏状态变换为上下文变量(context variable) ：$c=q(h_1,...,h_T)$。例如，当选择$q(h_1, . . . ,h_T) =h_T$时，上下文变量是输⼊序列最终时间步的隐藏状态$h^T$。&lt;/p&gt;
 &lt;p&gt;以上描述的编码器是⼀个&lt;strong&gt;单向&lt;/strong&gt;的循环神经⽹络，每个时间步的隐藏状态只取决于该时间步及之前的输⼊⼦序列。我们也可以使⽤&lt;strong&gt;双向&lt;/strong&gt;循环神经⽹络构造编码器。在这种情况下，编码器每个时间步的隐藏状态同时取决于该时间步&lt;strong&gt;之前和之后的⼦序列&lt;/strong&gt;（包括当前时间步的输⼊），并编码了整个序列的信息。&lt;/p&gt;
 &lt;hr&gt;
@@ -95,12 +95,12 @@ $$&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;评估预测的序列&#34;&gt;评估预测的序列&lt;/h2&gt;
 &lt;p&gt;通过将预测序列与标签序列(the ground-truth)对比进行衡量。&lt;strong&gt;双语替换评测&lt;/strong&gt;(英语：bilingual evaluation understudy，缩写：BLEU)是用于评估自然语言的字句用机器翻译出来的品质的一种算法。BLEU最早由&lt;em&gt;Papineni et al., 2002&lt;/em&gt;提出用于评估机器翻译的结果，然而其在其他应用上也广泛使用。原则上，对于预测序列中的任意n-grams，BLEU可以评估这个n-grams是否出现在标签序列(label sequence)中。&lt;/p&gt;
-&lt;p&gt;n-grams的精度(precision)使用$p_n$表示，其代表着预测序列和标签序列中匹配的n-grams的数量与预测序列中的总n-grams数量的比值。为了更好解释，给定一个标签序列$A,B,C,D,E,F$,以及预测序列$A,B,B,C,D$,我们可以记错$p_1=4/5$（n-grams中n=1时），$p_2=3/4(A-B、B-C、C-D)$,$p_3=1/3(B-C-D)$,$p_4=0$.&lt;/p&gt;
-&lt;p&gt;另外，令$\mathrm{len}&lt;em&gt;{label}$和$\mathrm{len}&lt;/em&gt;{pred}$分别代表标签序列和预测序列中的单词数。于是，BLEU可以定义为：&lt;/p&gt;
-&lt;p&gt;$$
-\exp\left(\min\left(0, 1 - \frac{\mathrm{len}&lt;em&gt;{\text{label}}}{\mathrm{len}&lt;/em&gt;{\text{pred}}}\right)\right) \prod_{n=1}^k p_n^{1/2^n},
+&lt;p&gt;n-grams的精度(precision)使用$p_n$表示，其代表着预测序列和标签序列中匹配的n-grams的数量与预测序列中的总n-grams数量的比值。为了更好解释，给定一个标签序列A,B,C,D,E,F,以及预测序列A,B,B,C,D,我们可以记错$p_1=4/5$（n-grams中$n=1$时），$p_2=3/4$(A-B、B-C、C-D),$p_3=1/3$(B-C-D),$p_4=0$.&lt;/p&gt;
+&lt;p&gt;另外，令$l_{\text{label}}$和$l_{pred}$分别代表标签序列和预测序列中的单词数。于是，BLEU可以定义为：
+$$
+\left(\min\left(0, 1 - \frac{l_{\text{label}}}{l_{\text{pred}}}\right)\right) \prod_{n=1}^k p_n^{1/2^n}
 $$&lt;/p&gt;
-&lt;p&gt;其中k表示匹配最长的n-grams的n。基于BLEU的定义式，当预测序列与标签序列完全一致时，BLEU的值为1。此外，由于越长的n-grams越难成功匹配，为了对其精度值进行调整，BLEU会对越长的n-grams的精度赋予越大的&lt;strong&gt;权重&lt;/strong&gt;。特别地，当$p_n$是固定的时候，$p_n^{1/2^n}$会随着n的增加而增大（初始论文中使用的是$p_n^{1/n}$）。&lt;/p&gt;
+&lt;p&gt;其中$k$表示匹配最长的n-grams的n。基于BLEU的定义式，当预测序列与标签序列完全一致时，BLEU的值为1。此外，由于越长的n-grams越难成功匹配，为了对其精度值进行调整，BLEU会对越长的n-grams的精度赋予越大的&lt;strong&gt;权重&lt;/strong&gt;。特别地，当$p_n$是固定的时候，$p_n^{1/2^n}$会随着n的增加而增大（初始论文中使用的是$p_n^{1/n}$）。&lt;/p&gt;
 &lt;p&gt;由于预测越短的序列，得到的$p_n$值也就会越高，在BLUE定义式中的前面的指数项其实就是对短序列的一种惩罚项。例如，当$k=2$时，给定标签序列$A,B,C,D,E,F$以及预测序列$A,B$,尽管$p_1=p_2=1$,而惩罚项因子$\exp(1-6/2)\approx 0.14$会将整个BLEU得分降低。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;reference&#34;&gt;Reference&lt;/h2&gt;
@@ -159,7 +159,7 @@ $$&lt;/p&gt;
             <title type="text">弄懂系列： 反向传播算法</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/back-propagation/" />
             <id>https://derooce.github.io/posts/back-propagation/</id>
-            <updated>2022-08-17T21:43:45&#43;08:00</updated>
+            <updated>2022-08-17T22:22:16&#43;08:00</updated>
             <published>2022-08-17T20:58:47&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -263,12 +263,8 @@ $$&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;loss-function-for-training&#34;&gt;Loss function for training&lt;/h2&gt;
 &lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;A &amp;quot;Good&amp;quot; function: $f(x ; \theta) \sim \hat{y} \Rightarrow |\hat{y}-f(x ; \theta)| \approx 0$&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Define an example loss function: $C(\theta)=\sum_{k}\left|\hat{y}&lt;em&gt;{k}-f\left(x&lt;/em&gt;{k} ; \theta\right)\right|$&lt;/p&gt;
-&lt;/li&gt;
+&lt;li&gt;A &amp;quot;Good&amp;quot; function: $f(x ; \theta) \sim \hat{y} \Rightarrow |\hat{y}-f(x ; \theta)| \approx 0$&lt;/li&gt;
+&lt;li&gt;Define an example loss function: $C(\theta)=\sum_{k} \left | \hat{y}_{k}-f\left(x_{k} ; \theta \right) \right |$&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr&gt;
 &lt;p&gt;&lt;strong&gt;Gradient Descent for Neural Network&lt;/strong&gt;&lt;/p&gt;
@@ -307,12 +303,12 @@ $$&lt;/p&gt;
 \frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}=a_{j}^{l-1}
 $$&lt;/p&gt;
 &lt;p&gt;$$
-\frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}=\left{\begin{array}{cl}a_{j}^{l-1} &amp;amp; , l&amp;gt;1 \ x_{j} &amp;amp; , l=1\end{array}\right.
+\frac{\partial z_{i}^{l}}{\partial w_{i j}^{l}}=\left\{\begin{array}{cl}a_{j}^{l-1} &amp;amp; , l&amp;gt;1 \\ x_{j} &amp;amp; , l=1\end{array}\right.
 $$&lt;/p&gt;
 &lt;hr&gt;
 &lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/dIVGVe.png&#34; alt=&#34;back6&#34;&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;★★★★★ : $\delta_i^l$是第$l$层的传播梯度。==直接将这个难求的$\partial{C(\theta)}/\partial{z_i^l}$设为$\delta_i^l$.==&lt;/p&gt;
+&lt;p&gt;★★★★★ : $\delta_i^l$是第$l$层的传播梯度。直接将这个难求的$\partial{C(\theta)}/\partial{z_i^l}$设为$\delta_i^l$.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;Idea: from $L$ to $1$：&lt;/p&gt;
 &lt;ul&gt;
@@ -321,7 +317,7 @@ $$&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/p7J1Yh.png&#34; alt=&#34;back7&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/UeG12k.png&#34; alt=&#34;back8&#34;&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;★★★★★ : ==Compute $\delta^l$ based on $\delta^{𝑙+1}$==&lt;/li&gt;
+&lt;li&gt;★★★★★ : Compute $\delta^l$ based on $\delta^{𝑙+1}$&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/lgzey9.png&#34; alt=&#34;back9&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/4XjmlS.png&#34; alt=&#34;back10&#34;&gt;&lt;/p&gt;
@@ -3702,7 +3698,7 @@ $$&lt;/p&gt;
             <title type="text">Hello Hugo</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/fancy-settings-for-hugo/" />
             <id>https://derooce.github.io/posts/fancy-settings-for-hugo/</id>
-            <updated>2022-07-31T23:33:14&#43;08:00</updated>
+            <updated>2022-08-17T22:23:09&#43;08:00</updated>
             <published>2021-03-12T11:05:36&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -4045,10 +4041,12 @@ $$&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# under hugo base directory&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;hugo 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;hugo server
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# jump to the public directory&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git add .
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git commit -m &lt;span class=&#34;s2&#34;&gt;&amp;#34;xx&amp;#34;&lt;/span&gt;
