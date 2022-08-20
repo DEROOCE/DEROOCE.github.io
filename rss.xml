@@ -23,7 +23,7 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
         
-        <lastBuildDate>Sat, 20 Aug 2022 11:06:57 &#43;0800</lastBuildDate>
+        <lastBuildDate>Sat, 20 Aug 2022 20:37:39 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://derooce.github.io/rss.xml" />
         
@@ -3626,6 +3626,9 @@ $$&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;css样式改变： &lt;span class=&#34;filename&#34;&gt;blog/assets/scss/custom/_custom.scss&lt;/span&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;字体修改： &lt;span class=&#34;filename&#34;&gt;blog/theme/config.toml&lt;/span&gt; &lt;code&gt;fontLinks&lt;/code&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 </description>

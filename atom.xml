@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">Writing and Sharing something insightful!</subtitle>
-    <updated>2022-08-20T11:06:57&#43;08:00</updated>
+    <updated>2022-08-20T20:37:39&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -3581,7 +3581,7 @@ $$&lt;/p&gt;
             <title type="text">Blog Css Style</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/blog-css-style/" />
             <id>https://derooce.github.io/posts/blog-css-style/</id>
-            <updated>2022-08-20T00:04:48&#43;08:00</updated>
+            <updated>2022-08-20T20:36:50&#43;08:00</updated>
             <published>2021-03-13T14:14:04&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -3653,6 +3653,9 @@ $$&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;css样式改变： &lt;span class=&#34;filename&#34;&gt;blog/assets/scss/custom/_custom.scss&lt;/span&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;字体修改： &lt;span class=&#34;filename&#34;&gt;blog/theme/config.toml&lt;/span&gt; &lt;code&gt;fontLinks&lt;/code&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 </content>
