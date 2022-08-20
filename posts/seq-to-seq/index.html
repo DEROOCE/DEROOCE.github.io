@@ -14,7 +14,7 @@
 
     <title>弄懂系列： Seq2Seq模型 | DEROOCE</title>
 
-    <link rel="stylesheet" href="/css/meme.min.fe7f848215a11b493a1755d8037e48b091cdee6e432054767a15650ff9adf10e.css"/>
+    <link rel="stylesheet" href="/css/meme.min.93a6c234360b4be7b9de247410cc6e19280b9f8247b5d51ab6f959d4638edcb0.css"/>
 
     
     
@@ -27,7 +27,7 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" media="print" onload="this.media='all'" />
         <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Fondamento:ital@0;1&amp;family=Vast&#43;Shadow&amp;family=Merriweather:ital,wght@0,300;0,400;1,300;1,400&amp;family=Neuton:ital,wght@0,300;0,400;1,400&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" /></noscript>
 
-    <meta name="author" content="DEROOCE" /><meta name="description" content="Seq2Seq模型 由来 在⾃然语⾔处理的很多应⽤中，输⼊和输出都可以是不定⻓序列。以机器翻译为例，输⼊可以是⼀段不定⻓的中文⽂本序列，输出可以是⼀段不定⻓的英语⽂本序列。 当输⼊和输出都是不定⻓序列时，我们可以使⽤==编码器-解码器架构==（encoder-decoder）或者seq2seq模型。 序列到……" />
+    <meta name="author" content="DEROOCE" /><meta name="description" content="Seq2Seq模型 由来 在⾃然语⾔处理的很多应⽤中，输⼊和输出都可以是不定⻓序列。以机器翻译为例，输⼊可以是⼀段不定⻓的中文⽂本序列，输出可以是⼀段不定⻓的英语⽂本序列。 当输⼊和输出都是不定⻓序列时，我们可以使⽤编码器-解码器架构（encoder-decoder）或者seq2seq模型。 序列到序列模型……" />
 
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#2a6df4" />
@@ -42,6 +42,8 @@
     <meta name="msapplication-TileImage" content="../../icons/mstile-150x150.png" />
     <link rel="manifest" href="/manifest.json" />
 
+    
+    
     <script src="https://kit.fontawesome.com/e2d29a5fca.js" crossorigin="anonymous"></script>
     
     
@@ -57,13 +59,13 @@
         "@context": "https://schema.org",
         "@type": "BlogPosting",
         "datePublished": "2022-08-17T20:58:54+08:00",
-        "dateModified": "2022-08-17T22:10:52+08:00",
+        "dateModified": "2022-08-18T19:40:39+08:00",
         "url": "https://derooce.github.io/posts/seq-to-seq/",
         "headline": "弄懂系列： Seq2Seq模型",
-        "description": "Seq2Seq模型 由来 在⾃然语⾔处理的很多应⽤中，输⼊和输出都可以是不定⻓序列。以机器翻译为例，输⼊可以是⼀段不定⻓的中文⽂本序列，输出可以是⼀段不定⻓的英语⽂本序列。 当输⼊和输出都是不定⻓序列时，我们可以使⽤==编码器-解码器架构==（encoder-decoder）或者seq2seq模型。 序列到……",
+        "description": "Seq2Seq模型 由来 在⾃然语⾔处理的很多应⽤中，输⼊和输出都可以是不定⻓序列。以机器翻译为例，输⼊可以是⼀段不定⻓的中文⽂本序列，输出可以是⼀段不定⻓的英语⽂本序列。 当输⼊和输出都是不定⻓序列时，我们可以使⽤编码器-解码器架构（encoder-decoder）或者seq2seq模型。 序列到序列模型……",
         "inLanguage" : "zh-CN",
         "articleSection": "posts",
-        "wordCount":  2517 ,
+        "wordCount":  2513 ,
         "image": ["https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/6giLzr.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/IdTcj8.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/EF0cgo.png"],
         "author": {
             "@type": "Person",
@@ -103,13 +105,13 @@
 
 
 <meta property="og:title" content="弄懂系列： Seq2Seq模型" />
-<meta property="og:description" content="Seq2Seq模型 由来 在⾃然语⾔处理的很多应⽤中，输⼊和输出都可以是不定⻓序列。以机器翻译为例，输⼊可以是⼀段不定⻓的中文⽂本序列，输出可以是⼀段不定⻓的英语⽂本序列。 当输⼊和输出都是不定⻓序列时，我们可以使⽤==编码器-解码器架构==（encoder-decoder）或者seq2seq模型。 序列到……" />
+<meta property="og:description" content="Seq2Seq模型 由来 在⾃然语⾔处理的很多应⽤中，输⼊和输出都可以是不定⻓序列。以机器翻译为例，输⼊可以是⼀段不定⻓的中文⽂本序列，输出可以是⼀段不定⻓的英语⽂本序列。 当输⼊和输出都是不定⻓序列时，我们可以使⽤编码器-解码器架构（encoder-decoder）或者seq2seq模型。 序列到序列模型……" />
 <meta property="og:url" content="https://derooce.github.io/posts/seq-to-seq/" />
 <meta property="og:site_name" content="DEROOCE" />
 <meta property="og:locale" content="zh" /><meta property="og:image" content="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/6giLzr.png" />
 <meta property="og:type" content="article" />
     <meta property="article:published_time" content="2022-08-17T20:58:54&#43;08:00" />
-    <meta property="article:modified_time" content="2022-08-17T22:10:52&#43;08:00" />
+    <meta property="article:modified_time" content="2022-08-18T19:40:39&#43;08:00" />
     
     <meta property="article:section" content="posts" />
 
@@ -135,11 +137,17 @@
     
 
 
+
+
+
+
+
 </head>
 
     <body>
         <div class="container">
             
+
     <header class="header">
         
             <div class="header-wrapper">
@@ -180,6 +188,11 @@
             
         
             
+                <li class="menu-item"><a href="/cv/"><span class="menu-item-name">CV</span></a>
+                </li>
+            
+        
+            
                 
                     
                     
@@ -194,6 +207,9 @@
 </nav>
 
                     
+
+
+
                 </div>
             </div>
             
@@ -252,7 +268,7 @@
     
     
         
-        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;2517</span>
+        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;2513</span>
     
     
     
@@ -275,7 +291,7 @@
                 <h1 id="seq2seq模型"><a href="#seq2seq模型" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:seq2seq模型" class="headings">Seq2Seq模型</a></h1>
 <h2 id="由来"><a href="#由来" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:由来" class="headings">由来</a></h2>
 <p>在⾃然语⾔处理的很多应⽤中，输⼊和输出都可以是不定⻓序列。以机器翻译为例，输⼊可以是⼀段不定⻓的中文⽂本序列，输出可以是⼀段不定⻓的英语⽂本序列。</p>
-<p>当输⼊和输出都是不定⻓序列时，我们可以使⽤==编码器-解码器架构==（encoder-decoder）或者<strong>seq2seq模型</strong>。</p>
+<p>当输⼊和输出都是不定⻓序列时，我们可以使⽤编码器-解码器架构（encoder-decoder）或者<strong>seq2seq模型</strong>。</p>
 <blockquote>
 <p>序列到序列模型，简称seq2seq模型。</p>
 </blockquote>
@@ -362,9 +378,9 @@ $$</p>
 
         
     <div class="updated-badge-container">
-        <span title="Updated @ 2022-08-17 22:10:52 CST" style="cursor:help">
+        <span title="Updated @ 2022-08-18 19:40:39 CST" style="cursor:help">
 
-<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2022-08-17</text><text x="915" y="140" textLength="650" transform="scale(.1)">2022-08-17</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2022-08-18</text><text x="915" y="140" textLength="650" transform="scale(.1)">2022-08-18</text></g></svg>
         </span></div>
 
 

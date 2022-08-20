@@ -23,7 +23,7 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
         
-        <lastBuildDate>Wed, 17 Aug 2022 22:23:19 &#43;0800</lastBuildDate>
+        <lastBuildDate>Sat, 20 Aug 2022 11:06:57 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://derooce.github.io/rss.xml" />
         
@@ -41,7 +41,7 @@
                     <description>&lt;h1 id=&#34;seq2seq模型&#34;&gt;Seq2Seq模型&lt;/h1&gt;
 &lt;h2 id=&#34;由来&#34;&gt;由来&lt;/h2&gt;
 &lt;p&gt;在⾃然语⾔处理的很多应⽤中，输⼊和输出都可以是不定⻓序列。以机器翻译为例，输⼊可以是⼀段不定⻓的中文⽂本序列，输出可以是⼀段不定⻓的英语⽂本序列。&lt;/p&gt;
-&lt;p&gt;当输⼊和输出都是不定⻓序列时，我们可以使⽤==编码器-解码器架构==（encoder-decoder）或者&lt;strong&gt;seq2seq模型&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;当输⼊和输出都是不定⻓序列时，我们可以使⽤编码器-解码器架构（encoder-decoder）或者&lt;strong&gt;seq2seq模型&lt;/strong&gt;。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;序列到序列模型，简称seq2seq模型。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -2871,10 +2871,10 @@ training.&lt;/p &gt;&lt;/div&gt;
 &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314135251.png&#34; style=&#34;zoom: 33%;&#34; /&gt;
 &lt;p&gt;令$p(w,w&#39;)$是词$w$在以$w&#39;$为中心的5个单词组成的窗口内出现的经验概率，$p(w)$是词$w$在文本中出现的概率，$p(w&#39;)$是词$w&#39;$在文本中出现的概率。则对应的点互信息(PMI)计算为:
 $$
-PMI(w, w&#39;) = \log (\frac{p(w, w&#39;)}{p(w) p(w&#39;)})  \qquad \mbox{(Pointwise mutual information (PMI))}
+PMI(w, w&#39;) = \log (\frac{p(w, w&#39;)}{p(w) p(w&#39;)})  \qquad \text{(Pointwise mutual information (PMI))}
 $$&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;🔥&lt;u&gt;Important&lt;/u&gt;: 一些我们将会使用到的神经网络方法(如，Word2Vec)，隐式地近似（移位的，shifted）PMI矩阵的因式分解 $\color{#888}{u_{c}^T}\color{#88bd33}{v_{w}}\color{black} =PMI(\color{#88bd33}{w}\color{black}, \color{#888}{c}\color{black})-\log k$,其中$k$表示&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#%E6%9B%B4%E5%BF%AB%E7%9A%84%E8%AE%AD%E7%BB%83%E6%96%B9%E5%BC%8F%E8%B4%9F%E9%87%87%E6%A0%B7&#34;&gt;负采样&lt;/a&gt;的样本个数。&lt;/p&gt;
+&lt;p&gt;🔥&lt;u&gt;Important&lt;/u&gt;: 一些我们将会使用到的神经网络方法(如，Word2Vec)，隐式地近似（移位的，shifted）PMI矩阵的因式分解 $\color{#888}{u_{c}^T}{\color{#88bd33}{v_{w}}} =PMI(\color{#88bd33}{w}, \color{#888}{c}-\log k)$,其中$k$表示&lt;a href=&#34;https://derooce.github.io/posts/word-embeddings-notes/#%E6%9B%B4%E5%BF%AB%E7%9A%84%E8%AE%AD%E7%BB%83%E6%96%B9%E5%BC%8F%E8%B4%9F%E9%87%87%E6%A0%B7&#34;&gt;负采样&lt;/a&gt;的样本个数。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;hr&gt;
 &lt;h3 id=&#34;潜在语义分析-latent-semantic-analysis-lsa-understanding-documents&#34;&gt;潜在语义分析 Latent Semantic Analysis (LSA): Understanding Documents&lt;/h3&gt;
@@ -2949,7 +2949,7 @@ $$&lt;/p&gt;
 &lt;h3 id=&#34;目标函数负对数似然&#34;&gt;目标函数：负对数似然&lt;/h3&gt;
 &lt;p&gt;对于文本预料的每个位置$t=1,...,T$, 给定中心词$\color{#88bd33}{w_t}$,Word2Vec将根据一个$m$-大小的窗口来预测上下文词:
 $$
-\color{#88bd33}{\mbox{Likelihood}} \color{black}= L(\theta)= \prod\limits_{t=1}^T\prod\limits_{-m\le j \le m, j\neq 0}P(\color{#888}{w_{t+j}}|\color{#88bd33}{w_t}\color{black}, \theta),
+{\color{#88bd33}{\text{Likelihood}}}= L(\theta)= \prod\limits_{t=1}^T\prod\limits_{-m\le j \le m, j\neq 0}P(\color{#888}{w_{t+j}}|\color{#88bd33}{w_t}, \theta),
 $$
 其中$\theta$是所有需要优化的变量。目标函数(aka. 损失函数、成本函数)$J(\theta)$是平均负对数似然：
 &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314140317.png&#34; alt=&#34;&#34; title=&#34;似然函数取对数&#34;&gt;&lt;/p&gt;
@@ -3052,7 +3052,7 @@ $$&lt;/p&gt;
 &lt;img src=&#34;https://gitee.com/raderlu/blog-image-bed/raw/master/img/20210314141106.png&#34; alt=&#34;&#34;&gt;
 中心词为$\color{#88bd33}\mathrm{cat}$,以及含有四个上下文词。在训练时，我们先从中选出一个上下文词，假设选择$\color{#888}\mathrm{cute}$,那么这个($\color{#88bd33}\mathrm{cat}$,$\color{#888}\mathrm{cute}$)配对的损失函数项为:&lt;/p&gt;
 &lt;div&gt;
-    $$
+$$
     \begin{aligned}
  J_{t,j}(\theta)= -\log P(\color{#888}{cute}\color{black}|\color{#88bd33}{cat}\color{black}) &amp;=
         -\log \frac{\exp\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}}{
@@ -3060,7 +3060,7 @@ $$&lt;/p&gt;
     -\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}\color{black}
         + \log \sum\limits_{w\in Voc}\exp{\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}\color{black}{.}
 		\end{aligned}
-    $$
+$$
 &lt;/div&gt;
 &lt;div&gt;
     $$
@@ -3092,16 +3092,16 @@ $$&lt;/p&gt;
 &lt;p&gt;如果需要正式地说明，当前步的新损失函数可以表达为：
 $$
 J_{t,j}(\theta)=
--\log\sigma(\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}\color{black}) -
-\sum\limits_{w\in {w_{i_1},\dots, w_{i_K}}}\log\sigma({-\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}\color{black}),
+-\log\sigma({\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}}) -
+\sum\limits_{w\in {w_{i_1},\dots, w_{i_K}}}\log\sigma({-\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}),
 $$
 其中$w_{i_1},\dots, w_{i_K}$表示在当前步上随机选择的$K$个负样本，以及$\sigma(x)=\frac{1}{1+e^{-x}}$表示sigmoid函数。&lt;/p&gt;
 &lt;p&gt;注意到$\sigma(-x)=\frac{1}{1+e^{x}}=\frac{1\cdot e^{-x}}{(1+e^{x})\cdot e^{-x}} =
 \frac{e^{-x}}{1+e^{-x}}= 1- \frac{1}{1+e^{x}}=1-\sigma(x)$,因此损失函数还可以改写为：&lt;/p&gt;
 &lt;p&gt;$$
 J_{t,j}(\theta)=
--\log\sigma(\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}\color{black}) -
-\sum\limits_{w\in {w_{i_1},\dots, w_{i_K}}}\log(1-\sigma({\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}\color{black})).
+-\log\sigma({\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}}) -
+\sum\limits_{w\in {w_{i_1},\dots, w_{i_K}}}\log(1-\sigma({\color{#888}{u_w^T}}\color{#88bd33}{v_{cat}})).
 $$&lt;/p&gt;
 &lt;hr&gt;
 &lt;p&gt;&lt;strong&gt;关于&lt;em&gt;负&lt;/em&gt;采样&lt;/strong&gt;的几点说明：&lt;/p&gt;
@@ -3171,8 +3171,8 @@ $$P\left(w_{i}\right)=\frac{f\left(w_{i}\right)^{3 / 4}}{\sum_{j=0}^{n}\left(f\l
 &lt;p&gt;&lt;u&gt;Why Two Vectors?&lt;/u&gt;: 回忆Word2Vec中的内容，我们需要训练两个向量：中心词向量和其对应的上下文向量，并且在训练结束后，上下文词向量将会直接丢弃，不需再使用，那么为什么还需要使用两个向量? 其实这就使得Word2Vec模型简单高效的技巧所在。我们再看一下某一步更新的损失函数：
 $$
 J_{t,j}(\theta)=
--\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}}\color{black} -
-\log \sum\limits_{w\in V}\exp{\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}\color{black}{.}
+-\color{#888}{u_{cute}^T}\color{#88bd33}{v_{cat}} -
+\log \sum\limits_{w\in V}\exp{\color{#888}{u_w^T}\color{#88bd33}{v_{cat}}}{.}
 $$
 当中心词和上下文词使用不同的向量，在损失函数（负采样方法中的损失函数也是同理）的第一项和第二项指数内的点积其实都关于参数(即词向量)是线性的，因此梯度可以非常容易地计算，从而训练速度也会非常快。&lt;/p&gt;
 &lt;p&gt;&lt;u&gt;滑动窗口的大小选择&lt;/u&gt;: 滑动窗口的大小对向量相似度的计算有很大的影响。有研究表明：越大的窗口越能产生主题相关的相似度(topical similarities),例如walked,run,walking等词会分类在一起，词向量会比较接近；而越小的窗口越能产生更多功能与句法(functional and syntactic)上的相似度，例如Walking,running,approaching等。&lt;/p&gt;
@@ -3265,7 +3265,7 @@ $$
 &lt;p&gt;在形式上，给定一组词配对以及它们的向量表示配对${\color{#88a635}{x_i}\color{black}, \color{#547dbf}{z_i}\color{black} }_{i=1}^n$,其中$\color{#88a635}{x_i}$和$\color{#547dbf}{z_i}$分别是源语言(source language)中的第$i$个词，以及目标语言(target language)中对应的翻译单词。我们希望找到一个映射矩阵$W$，使得$W\color{#547dbf}{z_i}$近似于$\color{#88a635}{x_i}$,也即从两个语言的字典中找到匹配的单词。&lt;/p&gt;
 &lt;p&gt;我们将根据如下准则选取$W$:
 $$
-W = \arg \min\limits_{W}\sum\limits_{i=1}^n\parallel W\color{#547dbf}{z_i}\color{black} - \color{#88a635}{x_i}\color{black}\parallel^2,
+W = \arg \min\limits_{W}\sum\limits_{i=1}^n\parallel W\color{#547dbf}{z_i} - \color{#88a635}{x_i}\parallel^2,
 $$
 并且通过梯度下降算法优化。&lt;/p&gt;
 &lt;blockquote&gt;
@@ -3623,6 +3623,9 @@ $$&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;在博客页面嵌入交互图表&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;css样式改变： &lt;span class=&#34;filename&#34;&gt;blog/assets/scss/custom/_custom.scss&lt;/span&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 </description>
@@ -3998,7 +4001,12 @@ $$&lt;/p&gt;
 &lt;/div&gt;&lt;hr&gt;
 &lt;h2 id=&#34;hugo-shortcodes&#34;&gt;Hugo shortcodes&lt;/h2&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://gohugo.io/content-management/shortcodes/&#34;&gt;Shortcodes | Hugo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://gohugo.io/content-management/shortcodes/&#34;&gt;Shortcodes | Hugo&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/61191614/hugo-insert-js-in-between-markdown-content&#34;&gt;在markdown中加入js&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;hugo-workflow&#34;&gt;hugo workflow&lt;/h2&gt;
@@ -4033,7 +4041,7 @@ $$&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://guanqr.com/tech/website/a-way-to-realize-carousel-in-meme/&#34;&gt;轮播图代码来源&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:2&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id=&#34;fn:3&#34;&gt;
-&lt;p&gt;&lt;a href=&#34;https://ztygcs.github.io/posts/meme%E4%B8%BB%E9%A2%98%E4%BC%98%E5%8C%96%E4%BA%8C/#top&#34;&gt;诗歌引用代码&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:3&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://ztygcs.github.io/posts/%E5%8D%9A%E5%AE%A2/%E8%87%AA%E5%AE%9A%E4%B9%89-hugo-shortcodes-%E7%AE%80%E7%A0%81/&#34;&gt;诗歌引用代码&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:3&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id=&#34;fn:4&#34;&gt;
 &lt;p&gt;&lt;a href=&#34;https://shishuochen.gitee.io/2020/uffick8u1/&#34;&gt;Hugo博客添加font awesome&lt;/a&gt;&amp;#160;&lt;a href=&#34;https://derooce.github.io/posts/fancy-settings-for-hugo/#fnref:4&#34; class=&#34;footnote-backref&#34; role=&#34;doc-backlink&#34;&gt;&amp;#x21a9;&amp;#xfe0e;&lt;/a&gt;&lt;/p&gt;
