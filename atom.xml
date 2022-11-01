@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
     <title type="text">DEROOCE</title>
     <subtitle type="html">Writing and Sharing something insightful!</subtitle>
-    <updated>2022-08-20T20:37:39&#43;08:00</updated>
+    <updated>2022-11-01T14:42:34&#43;08:00</updated>
     <id>https://derooce.github.io/</id>
     <link rel="alternate" type="text/html" href="https://derooce.github.io/" />
     <link rel="self" type="application/atom&#43;xml" href="https://derooce.github.io/atom.xml" />
@@ -15,7 +15,7 @@
                 <email>vanace.jc@gmail.com</email>
             </author>
     <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights>
-    <generator uri="https://gohugo.io/" version="0.101.0">Hugo</generator>
+    <generator uri="https://gohugo.io/" version="0.105.0">Hugo</generator>
         <entry>
             <title type="text">弄懂系列： Seq2Seq模型</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/seq-to-seq/" />
@@ -159,7 +159,7 @@ $$&lt;/p&gt;
             <title type="text">弄懂系列： 反向传播算法</title>
             <link rel="alternate" type="text/html" href="https://derooce.github.io/posts/back-propagation/" />
             <id>https://derooce.github.io/posts/back-propagation/</id>
-            <updated>2022-08-17T22:22:16&#43;08:00</updated>
+            <updated>2022-08-25T08:37:06&#43;08:00</updated>
             <published>2022-08-17T20:58:47&#43;08:00</published>
             <author>
                     <name>DEROOCE</name>
@@ -361,6 +361,16 @@ $$&lt;/p&gt;
 &lt;h2 id=&#34;其他注意事项&#34;&gt;其他注意事项&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;反向传播不只适用于层层堆叠的模型；它可用于任何&lt;strong&gt;有向无环图&lt;/strong&gt;（DAG）只要模组间具有偏序关系，&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;reference&#34;&gt;Reference&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;李宏毅机器学习课程&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.csdn.net/hoho1151191150/article/details/79537246&#34;&gt;# 神经网络学习（三）反向（BP）传播算法（1）&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ol&gt;
 </content>
             

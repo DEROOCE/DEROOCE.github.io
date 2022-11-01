@@ -10,7 +10,7 @@
         <title>DEROOCE</title>
         <link>https://derooce.github.io/</link>
         <description>Writing and Sharing something insightful!</description>
-        <generator>Hugo 0.101.0 https://gohugo.io/</generator>
+        <generator>Hugo 0.105.0 https://gohugo.io/</generator>
         
             <language>zh-CN</language>
         
@@ -23,7 +23,7 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
         
-        <lastBuildDate>Sat, 20 Aug 2022 20:37:39 &#43;0800</lastBuildDate>
+        <lastBuildDate>Tue, 01 Nov 2022 14:42:34 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://derooce.github.io/rss.xml" />
         
@@ -367,6 +367,16 @@ $$&lt;/p&gt;
 &lt;h2 id=&#34;其他注意事项&#34;&gt;其他注意事项&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;反向传播不只适用于层层堆叠的模型；它可用于任何&lt;strong&gt;有向无环图&lt;/strong&gt;（DAG）只要模组间具有偏序关系，&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;reference&#34;&gt;Reference&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;李宏毅机器学习课程&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.csdn.net/hoho1151191150/article/details/79537246&#34;&gt;# 神经网络学习（三）反向（BP）传播算法（1）&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ol&gt;
 </description>
                 

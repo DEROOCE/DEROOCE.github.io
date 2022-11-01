@@ -3,7 +3,7 @@
     <head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
     <meta charset="UTF-8" />
 
-    <meta name="generator" content="Hugo 0.101.0" /><meta name="theme-color" content="#fff" />
+    <meta name="generator" content="Hugo 0.105.0"><meta name="theme-color" content="#fff" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
@@ -59,13 +59,13 @@
         "@context": "https://schema.org",
         "@type": "BlogPosting",
         "datePublished": "2022-08-17T20:58:47+08:00",
-        "dateModified": "2022-08-17T22:22:16+08:00",
+        "dateModified": "2022-08-25T08:37:06+08:00",
         "url": "https://derooce.github.io/posts/back-propagation/",
         "headline": "弄懂系列： 反向传播算法",
         "description": "backpropagation 参数化模型 Parameterized models: $\\bar{y}=G(x,w)$. 简单来讲，参数化模型就是依赖于输入和可训练参数的函数。 其中，可训练参数在不同训练样本中是共享的，而输入则因每个样本不同而不同。在大多数深度学习框架中，参数是隐性的(implicit)：当函数被调用时，参数不被传递。 如果把模型比作面向对象编程，这些参数相当于被“储存在函数中”。 变量（……",
         "inLanguage" : "zh-CN",
         "articleSection": "posts",
-        "wordCount":  912 ,
+        "wordCount":  945 ,
         "image": ["https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/smwdfA.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/JZ2Zmu.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/VFQuEZ.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/bjmDLP.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/y0GeqY.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/dIVGVe.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/p7J1Yh.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/UeG12k.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/lgzey9.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/4XjmlS.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/Jha89O.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/jVjDEO.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/YWKplX.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/Jk6Oh2.png","https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/pKFSjE.png"],
         "author": {
             "@type": "Person",
@@ -111,7 +111,7 @@
 <meta property="og:locale" content="zh" /><meta property="og:image" content="https://cdn.jsdelivr.net/gh/DEROOCE/imgbed@main/uPic/smwdfA.png" />
 <meta property="og:type" content="article" />
     <meta property="article:published_time" content="2022-08-17T20:58:47&#43;08:00" />
-    <meta property="article:modified_time" content="2022-08-17T22:22:16&#43;08:00" />
+    <meta property="article:modified_time" content="2022-08-25T08:37:06&#43;08:00" />
     
     <meta property="article:section" content="posts" />
 
@@ -268,7 +268,7 @@
     
     
         
-        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;912</span>
+        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;945</span>
     
     
     
@@ -287,6 +287,7 @@
     <li><a id="contents:总结" href="#总结">总结</a></li>
     <li><a id="contents:向量-雅克比乘积" href="#向量-雅克比乘积">向量-雅克比乘积</a></li>
     <li><a id="contents:其他注意事项" href="#其他注意事项">其他注意事项</a></li>
+    <li><a id="contents:reference" href="#reference">Reference</a></li>
   </ol>
 </nav><div class="post-body e-content">
                 <p>backpropagation</p>
@@ -483,6 +484,16 @@ $$</p>
 <ol>
 <li>反向传播不只适用于层层堆叠的模型；它可用于任何<strong>有向无环图</strong>（DAG）只要模组间具有偏序关系，</li>
 </ol>
+<hr>
+<h2 id="reference"><a href="#reference" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:reference" class="headings">Reference</a></h2>
+<ol>
+<li>
+<p>李宏毅机器学习课程</p>
+</li>
+<li>
+<p><a href="https://blog.csdn.net/hoho1151191150/article/details/79537246" target="_blank" rel="noopener"># 神经网络学习（三）反向（BP）传播算法（1）</a></p>
+</li>
+</ol>
 
             </div>
 
@@ -495,9 +506,9 @@ $$</p>
 
         
     <div class="updated-badge-container">
-        <span title="Updated @ 2022-08-17 22:22:16 CST" style="cursor:help">
+        <span title="Updated @ 2022-08-25 08:37:06 CST" style="cursor:help">
 
-<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2022-08-17</text><text x="915" y="140" textLength="650" transform="scale(.1)">2022-08-17</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2022-08-25</text><text x="915" y="140" textLength="650" transform="scale(.1)">2022-08-25</text></g></svg>
         </span></div>
 
 
