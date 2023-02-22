@@ -10,7 +10,7 @@
         <title>DEROOCE</title>
         <link>https://derooce.github.io/</link>
         <description>Writing and Sharing something insightful!</description>
-        <generator>Hugo 0.105.0 https://gohugo.io/</generator>
+        <generator>Hugo 0.110.0 https://gohugo.io/</generator>
         
             <language>zh-CN</language>
         
@@ -23,7 +23,7 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</copyright>
         
-        <lastBuildDate>Tue, 01 Nov 2022 14:44:51 &#43;0800</lastBuildDate>
+        <lastBuildDate>Wed, 22 Feb 2023 23:31:13 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="https://derooce.github.io/rss.xml" />
         
